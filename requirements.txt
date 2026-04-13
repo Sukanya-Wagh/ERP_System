@@ -9,4 +9,3 @@ openpyxl==3.1.2
 Email-Validator==2.0.0
 Pillow==10.0.0
 gunicorn==21.2.0
-python-3.11.9
