@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2 class="mb-4">Submit Complaint to CC</h2>
+
+<form method="POST">
+    {{ form.hidden_tag() }}
+    
+    <div class="mb-3">
+        {{ form.content.label(class="form-label") }}
+        {{ form.content(class="form-control", rows="5", placeholder="Describe your complaint in detail...") }}
+        {% if form.content.errors %}
+            <div class="text-danger">
+                {% for error in form.content.errors %}
+                    {{ error }}
+                {% endfor %}
+            </div>
+        {% endif %}
+    </div>
+    
+    {{ form.submit(class="btn btn-danger") }}
+    <a href="{{ url_for('student_dashboard') }}" class="btn btn-secondary">Cancel</a>
+</form>
+{% endblock %}

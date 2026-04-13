@@ -1,0 +1,252 @@
+{% extends 'hod_base.html' %}
+
+{% block title %}Model Answers Management - HOD Dashboard{% endblock %}
+
+{% block extra_styles %}
+        .page-banner {
+            background: linear-gradient(135deg, rgba(0,245,255,0.08), rgba(99,102,241,0.08));
+            border: 1px solid rgba(0,245,255,0.2);
+            border-radius: 14px;
+            padding: 1.8rem 2rem;
+            margin-bottom: 2rem;
+            position: relative; overflow: hidden;
+        }
+        .page-banner::before {
+            content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+            background: linear-gradient(90deg, var(--neon-cyan), #6366f1, var(--neon-purple));
+            box-shadow: 0 0 15px rgba(0,245,255,0.4);
+        }
+        .page-banner h1 { font-family: 'Orbitron', monospace; font-size: 1.5rem; font-weight: 700; color: var(--neon-cyan); margin-bottom: 0.3rem; }
+        .page-banner p { color: var(--text-secondary); font-size: 0.9rem; margin: 0; }
+
+        .cyber-card {
+            background: rgba(13,13,20,0.85);
+            border: 1px solid rgba(0,245,255,0.15);
+            border-radius: 14px;
+            padding: 1.8rem;
+            margin-bottom: 1.5rem;
+            position: relative; overflow: hidden;
+        }
+        .cyber-card::before {
+            content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+            background: linear-gradient(90deg, var(--neon-cyan), var(--neon-purple));
+        }
+        .cyber-card.green::before { background: linear-gradient(90deg, var(--neon-green), var(--neon-cyan)); }
+        .cyber-card.blue::before { background: linear-gradient(90deg, #6366f1, #3B82F6); }
+
+        .card-title-bar {
+            display: flex; align-items: center; gap: 0.75rem;
+            margin-bottom: 1.5rem; padding-bottom: 1rem;
+            border-bottom: 1px solid rgba(0,245,255,0.1);
+        }
+        .card-title-bar .icon-box {
+            width: 38px; height: 38px; border-radius: 10px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1rem;
+        }
+        .card-title-bar h5 { font-family: 'Orbitron', monospace; font-size: 0.9rem; font-weight: 700; color: var(--neon-cyan); margin: 0; text-transform: uppercase; letter-spacing: 1px; }
+
+        .form-label { color: var(--neon-cyan) !important; font-size: 0.8rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 0.4rem; }
+        .form-control, .form-select {
+            background: rgba(10,10,15,0.8) !important;
+            border: 1px solid rgba(0,245,255,0.2) !important;
+            border-radius: 8px !important;
+            color: var(--text-primary) !important;
+            padding: 0.7rem 1rem !important;
+            font-size: 0.9rem !important;
+            transition: all 0.3s ease !important;
+        }
+        .form-control:focus, .form-select:focus {
+            border-color: var(--neon-cyan) !important;
+            box-shadow: 0 0 15px rgba(0,245,255,0.2) !important;
+            background: rgba(0,245,255,0.04) !important;
+        }
+        .form-control::placeholder { color: var(--text-muted) !important; }
+        .form-select option { background: #0d0d14; color: var(--text-primary); }
+        .form-text { color: var(--text-muted) !important; font-size: 0.78rem; }
+
+        .btn-upload {
+            width: 100%; background: rgba(0,0,0,0.4); border: 1px solid rgba(0,245,255,0.4);
+            color: var(--neon-cyan); padding: 0.8rem 1.5rem; border-radius: 8px;
+            font-size: 0.9rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;
+            transition: all 0.3s; position: relative; overflow: hidden; cursor: pointer;
+        }
+        .btn-upload::before { content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 100%; background: linear-gradient(90deg, transparent, rgba(0,245,255,0.15), transparent); transition: 0.5s; }
+        .btn-upload:hover::before { left: 100%; }
+        .btn-upload:hover { background: rgba(0,245,255,0.1); box-shadow: 0 0 20px rgba(0,245,255,0.3); transform: translateY(-2px); }
+
+        .guide-list { list-style: none; padding: 0; margin: 0; }
+        .guide-list li { display: flex; align-items: center; gap: 0.75rem; padding: 0.6rem 0; border-bottom: 1px solid rgba(0,245,255,0.06); color: var(--text-secondary); font-size: 0.88rem; }
+        .guide-list li:last-child { border-bottom: none; }
+        .guide-list li i { color: var(--neon-green); font-size: 0.85rem; width: 16px; }
+
+        /* Table */
+        .cyber-table { width: 100%; border-collapse: collapse; }
+        .cyber-table thead th {
+            background: rgba(0,245,255,0.05); color: var(--neon-cyan);
+            font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px;
+            padding: 0.9rem 1rem; border-bottom: 1px solid rgba(0,245,255,0.2);
+        }
+        .cyber-table tbody td { padding: 0.9rem 1rem; border-bottom: 1px solid rgba(0,245,255,0.06); color: var(--text-primary); font-size: 0.88rem; vertical-align: middle; }
+        .cyber-table tbody tr:hover td { background: rgba(0,245,255,0.04); }
+
+        .subj-badge { display: inline-block; background: rgba(0,245,255,0.1); border: 1px solid rgba(0,245,255,0.3); color: var(--neon-cyan); padding: 0.2rem 0.6rem; border-radius: 6px; font-size: 0.72rem; font-weight: 700; letter-spacing: 0.5px; }
+        .sem-badge { display: inline-block; background: rgba(99,102,241,0.15); border: 1px solid rgba(99,102,241,0.3); color: #818cf8; padding: 0.2rem 0.6rem; border-radius: 6px; font-size: 0.72rem; font-weight: 700; }
+        .dl-badge { display: inline-block; background: rgba(0,255,157,0.1); border: 1px solid rgba(0,255,157,0.3); color: var(--neon-green); padding: 0.2rem 0.6rem; border-radius: 6px; font-size: 0.78rem; font-weight: 700; }
+        .title-text { color: var(--neon-cyan); font-weight: 600; font-size: 0.88rem; }
+        .desc-text { color: var(--text-muted); font-size: 0.78rem; margin-top: 0.15rem; }
+        .subj-name { color: var(--text-muted); font-size: 0.75rem; margin-top: 0.15rem; }
+
+        .btn-dl {
+            display: inline-flex; align-items: center; gap: 0.4rem;
+            background: transparent; border: 1px solid rgba(0,245,255,0.3);
+            color: var(--neon-cyan); padding: 0.4rem 0.9rem; border-radius: 6px;
+            font-size: 0.78rem; font-weight: 600; text-decoration: none; transition: all 0.25s;
+        }
+        .btn-dl:hover { background: rgba(0,245,255,0.1); box-shadow: 0 0 12px rgba(0,245,255,0.3); color: var(--neon-cyan); transform: translateY(-1px); }
+
+        .empty-state { text-align: center; padding: 3rem 1rem; color: var(--text-muted); }
+        .empty-state i { font-size: 3rem; color: rgba(0,245,255,0.2); margin-bottom: 1rem; display: block; }
+        .empty-state p { font-size: 0.9rem; }
+
+        .btn-back {
+            display: inline-flex; align-items: center; gap: 0.5rem;
+            background: transparent; border: 1px solid rgba(255,255,255,0.15);
+            color: var(--text-secondary); padding: 0.6rem 1.2rem; border-radius: 8px;
+            font-size: 0.85rem; text-decoration: none; transition: all 0.25s; margin-top: 0.5rem;
+        }
+        .btn-back:hover { border-color: rgba(0,245,255,0.3); color: var(--neon-cyan); }
+{% endblock %}
+
+{% block page_title %}Model Answers Management{% endblock %}
+
+{% block content %}
+<!-- Page Banner -->
+<div class="page-banner">
+    <h1><i class="fas fa-file-pdf me-2"></i>Model Answers Management</h1>
+    <p>Upload and manage model answer papers for all subjects</p>
+</div>
+
+<div class="row g-4">
+    <!-- Upload Form -->
+    <div class="col-lg-6">
+        <div class="cyber-card green">
+            <div class="card-title-bar">
+                <div class="icon-box" style="background:rgba(0,255,157,0.1);color:var(--neon-green);"><i class="fas fa-upload"></i></div>
+                <h5 style="color:var(--neon-green);">Upload Model Answer</h5>
+            </div>
+            <form method="POST" enctype="multipart/form-data">
+                {{ form.hidden_tag() }}
+                <div class="mb-3">
+                    {{ form.subject_code.label(class="form-label") }}
+                    {{ form.subject_code(class="form-select") }}
+                </div>
+                <div class="mb-3">
+                    {{ form.title.label(class="form-label") }}
+                    {{ form.title(class="form-control", placeholder="e.g. Winter 2024 Model Answer") }}
+                </div>
+                <div class="mb-3">
+                    {{ form.description.label(class="form-label") }}
+                    {{ form.description(class="form-control", rows="3", placeholder="Brief description...") }}
+                </div>
+                <div class="row g-3 mb-3">
+                    <div class="col-6">
+                        {{ form.semester.label(class="form-label") }}
+                        {{ form.semester(class="form-select") }}
+                    </div>
+                    <div class="col-6">
+                        {{ form.academic_year.label(class="form-label") }}
+                        {{ form.academic_year(class="form-control", placeholder="2024-25") }}
+                    </div>
+                </div>
+                <div class="mb-4">
+                    {{ form.file.label(class="form-label") }}
+                    {{ form.file(class="form-control") }}
+                    <div class="form-text mt-1"><i class="fas fa-info-circle me-1"></i>Supported: PDF, DOC, DOCX, TXT — Max 16MB</div>
+                </div>
+                <button type="submit" class="btn-upload"><i class="fas fa-upload me-2"></i>Upload Model Answer</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Guidelines -->
+    <div class="col-lg-6">
+        <div class="cyber-card blue">
+            <div class="card-title-bar">
+                <div class="icon-box" style="background:rgba(99,102,241,0.15);color:#818cf8;"><i class="fas fa-info-circle"></i></div>
+                <h5 style="color:#818cf8;">Upload Guidelines</h5>
+            </div>
+            <ul class="guide-list">
+                <li><i class="fas fa-check-circle"></i>Upload model answers for all subjects</li>
+                <li><i class="fas fa-check-circle"></i>Use descriptive titles for easy identification</li>
+                <li><i class="fas fa-check-circle"></i>Always include semester and academic year</li>
+                <li><i class="fas fa-check-circle"></i>Supported formats: PDF, DOC, DOCX, TXT</li>
+                <li><i class="fas fa-check-circle"></i>Maximum file size: 16MB</li>
+                <li><i class="fas fa-check-circle"></i>Students can download these for exam preparation</li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<!-- Uploaded Model Answers Table -->
+<div class="cyber-card">
+    <div class="card-title-bar">
+        <div class="icon-box" style="background:rgba(0,245,255,0.1);color:var(--neon-cyan);"><i class="fas fa-list"></i></div>
+        <h5>Uploaded Model Answers</h5>
+    </div>
+
+    {% if model_answers %}
+    <div class="table-responsive">
+        <table class="cyber-table">
+            <thead>
+                <tr>
+                    <th>Subject</th>
+                    <th>Title</th>
+                    <th>Semester</th>
+                    <th>Academic Year</th>
+                    <th>Uploaded By</th>
+                    <th>Downloads</th>
+                    <th>Upload Date</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for answer in model_answers %}
+                <tr>
+                    <td>
+                        <span class="subj-badge">{{ answer.subject_code }}</span>
+                        <div class="subj-name">{{ answer.subject_name }}</div>
+                    </td>
+                    <td>
+                        <div class="title-text">{{ answer.title }}</div>
+                        {% if answer.description %}
+                        <div class="desc-text">{{ answer.description[:50] }}{% if answer.description|length > 50 %}...{% endif %}</div>
+                        {% endif %}
+                    </td>
+                    <td><span class="sem-badge">Sem {{ answer.semester }}</span></td>
+                    <td style="color:var(--text-secondary);">{{ answer.academic_year }}</td>
+                    <td style="color:var(--text-primary);">{{ answer.uploader.full_name or answer.uploader.username }}</td>
+                    <td><span class="dl-badge"><i class="fas fa-download me-1"></i>{{ answer.download_count }}</span></td>
+                    <td style="color:var(--text-muted);font-size:0.82rem;">{{ answer.timestamp.strftime('%d/%m/%Y') }}</td>
+                    <td>
+                        <a href="{{ url_for('download_model_answer', answer_id=answer.id) }}" class="btn-dl">
+                            <i class="fas fa-download"></i>Download
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="empty-state">
+        <i class="fas fa-file-pdf"></i>
+        <p>No model answers uploaded yet.<br>Use the form above to upload your first model answer.</p>
+    </div>
+    {% endif %}
+</div>
+
+<a href="{{ url_for('hod_dashboard') }}" class="btn-back">
+    <i class="fas fa-arrow-left"></i>Back to Dashboard
+</a>
+{% endblock %}

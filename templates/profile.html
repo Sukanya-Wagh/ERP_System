@@ -1,0 +1,466 @@
+{% extends "faculty_base.html" %}
+
+{% block title %}Profile - Faculty Workload System{% endblock %}
+
+{% block extra_styles %}
+<style>
+    /* Profile page specific styling with dark neon cyber theme */
+    .profile-card {
+        background: rgba(18, 18, 24, 0.8);
+        backdrop-filter: blur(15px);
+        border: 1px solid rgba(0, 240, 255, 0.3);
+        border-radius: var(--border-radius);
+        padding: 2rem;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+        margin-bottom: 2rem;
+    }
+
+    .profile-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(90deg, var(--neon-cyan), var(--neon-magenta));
+    }
+
+    .profile-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+    }
+
+    .profile-avatar {
+        width: 150px;
+        height: 150px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, var(--neon-cyan), var(--neon-purple));
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 4rem;
+        color: #000000;
+        margin: 0 auto 1.5rem;
+        box-shadow: 0 0 30px rgba(0, 240, 255, 0.4);
+        transition: all 0.3s ease;
+    }
+
+    .profile-avatar:hover {
+        transform: scale(1.05);
+        box-shadow: 0 0 40px rgba(0, 240, 255, 0.6);
+    }
+
+    .profile-name {
+        color: var(--neon-cyan);
+        font-size: 1.8rem;
+        font-weight: 700;
+        text-align: center;
+        margin-bottom: 0.5rem;
+        text-shadow: 0 0 10px rgba(0, 240, 255, 0.5);
+    }
+
+    .profile-role {
+        color: var(--text-secondary);
+        font-size: 1.1rem;
+        text-align: center;
+        margin-bottom: 1rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    .profile-info-item {
+        display: flex;
+        align-items: center;
+        margin-bottom: 1rem;
+        padding: 0.75rem;
+        background: rgba(0, 240, 255, 0.05);
+        border-radius: 8px;
+        border: 1px solid rgba(0, 240, 255, 0.1);
+        transition: all 0.3s ease;
+    }
+
+    .profile-info-item:hover {
+        background: rgba(0, 240, 255, 0.1);
+        border-color: rgba(0, 240, 255, 0.3);
+    }
+
+    .profile-info-item i {
+        color: var(--neon-cyan);
+        font-size: 1.2rem;
+        margin-right: 1rem;
+        width: 20px;
+        text-align: center;
+    }
+
+    .profile-info-item span {
+        color: var(--text-primary);
+        font-weight: 500;
+    }
+
+    .form-section {
+        background: rgba(18, 18, 24, 0.8);
+        backdrop-filter: blur(15px);
+        border: 1px solid rgba(0, 240, 255, 0.3);
+        border-radius: var(--border-radius);
+        padding: 2rem;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .form-section::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(90deg, var(--neon-purple), var(--neon-magenta));
+    }
+
+    .form-section h5 {
+        color: var(--neon-cyan);
+        font-weight: 700;
+        margin-bottom: 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        text-shadow: 0 0 5px rgba(0, 240, 255, 0.3);
+    }
+
+    .form-section h5 i {
+        color: var(--neon-cyan);
+        font-size: 1.2rem;
+    }
+
+    .form-label {
+        color: var(--neon-cyan);
+        font-weight: 600;
+        text-transform: uppercase;
+        font-size: 0.8rem;
+        letter-spacing: 0.5px;
+        margin-bottom: 0.5rem;
+    }
+
+    .form-control {
+        background: rgba(18, 18, 24, 0.6) !important;
+        border: 1px solid rgba(0, 240, 255, 0.3) !important;
+        border-radius: 8px !important;
+        color: var(--text-primary) !important;
+        padding: 0.75rem 1rem !important;
+        transition: all 0.3s ease !important;
+        font-size: 0.9rem !important;
+    }
+
+    .form-control:focus {
+        background: rgba(18, 18, 24, 0.8) !important;
+        border-color: var(--neon-cyan) !important;
+        box-shadow: 0 0 20px rgba(0, 240, 255, 0.3) !important;
+        color: var(--text-primary) !important;
+        outline: none !important;
+    }
+
+    .form-control::placeholder {
+        color: var(--text-muted) !important;
+        opacity: 0.7 !important;
+    }
+
+    .form-text {
+        color: var(--text-muted) !important;
+        font-size: 0.8rem !important;
+    }
+
+    .text-danger {
+        color: var(--error) !important;
+        font-weight: 500 !important;
+    }
+
+    .btn-cyber {
+        background: rgba(0, 0, 0, 0.5);
+        border: 1px solid var(--neon-cyan);
+        color: var(--neon-cyan);
+        padding: 0.75rem 1.5rem;
+        border-radius: 8px;
+        text-decoration: none;
+        font-weight: 600;
+        text-align: center;
+        transition: all 0.3s ease;
+        box-shadow: 0 0 10px rgba(0, 240, 255, 0.2);
+        position: relative;
+        overflow: hidden;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        font-size: 0.85rem;
+    }
+
+    .btn-cyber::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(0, 240, 255, 0.2), transparent);
+        transition: 0.5s;
+    }
+
+    .btn-cyber:hover::before {
+        left: 100%;
+    }
+
+    .btn-cyber:hover {
+        background: rgba(0, 240, 255, 0.1);
+        box-shadow: 0 0 20px rgba(0, 240, 255, 0.4);
+        color: var(--neon-cyan);
+        text-decoration: none;
+        transform: translateY(-2px);
+    }
+
+    .btn-secondary-cyber {
+        background: rgba(0, 0, 0, 0.5);
+        border: 1px solid var(--text-secondary);
+        color: var(--text-secondary);
+    }
+
+    .btn-secondary-cyber:hover {
+        background: rgba(156, 163, 175, 0.1);
+        box-shadow: 0 0 15px rgba(156, 163, 175, 0.4);
+        color: var(--text-secondary);
+        text-decoration: none;
+    }
+
+    .btn-warning-cyber {
+        background: rgba(0, 0, 0, 0.5);
+        border: 1px solid var(--warning);
+        color: var(--warning);
+    }
+
+    .btn-warning-cyber:hover {
+        background: rgba(255, 215, 0, 0.1);
+        box-shadow: 0 0 15px rgba(255, 215, 0, 0.4);
+        color: var(--warning);
+        text-decoration: none;
+    }
+
+    /* Animation for page load */
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .profile-card,
+    .form-section {
+        animation: fadeInUp 0.6s ease-out;
+    }
+
+    .profile-card:nth-child(1) { animation-delay: 0.1s; }
+    .form-section:nth-child(2) { animation-delay: 0.2s; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-4">
+        <div class="profile-card">
+            {% if current_user.profile_picture %}
+                <img src="{{ url_for('static', filename=current_user.profile_picture) }}" 
+                     alt="Profile Picture" class="profile-avatar" style="object-fit: cover;"
+                     onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                <div class="profile-avatar" style="display:none;">
+                    <i class="fas fa-user"></i>
+                </div>
+            {% else %}
+                <div class="profile-avatar">
+                    <i class="fas fa-user"></i>
+                </div>
+            {% endif %}
+            
+            <h4 class="profile-name">{{ current_user.full_name or current_user.username }}</h4>
+            <p class="profile-role">{{ current_user.role.title() }}</p>
+            
+            {% if current_user.department %}
+                <div class="profile-info-item">
+                    <i class="fas fa-building"></i>
+                    <span>{{ current_user.department }}</span>
+                </div>
+            {% endif %}
+            
+            {% if current_user.email %}
+                <div class="profile-info-item">
+                    <i class="fas fa-envelope"></i>
+                    <span>{{ current_user.email }}</span>
+                </div>
+            {% endif %}
+            
+            {% if current_user.phone %}
+                <div class="profile-info-item">
+                    <i class="fas fa-phone"></i>
+                    <span>{{ current_user.phone }}</span>
+                </div>
+            {% endif %}
+            
+            <div class="profile-info-item">
+                <i class="fas fa-calendar"></i>
+                <span>Joined: {{ current_user.date_joined.strftime('%B %d, %Y') if current_user.date_joined else 'N/A' }}</span>
+            </div>
+            
+            {% if current_user.last_login %}
+                <div class="profile-info-item">
+                    <i class="fas fa-clock"></i>
+                    <span>Last Login: {{ current_user.last_login.strftime('%B %d, %Y at %I:%M %p') }}</span>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+    
+    <div class="col-md-8">
+        <div class="form-section">
+            <h5><i class="fas fa-edit"></i> Update Profile</h5>
+            
+            <form method="POST" enctype="multipart/form-data">
+                {{ form.hidden_tag() }}
+                
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            {{ form.full_name.label(class="form-label") }}
+                            {{ form.full_name(class="form-control") }}
+                            {% if form.full_name.errors %}
+                                <div class="text-danger">
+                                    {% for error in form.full_name.errors %}
+                                        <small>{{ error }}</small>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            {{ form.email.label(class="form-label") }}
+                            {{ form.email(class="form-control") }}
+                            {% if form.email.errors %}
+                                <div class="text-danger">
+                                    {% for error in form.email.errors %}
+                                        <small>{{ error }}</small>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            {{ form.phone.label(class="form-label") }}
+                            {{ form.phone(class="form-control") }}
+                            {% if form.phone.errors %}
+                                <div class="text-danger">
+                                    {% for error in form.phone.errors %}
+                                        <small>{{ error }}</small>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            {{ form.department.label(class="form-label") }}
+                            {{ form.department(class="form-control") }}
+                            {% if form.department.errors %}
+                                <div class="text-danger">
+                                    {% for error in form.department.errors %}
+                                        <small>{{ error }}</small>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mb-3">
+                    {{ form.profile_picture.label(class="form-label") }}
+                    {{ form.profile_picture(class="form-control") }}
+                    {% if form.profile_picture.errors %}
+                        <div class="text-danger">
+                            {% for error in form.profile_picture.errors %}
+                                <small>{{ error }}</small>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                    <small class="form-text">Accepted formats: JPG, PNG, JPEG (Max size: 16MB)</small>
+                </div>
+                
+                <div class="d-flex gap-3 flex-wrap">
+                    {{ form.submit(class="btn-cyber") }}
+                    <a href="{{ url_for('change_password') }}" class="btn-cyber btn-warning-cyber">
+                        <i class="fas fa-key me-2"></i> Change Password
+                    </a>
+                    {% if current_user.role == 'hod' %}
+                        <a href="{{ url_for('hod_dashboard') }}" class="btn-cyber btn-secondary-cyber">
+                            <i class="fas fa-dashboard me-2"></i> Dashboard
+                        </a>
+                    {% elif current_user.role == 'faculty' %}
+                        <a href="{{ url_for('faculty_dashboard') }}" class="btn-cyber btn-secondary-cyber">
+                            <i class="fas fa-dashboard me-2"></i> Dashboard
+                        </a>
+                    {% elif current_user.role == 'student' %}
+                        <a href="{{ url_for('student_dashboard') }}" class="btn-cyber btn-secondary-cyber">
+                            <i class="fas fa-dashboard me-2"></i> Dashboard
+                        </a>
+                    {% elif current_user.role == 'cc' %}
+                        <a href="{{ url_for('cc_dashboard') }}" class="btn-cyber btn-secondary-cyber">
+                            <i class="fas fa-dashboard me-2"></i> Dashboard
+                        </a>
+                    {% endif %}
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+    // Add hover effects to profile info items
+    document.addEventListener('DOMContentLoaded', function() {
+        const profileItems = document.querySelectorAll('.profile-info-item');
+        
+        profileItems.forEach(item => {
+            item.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateX(5px)';
+            });
+            
+            item.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateX(0)';
+            });
+        });
+
+        // Add loading animation to cards
+        const cards = document.querySelectorAll('.profile-card, .form-section');
+        cards.forEach((card, index) => {
+            card.style.animationDelay = `${index * 0.1}s`;
+            card.classList.add('animate-fade-in');
+        });
+    });
+
+    // Add CSS animation class
+    const style = document.createElement('style');
+    style.textContent = `
+        .animate-fade-in {
+            animation: fadeInUp 0.6s ease-out forwards;
+            opacity: 0;
+        }
+    `;
+    document.head.appendChild(style);
+</script>
+{% endblock %}

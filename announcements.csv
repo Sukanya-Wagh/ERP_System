@@ -1,0 +1,12 @@
+id,title,content,created_by,target_role,priority,is_active,expires_at,timestamp
+1,About Meeting,About Unit Test ,78,faculty,high,True,2025-08-05,2025-08-31 09:24:06.251330
+5,About Meeting,About unit test,93,faculty,high,True,2025-09-02,2025-09-02 11:21:33.554376
+6,About Meeting,About syllabus Complition,93,faculty,high,True,2025-09-02,2025-09-02 11:43:15.775184
+7,About Scholorship,Filling form,78,faculty,high,True,2025-09-08,2025-09-08 11:39:34.179296
+8,About Diwali holiday,All Students and faculty members are here by inform to note that meeting is scheduled at 9:00 Am Attendence is mandatory.,93,all,high,True,2025-10-01,2025-11-01 03:59:50.957913
+9,about holiday,tommorrow is holiday,93,all,normal,True,2025-12-02,2025-12-18 08:54:13.322004
+10,holiday,today is holiday,93,faculty,high,True,2025-12-18,2025-12-18 08:58:22.703796
+11,Today The Result Will be Declared,Show in official website,93,faculty,high,True,2026-01-02,2026-01-02 06:41:56.619473
+12,About Hallticket,The MSBTE Hallticket are generated frm website,93,faculty,high,True,2026-03-23,2026-03-23 08:43:59.386420
+13,About Department Meeting,The Meeting is Scheduled at 3:00 PM,93,faculty,high,True,2026-04-04,2026-04-04 09:15:57.473632
+14,About Unit Test ,Meeting is sheduled at 3 pm,93,faculty,high,True,2026-04-04,2026-04-04 11:25:50.992884

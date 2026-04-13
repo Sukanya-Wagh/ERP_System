@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block content %}
+<h3>Send Marks to HOD</h3>
+
+<form method="POST">
+  {{ form.hidden_tag() }}
+  <div class="mb-3">
+    {{ form.student.label(class="form-label") }}
+    {{ form.student(class="form-select") }}
+  </div>
+  <div class="mb-3">
+    {{ form.subject.label(class="form-label") }}
+    {{ form.subject(class="form-control") }}
+  </div>
+  <div class="mb-3">
+    {{ form.marks_obtained.label(class="form-label") }}
+    {{ form.marks_obtained(class="form-control") }}
+  </div>
+  <div class="mb-3">
+    {{ form.total_marks.label(class="form-label") }}
+    {{ form.total_marks(class="form-control") }}
+  </div>
+
+  <button type="submit" class="btn btn-primary">Send Marks</button>
+</form>
+{% endblock %}

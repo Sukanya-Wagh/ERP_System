@@ -1,0 +1,151 @@
+{% extends "hod_base.html" %}
+
+{% block title %}Enter Student Marks - HOD Dashboard{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-8">
+        <div class="card" style="background: rgba(18, 18, 24, 0.9) !important; border: 2px solid var(--neon-green) !important;">
+            <div class="card-header d-flex align-items-center" style="background: rgba(0, 255, 157, 0.1) !important; border-bottom: 2px solid var(--neon-green) !important;">
+                <i class="fas fa-chart-line me-2" style="color: var(--neon-green) !important;"></i>
+                <h5 class="mb-0" style="color: var(--neon-green) !important; font-weight: 700 !important;">Test Marks</h5>
+            </div>
+            <div class="card-body" style="padding: 2rem !important;">
+                <div style="text-align:center; margin-bottom: 1.5rem;">
+                    <i class="fas fa-chart-line" style="font-size:2.5rem; color:var(--neon-green);"></i>
+                </div>
+
+                <div class="alert" style="background: rgba(0, 255, 157, 0.1) !important; border: 1px solid rgba(0, 255, 157, 0.3) !important; color: #00ff9d !important; margin-bottom: 1.5rem;">
+                    <i class="fas fa-info-circle me-2"></i>
+                    <strong style="color: #00ff9d !important;">Student Assessment:</strong> Select subject and test, then enter marks for all students.
+                </div>
+
+                <form id="marksEntryForm" method="POST" action="{{ url_for('manage_test_marks') }}">
+                    {{ form.hidden_tag() }}
+
+                    <div class="mb-3">
+                        {{ form.subject.label(class="form-label", style="color:#ccc; font-weight:600;") }}
+                        {{ form.subject(class="form-control", placeholder="e.g. Java, Operating System, CSS", style="background:rgba(0,0,0,0.6); border:1px solid rgba(0,245,255,0.3); color:white;") }}
+                        {% if form.subject.errors %}
+                            <div class="text-danger small mt-1">{{ form.subject.errors[0] }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="mb-3">
+                        {{ form.test_number.label(class="form-label", style="color:#ccc; font-weight:600;") }}
+                        {{ form.test_number(id="test_number", class="form-select", style="background:rgba(0,0,0,0.6); border:1px solid rgba(0,245,255,0.3); color:white;") }}
+                    </div>
+
+                    <div class="mb-4">
+                        {{ form.total_marks.label(class="form-label", style="color:#ccc; font-weight:600;") }}
+                        {{ form.total_marks(id="total_marks", class="form-control", placeholder="e.g. 30", style="background:rgba(0,0,0,0.6); border:1px solid rgba(0,245,255,0.3); color:white;") }}
+                    </div>
+
+                    <div class="text-center">
+                        <button type="submit" class="btn btn-primary" style="background: rgba(0,0,0,0.5) !important; border: 1px solid var(--neon-green) !important; color: var(--neon-green) !important; font-weight: 600 !important; padding: 0.75rem 2rem !important; font-size: 1.1rem !important;">
+                            <i class="fas fa-plus me-2"></i>Enter Marks
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-4">
+        <div class="card" style="background: rgba(18, 18, 24, 0.9) !important; border: 2px solid var(--neon-purple) !important;">
+            <div class="card-header d-flex align-items-center" style="background: rgba(139, 92, 246, 0.1) !important; border-bottom: 2px solid var(--neon-purple) !important;">
+                <i class="fas fa-info-circle me-2" style="color: var(--neon-purple) !important;"></i>
+                <h5 class="mb-0" style="color: var(--neon-purple) !important; font-weight: 700 !important;">Quick Stats</h5>
+            </div>
+            <div class="card-body" style="padding: 2rem !important;">
+                <div class="d-flex align-items-center justify-content-between mb-4 p-3" style="background: rgba(0,255,157,0.1) !important; border: 1px solid rgba(0,255,157,0.3) !important; border-radius: 8px;">
+                    <div>
+                        <div style="color: var(--neon-green) !important; font-size: 1.5rem; font-weight: 700;">{{ test_marks|length }}</div>
+                        <div style="color: var(--text-secondary) !important; font-size: 0.875rem;">Recent Entries</div>
+                    </div>
+                    <div style="width:40px;height:40px;background:linear-gradient(45deg,var(--neon-green),var(--neon-teal));border-radius:50%;display:flex;align-items:center;justify-content:center;">
+                        <i class="fas fa-check text-white"></i>
+                    </div>
+                </div>
+                <div class="d-flex align-items-center justify-content-between p-3" style="background: rgba(0,245,255,0.1) !important; border: 1px solid rgba(0,245,255,0.3) !important; border-radius: 8px;">
+                    <div>
+                        <div style="color: var(--neon-cyan) !important; font-size: 1.5rem; font-weight: 700;">{{ students_count or 0 }}</div>
+                        <div style="color: var(--text-secondary) !important; font-size: 0.875rem;">Total Students</div>
+                    </div>
+                    <div style="width:40px;height:40px;background:linear-gradient(45deg,var(--neon-cyan),var(--neon-teal));border-radius:50%;display:flex;align-items:center;justify-content:center;">
+                        <i class="fas fa-users text-white"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Recent Marks -->
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card" style="background: rgba(18,18,24,0.9) !important; border: 2px solid var(--neon-yellow) !important;">
+            <div class="card-header d-flex align-items-center" style="background: rgba(255,215,0,0.1) !important; border-bottom: 2px solid var(--neon-yellow) !important;">
+                <i class="fas fa-history me-2" style="color: var(--neon-yellow) !important;"></i>
+                <h5 class="mb-0" style="color: var(--neon-yellow) !important; font-weight: 700 !important;">Recent Marks Entries</h5>
+            </div>
+            <div class="card-body" style="padding: 2rem !important;">
+                {% if test_marks %}
+                <div class="table-responsive">
+                    <table class="table table-hover" style="background: transparent !important;">
+                        <thead>
+                            <tr>
+                                <th style="color: var(--neon-yellow) !important; border-bottom: 2px solid var(--neon-yellow) !important;">Student</th>
+                                <th style="color: var(--neon-yellow) !important; border-bottom: 2px solid var(--neon-yellow) !important;">Subject</th>
+                                <th style="color: var(--neon-yellow) !important; border-bottom: 2px solid var(--neon-yellow) !important;">Test #</th>
+                                <th style="color: var(--neon-yellow) !important; border-bottom: 2px solid var(--neon-yellow) !important;">Marks</th>
+                                <th style="color: var(--neon-yellow) !important; border-bottom: 2px solid var(--neon-yellow) !important;">%</th>
+                                <th style="color: var(--neon-yellow) !important; border-bottom: 2px solid var(--neon-yellow) !important;">Date</th>
+                                <th style="color: var(--neon-yellow) !important; border-bottom: 2px solid var(--neon-yellow) !important;">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for mark in test_marks %}
+                            <tr style="border-bottom: 1px solid rgba(255,215,0,0.1) !important;">
+                                <td style="color: var(--neon-cyan) !important; font-weight: 600;">{{ mark.student.full_name or mark.student.username }}</td>
+                                <td style="color: var(--text-secondary) !important;">{{ mark.subject.name }}</td>
+                                <td><span class="badge" style="background-color: var(--neon-cyan) !important; color: #000 !important; padding: 0.4rem 0.7rem;">Test {{ mark.test_number }}</span></td>
+                                <td style="color: white !important;">{{ mark.marks_obtained }}/{{ mark.total_marks }}</td>
+                                <td>
+                                    {% set pct = (mark.marks_obtained / mark.total_marks * 100) | round(1) %}
+                                    {% if pct >= 75 %}
+                                        <span class="badge bg-success">{{ pct }}%</span>
+                                    {% elif pct >= 50 %}
+                                        <span class="badge bg-warning text-dark">{{ pct }}%</span>
+                                    {% else %}
+                                        <span class="badge bg-danger">{{ pct }}%</span>
+                                    {% endif %}
+                                </td>
+                                <td style="color: var(--text-secondary) !important;">{{ mark.test_date.strftime('%d %b %Y') if mark.test_date else 'N/A' }}</td>
+                                <td>
+                                    <form method="POST" action="{{ url_for('hod_delete_test_marks', test_marks_id=mark.id) }}" style="display:inline;" onsubmit="return confirm('Delete this mark?');">
+                                        <button type="submit" class="btn btn-sm btn-danger"><i class="fas fa-trash"></i></button>
+                                    </form>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="text-center py-4">
+                    <i class="fas fa-chart-line fa-2x mb-2" style="color: var(--text-muted);"></i>
+                    <p style="color: var(--text-muted);">No test marks yet. Use the form to add marks.</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="d-flex justify-content-end mt-4">
+    <a href="{{ url_for('hod_dashboard') }}" class="btn btn-secondary" style="background: rgba(0,0,0,0.5) !important; border: 1px solid var(--text-secondary) !important; color: var(--text-secondary) !important;">
+        <i class="fas fa-arrow-left me-2"></i> Back to Dashboard
+    </a>
+</div>
+{% endblock %}

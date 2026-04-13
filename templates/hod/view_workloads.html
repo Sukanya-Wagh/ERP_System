@@ -1,0 +1,114 @@
+{% extends "hod_base.html" %}
+
+{% block title %}View Workloads - HOD Dashboard{% endblock %}
+
+{% block content %}
+<div class="row g-3 mb-4">
+    <div class="col-lg-3 col-md-6">
+        <div class="card" style="background:var(--bg-card);border:1px solid rgba(0,245,255,0.2);border-radius:12px;padding:1.5rem;">
+            <div style="width:48px;height:48px;border-radius:12px;background:rgba(0,245,255,0.1);display:flex;align-items:center;justify-content:center;margin-bottom:1rem;">
+                <i class="fas fa-tasks" style="color:var(--neon-cyan);font-size:1.3rem;"></i>
+            </div>
+            <div style="font-size:2rem;font-weight:700;color:var(--neon-cyan);font-family:'Orbitron',monospace;">{{ workloads|length }}</div>
+            <div style="font-size:0.78rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;">Total Assignments</div>
+        </div>
+    </div>
+    <div class="col-lg-3 col-md-6">
+        <div class="card" style="background:var(--bg-card);border:1px solid rgba(0,255,157,0.2);border-radius:12px;padding:1.5rem;">
+            <div style="width:48px;height:48px;border-radius:12px;background:rgba(0,255,157,0.1);display:flex;align-items:center;justify-content:center;margin-bottom:1rem;">
+                <i class="fas fa-clock" style="color:var(--neon-green);font-size:1.3rem;"></i>
+            </div>
+            <div style="font-size:2rem;font-weight:700;color:var(--neon-green);font-family:'Orbitron',monospace;">{{ workloads|map(attribute='hours')|sum }}</div>
+            <div style="font-size:0.78rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;">Total Hours/Week</div>
+        </div>
+    </div>
+    <div class="col-lg-3 col-md-6">
+        <div class="card" style="background:var(--bg-card);border:1px solid rgba(139,92,246,0.2);border-radius:12px;padding:1.5rem;">
+            <div style="width:48px;height:48px;border-radius:12px;background:rgba(139,92,246,0.1);display:flex;align-items:center;justify-content:center;margin-bottom:1rem;">
+                <i class="fas fa-user-tie" style="color:var(--neon-purple);font-size:1.3rem;"></i>
+            </div>
+            <div style="font-size:2rem;font-weight:700;color:var(--neon-purple);font-family:'Orbitron',monospace;">{{ workloads|map(attribute='faculty_id')|unique|list|length }}</div>
+            <div style="font-size:0.78rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;">Faculty Members</div>
+        </div>
+    </div>
+    <div class="col-lg-3 col-md-6">
+        <div class="card" style="background:var(--bg-card);border:1px solid rgba(255,215,0,0.2);border-radius:12px;padding:1.5rem;">
+            <div style="width:48px;height:48px;border-radius:12px;background:rgba(255,215,0,0.1);display:flex;align-items:center;justify-content:center;margin-bottom:1rem;">
+                <i class="fas fa-book" style="color:var(--neon-yellow);font-size:1.3rem;"></i>
+            </div>
+            <div style="font-size:2rem;font-weight:700;color:var(--neon-yellow);font-family:'Orbitron',monospace;">{{ workloads|map(attribute='subject')|unique|list|length }}</div>
+            <div style="font-size:0.78rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;">Unique Subjects</div>
+        </div>
+    </div>
+</div>
+
+<div class="card" style="background:var(--bg-card);border:1px solid rgba(0,245,255,0.15);border-radius:12px;">
+    <div class="card-header d-flex align-items-center justify-content-between" style="background:rgba(0,245,255,0.05);border-bottom:1px solid rgba(0,245,255,0.15);padding:1.25rem 1.5rem;">
+        <div class="d-flex align-items-center gap-2">
+            <i class="fas fa-layer-group" style="color:var(--neon-cyan);"></i>
+            <h5 class="mb-0" style="color:var(--neon-cyan);font-weight:700;">All Faculty Workload Assignments</h5>
+        </div>
+        <a href="{{ url_for('assign_workload') }}" class="btn btn-sm" style="background:rgba(0,245,255,0.1);border:1px solid rgba(0,245,255,0.4);color:var(--neon-cyan);">
+            <i class="fas fa-plus me-1"></i>Assign New
+        </a>
+    </div>
+    <div class="card-body" style="padding:1.5rem;">
+        {% if workloads %}
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th style="color:var(--neon-cyan);border-color:rgba(0,245,255,0.15);">#</th>
+                        <th style="color:var(--neon-cyan);border-color:rgba(0,245,255,0.15);">Faculty</th>
+                        <th style="color:var(--neon-cyan);border-color:rgba(0,245,255,0.15);">Subject</th>
+                        <th style="color:var(--neon-cyan);border-color:rgba(0,245,255,0.15);">Hours/Week</th>
+                        <th style="color:var(--neon-cyan);border-color:rgba(0,245,255,0.15);">Assigned Date</th>
+                        <th style="color:var(--neon-cyan);border-color:rgba(0,245,255,0.15);">Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for workload in workloads %}
+                    <tr style="border-color:rgba(0,245,255,0.08);">
+                        <td style="color:var(--text-muted);">{{ loop.index }}</td>
+                        <td>
+                            <div class="d-flex align-items-center gap-2">
+                                <div style="width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--neon-cyan),var(--neon-purple));display:flex;align-items:center;justify-content:center;font-weight:700;color:#000;font-size:0.85rem;flex-shrink:0;">
+                                    {{ (workload.faculty.full_name or workload.faculty.username)[0]|upper }}
+                                </div>
+                                <div>
+                                    <div style="color:var(--text-primary);font-weight:600;">{{ workload.faculty.full_name or workload.faculty.username }}</div>
+                                    <small style="color:var(--text-muted);">{{ workload.faculty.username }}</small>
+                                </div>
+                            </div>
+                        </td>
+                        <td style="color:var(--text-primary);">{{ workload.subject }}</td>
+                        <td>
+                            <span style="background:rgba(0,245,255,0.1);color:var(--neon-cyan);border:1px solid rgba(0,245,255,0.3);border-radius:20px;padding:0.2rem 0.75rem;font-size:0.85rem;font-weight:600;">
+                                {{ workload.hours }} hrs
+                            </span>
+                        </td>
+                        <td style="color:var(--text-secondary);">{{ workload.timestamp.strftime('%d %b %Y') }}</td>
+                        <td><span class="badge bg-success">Active</span></td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="text-center py-5">
+            <i class="fas fa-layer-group fa-3x mb-3" style="color:rgba(0,245,255,0.2);"></i>
+            <p style="color:var(--text-secondary);">No workloads assigned yet.</p>
+            <a href="{{ url_for('assign_workload') }}" class="btn" style="background:rgba(0,245,255,0.1);border:1px solid rgba(0,245,255,0.4);color:var(--neon-cyan);">
+                <i class="fas fa-plus me-2"></i>Assign Workload
+            </a>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<div class="d-flex justify-content-end mt-4">
+    <a href="{{ url_for('hod_dashboard') }}" class="btn btn-secondary">
+        <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
+    </a>
+</div>
+{% endblock %}

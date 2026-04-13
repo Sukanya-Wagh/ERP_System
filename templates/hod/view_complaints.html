@@ -1,0 +1,190 @@
+{% extends "hod_base.html" %}
+
+{% block title %}View Complaints - HOD Dashboard{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header d-flex align-items-center">
+                <i class="fas fa-exclamation-triangle me-2"></i>
+                <h5 class="mb-0">Student Complaints</h5>
+            </div>
+            <div class="card-body">
+                <div class="icon-container">
+                    <i class="fas fa-clipboard-list"></i>
+                </div>
+                
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Student</th>
+                                <th>Title</th>
+                                <th>Description</th>
+                                <th>Status</th>
+                                <th>Submitted</th>
+                                <th>Admin Response</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for complaint in complaints %}
+                            <tr>
+                                <td><span class="fw-bold text-primary">#{{ complaint.id }}</span></td>
+                                <td>
+                                    <div class="fw-bold text-primary">{{ (complaint.submitter.full_name or complaint.submitter.username) if complaint.submitter else 'Unknown' }}</div>
+                                    <small class="text-muted">{{ complaint.submitter.username if complaint.submitter else 'N/A' }}</small>
+                                </td>
+                                <td>
+                                    <div class="fw-bold text-primary">{{ complaint.title }}</div>
+                                </td>
+                                <td>
+                                    <div style="max-width: 300px; word-wrap: break-word;">
+                                        {{ complaint.description[:100] }}{% if complaint.description|length > 100 %}...{% endif %}
+                                    </div>
+                                </td>
+                                <td>
+                                    {% if complaint.status == 'Pending' %}
+                                        <span class="badge bg-warning">Pending</span>
+                                    {% elif complaint.status == 'Under Investigation' %}
+                                        <span class="badge bg-info">Under Investigation</span>
+                                    {% elif complaint.status == 'Resolved' %}
+                                        <span class="badge bg-success">Resolved</span>
+                                    {% elif complaint.status == 'Rejected' %}
+                                        <span class="badge bg-danger">Rejected</span>
+                                    {% else %}
+                                        <span class="badge bg-secondary">{{ complaint.status }}</span>
+                                    {% endif %}
+                                </td>
+                                <td>{{ complaint.timestamp.strftime('%d %b %Y') }}</td>
+                                <td>
+                                    {% if complaint.comments %}
+                                        <i class="fas fa-check-circle text-success" title="Response provided"></i>
+                                    {% else %}
+                                        <i class="fas fa-clock text-warning" title="No response yet"></i>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <div class="btn-group btn-group-sm">
+                                        <button class="btn btn-secondary" title="View Details" data-bs-toggle="modal" data-bs-target="#complaintModal{{ complaint.id }}">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                        {% if complaint.status == 'Pending' %}
+                                        <form method="POST" action="{{ url_for('hod_resolve_complaint', complaint_id=complaint.id) }}" style="display:inline;" onsubmit="return confirm('Mark this complaint as resolved?');">
+                                            <button type="submit" class="btn btn-success" title="Mark Resolved">
+                                                <i class="fas fa-check"></i>
+                                            </button>
+                                        </form>
+                                        {% endif %}
+                                        <form method="POST" action="{{ url_for('hod_delete_complaint', complaint_id=complaint.id) }}" style="display: inline;" onsubmit="return confirm('Are you sure you want to delete this complaint? This action cannot be undone.');">
+                                            <button type="submit" class="btn btn-danger" title="Delete Complaint">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+
+                            <!-- Complaint Detail Modal -->
+                            <div class="modal fade" id="complaintModal{{ complaint.id }}" tabindex="-1">
+                                <div class="modal-dialog modal-lg">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title">Complaint #{{ complaint.id }}</h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <strong>Student:</strong> {{ (complaint.submitter.full_name or complaint.submitter.username) if complaint.submitter else 'Unknown' }}<br>
+                                                    <strong>Username:</strong> {{ complaint.submitter.username if complaint.submitter else 'N/A' }}<br>
+                                                    <strong>Category:</strong> {{ complaint.category }}<br>
+                                                    <strong>Priority:</strong> {{ complaint.priority }}<br>
+                                                    <strong>Status:</strong> 
+                                                    {% if complaint.status == 'Pending' %}
+                                                        <span class="badge bg-warning">Pending</span>
+                                                    {% elif complaint.status == 'Under Investigation' %}
+                                                        <span class="badge bg-info">Under Investigation</span>
+                                                    {% elif complaint.status == 'Resolved' %}
+                                                        <span class="badge bg-success">Resolved</span>
+                                                    {% elif complaint.status == 'Rejected' %}
+                                                        <span class="badge bg-danger">Rejected</span>
+                                                    {% endif %}
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <strong>Submitted:</strong> {{ complaint.timestamp.strftime('%d %b %Y at %I:%M %p') }}<br>
+                                                    {% if complaint.resolver %}
+                                                        <strong>Handled by:</strong> {{ complaint.resolver.full_name or complaint.resolver.username }}<br>
+                                                    {% endif %}
+                                                    {% if complaint.resolved_at %}
+                                                        <strong>Resolved at:</strong> {{ complaint.resolved_at.strftime('%d %b %Y at %I:%M %p') }}
+                                                    {% endif %}
+                                                </div>
+                                            </div>
+                                            <hr style="border-color: rgba(0, 245, 255, 0.2);">
+                                            <div class="mb-3">
+                                                <strong>Title:</strong>
+                                                <div class="mt-2 p-3 rounded" style="background: rgba(0, 0, 0, 0.3); border: 1px solid rgba(0, 245, 255, 0.2);">
+                                                    {{ complaint.title }}
+                                                </div>
+                                            </div>
+                                            <div class="mb-3">
+                                                <strong>Description:</strong>
+                                                <div class="mt-2 p-3 rounded" style="background: rgba(0, 0, 0, 0.3); border: 1px solid rgba(0, 245, 255, 0.2);">
+                                                    {{ complaint.description }}
+                                                </div>
+                                            </div>
+                                            {% if complaint.comments %}
+                                            <div class="mb-3">
+                                                <strong>Admin Comments:</strong>
+                                                <div class="mt-2 p-3 rounded" style="background: rgba(0, 255, 157, 0.1); border: 1px solid rgba(0, 255, 157, 0.3);">
+                                                    {{ complaint.comments }}
+                                                </div>
+                                            </div>
+                                            {% endif %}
+                                        </div>
+                                        <div class="modal-footer" style="border-top: 1px solid rgba(0, 245, 255, 0.2);">
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                            {% if complaint.status == 'Pending' %}
+                                            <form method="POST" action="{{ url_for('hod_resolve_complaint', complaint_id=complaint.id) }}" style="display:inline;" onsubmit="return confirm('Mark this complaint as resolved?');">
+                                                <button type="submit" class="btn btn-success">
+                                                    <i class="fas fa-check me-1"></i>Mark as Resolved
+                                                </button>
+                                            </form>
+                                            {% endif %}
+                                            <form method="POST" action="{{ url_for('hod_delete_complaint', complaint_id=complaint.id) }}" style="display: inline;" onsubmit="return confirm('Are you sure you want to delete this complaint? This action cannot be undone.');">
+                                                <button type="submit" class="btn btn-danger">
+                                                    <i class="fas fa-trash me-1"></i>Delete Complaint
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            {% else %}
+                            <tr>
+                                <td colspan="7" class="text-center py-4">
+                                    <i class="fas fa-inbox fa-2x mb-2 text-muted"></i>
+                                    <p class="text-muted mb-0">No complaints found</p>
+                                    <small class="text-muted">All complaints have been resolved or none submitted yet.</small>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="d-flex justify-content-end mt-4">
+    <a href="{{ url_for('hod_dashboard') }}" class="btn btn-secondary">
+        <i class="fas fa-arrow-left me-2"></i> Back to Dashboard
+    </a>
+</div>
+
+
+{% endblock %}

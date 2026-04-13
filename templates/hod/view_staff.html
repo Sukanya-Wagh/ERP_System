@@ -1,0 +1,173 @@
+{% extends "hod_base.html" %}
+
+{% block title %}View Staff - HOD Dashboard{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header d-flex align-items-center">
+                <i class="fas fa-users me-2"></i>
+                <h5 class="mb-0">All Staff Members</h5>
+            </div>
+            <div class="card-body">
+                <div class="icon-container">
+                    <i class="fas fa-user-friends"></i>
+                </div>
+                
+                {% if users %}
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Profile</th>
+                                    <th>Name</th>
+                                    <th>Username</th>
+                                    <th>Email</th>
+                                    <th>Role</th>
+                                    <th>Department</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for user in users %}
+                                <tr>
+                                    <td>
+                                        {% if user.profile_picture %}
+                                            <img src="{{ url_for('static', filename=user.profile_picture) }}" 
+                                                 alt="Profile" class="rounded-circle" width="40" height="40" 
+                                                 style="border: 2px solid var(--neon-cyan); box-shadow: 0 0 10px rgba(0, 245, 255, 0.3);">
+                                        {% else %}
+                                            <div class="d-flex align-items-center justify-content-center rounded-circle" 
+                                                 style="width: 40px; height: 40px; background: linear-gradient(45deg, var(--neon-cyan), rgba(0, 245, 255, 0.7)); color: #000000; box-shadow: 0 0 15px rgba(0, 245, 255, 0.4);">
+                                                <i class="fas fa-user"></i>
+                                            </div>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <div class="fw-bold text-primary">{{ user.full_name or user.username }}</div>
+                                    </td>
+                                    <td>{{ user.username }}</td>
+                                    <td>{{ user.email or 'Not provided' }}</td>
+                                    <td>
+                                        {% if user.role == 'faculty' %}
+                                            <span class="badge bg-primary">Faculty</span>
+                                        {% elif user.role == 'cc' %}
+                                            <span class="badge bg-info">Class Coordinator</span>
+                                        {% elif user.role == 'hod' %}
+                                            <span class="badge bg-warning">HOD</span>
+                                        {% else %}
+                                            <span class="badge bg-secondary">{{ user.role|title }}</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ user.department or 'Not assigned' }}</td>
+                                    <td>
+                                        {% if user.is_active %}
+                                            <span class="badge bg-success">Active</span>
+                                        {% else %}
+                                            <span class="badge bg-secondary">Inactive</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <div class="btn-group btn-group-sm">
+                                            <button type="button" class="btn btn-secondary" 
+                                                    data-bs-toggle="modal" data-bs-target="#editModal{{ user.id }}" title="Edit">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button type="button" class="btn btn-danger" 
+                                                    data-bs-toggle="modal" data-bs-target="#removeModal{{ user.id }}" title="Remove">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+
+                                <!-- Remove Confirmation Modal -->
+                                <div class="modal fade" id="removeModal{{ user.id }}" tabindex="-1">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content" style="background: rgba(18, 18, 24, 0.95); backdrop-filter: blur(20px); border: 1px solid rgba(0, 245, 255, 0.3); border-radius: 12px; color: var(--text-primary);">
+                                            <div class="modal-header" style="border-bottom: 1px solid rgba(0, 245, 255, 0.2);">
+                                                <h5 class="modal-title" style="color: var(--neon-cyan); text-shadow: 0 0 10px rgba(0, 245, 255, 0.5);">Confirm Removal</h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal" style="filter: invert(1);"></button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <p>Are you sure you want to remove <strong>{{ user.full_name or user.username }}</strong> from the system?</p>
+                                                <div class="alert" style="background: rgba(255, 215, 0, 0.1); border: 1px solid rgba(255, 215, 0, 0.3); color: var(--warning);">
+                                                    <i class="fas fa-exclamation-triangle me-2"></i>
+                                                    This action cannot be undone. All associated data will be permanently deleted.
+                                                </div>
+                                            </div>
+                                            <div class="modal-footer" style="border-top: 1px solid rgba(0, 245, 255, 0.2);">
+                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                                <form method="POST" action="{{ url_for('remove_staff') }}" style="display: inline;">
+                                                    <input type="hidden" name="user_id" value="{{ user.id }}">
+                                                    <button type="submit" class="btn btn-danger">
+                                                        <i class="fas fa-trash me-2"></i>Remove Staff
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <div class="text-center py-5">
+                        <i class="fas fa-users fa-3x mb-3 text-muted"></i>
+                        <h5 class="text-muted">No Staff Members Found</h5>
+                        <p class="text-muted">Start by adding faculty members to your department.</p>
+                        <a href="{{ url_for('add_staff') }}" class="btn btn-primary">
+                            <i class="fas fa-plus-circle me-2"></i>Add First Staff Member
+                        </a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Quick Actions -->
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header d-flex align-items-center">
+                <i class="fas fa-bolt me-2"></i>
+                <h5 class="mb-0">Quick Actions</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-3 mb-2">
+                        <a href="{{ url_for('add_staff') }}" class="btn btn-primary w-100">
+                            <i class="fas fa-plus-circle me-2"></i>Add New Staff
+                        </a>
+                    </div>
+                    <div class="col-md-3 mb-2">
+                        <a href="{{ url_for('assign_workload') }}" class="btn btn-success w-100">
+                            <i class="fas fa-tasks me-2"></i>Assign Workload
+                        </a>
+                    </div>
+                    <div class="col-md-3 mb-2">
+                        <a href="{{ url_for('manage_subjects') }}" class="btn btn-warning w-100">
+                            <i class="fas fa-book me-2"></i>Manage Subjects
+                        </a>
+                    </div>
+                    <div class="col-md-3 mb-2">
+                        <a href="{{ url_for('hod_dashboard') }}" class="btn btn-secondary w-100">
+                            <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="d-flex justify-content-end mt-4">
+    <a href="{{ url_for('hod_dashboard') }}" class="btn btn-secondary">
+        <i class="fas fa-arrow-left me-2"></i> Back to Dashboard
+    </a>
+</div>
+{% endblock %}

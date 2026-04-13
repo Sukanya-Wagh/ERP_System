@@ -1,0 +1,300 @@
+{% extends "faculty_base.html" %}
+
+{% block title %}View Student Feedback{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="card" style="background: rgba(18, 18, 24, 0.9) !important; border: 2px solid var(--neon-cyan) !important;">
+            <div class="card-header d-flex align-items-center" style="background: rgba(0, 245, 255, 0.1) !important; border-bottom: 2px solid var(--neon-cyan) !important;">
+                <i class="fas fa-comments me-2" style="color: var(--neon-cyan) !important;"></i>
+                <h5 class="mb-0" style="color: var(--neon-cyan) !important; font-weight: 700 !important;">Student Feedback</h5>
+            </div>
+            
+            <div class="card-body" style="padding: 2rem !important;">
+                <div class="icon-container" style="margin-bottom: 2rem !important;">
+                    <i class="fas fa-star" style="color: var(--neon-yellow) !important;"></i>
+                </div>
+                
+                {% if feedback_records %}
+                    <div class="table-responsive">
+                        <table class="table table-hover" style="background: transparent !important;">
+                            <thead>
+                                <tr>
+                                    <th style="color: var(--neon-cyan) !important; font-weight: 700 !important; border-bottom: 2px solid var(--neon-cyan) !important;">Student</th>
+                                    <th style="color: var(--neon-cyan) !important; font-weight: 700 !important; border-bottom: 2px solid var(--neon-cyan) !important;">Subject</th>
+                                    <th style="color: var(--neon-cyan) !important; font-weight: 700 !important; border-bottom: 2px solid var(--neon-cyan) !important;">Rating</th>
+                                    <th style="color: var(--neon-cyan) !important; font-weight: 700 !important; border-bottom: 2px solid var(--neon-cyan) !important;">Comments</th>
+                                    <th style="color: var(--neon-cyan) !important; font-weight: 700 !important; border-bottom: 2px solid var(--neon-cyan) !important;">Date</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for feedback in feedback_records %}
+                                <tr style="border-bottom: 1px solid rgba(0, 245, 255, 0.1) !important;">
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <div class="rounded-circle d-flex align-items-center justify-content-center me-3" 
+                                                 style="width: 32px; height: 32px; background: linear-gradient(45deg, var(--neon-purple), var(--neon-pink));">
+                                                <i class="fas fa-user text-white" style="font-size: 0.75rem;"></i>
+                                            </div>
+                                            <span style="color: var(--text-primary) !important; font-weight: 500;">
+                                                {{ feedback.student.full_name or feedback.student.username }}
+                                            </span>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        {% if feedback.subject %}
+                                            <div>
+                                                <span class="badge" style="background-color: rgba(59, 130, 246, 0.3) !important; color: #3b82f6 !important; padding: 0.25rem 0.5rem !important;">
+                                                    {{ feedback.subject.code }}
+                                                </span>
+                                                <p style="color: var(--text-muted) !important; font-size: 0.75rem; margin: 0.25rem 0 0 0;">{{ feedback.subject.name }}</p>
+                                            </div>
+                                        {% else %}
+                                            <span class="badge" style="background-color: rgba(107, 114, 128, 0.3) !important; color: var(--text-muted) !important; padding: 0.25rem 0.5rem !important;">General</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <div class="me-2">
+                                                {% for i in range(1, 6) %}
+                                                    {% if i <= feedback.overall_satisfaction %}
+                                                        <i class="fas fa-star" style="color: var(--neon-yellow) !important; font-size: 0.875rem;"></i>
+                                                    {% else %}
+                                                        <i class="far fa-star" style="color: var(--text-muted) !important; font-size: 0.875rem;"></i>
+                                                    {% endif %}
+                                                {% endfor %}
+                                            </div>
+                                            <span style="color: var(--neon-yellow) !important; font-weight: 600;">{{ feedback.overall_satisfaction }}/5</span>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        {% if feedback.additional_comments %}
+                                            <div style="max-width: 200px;">
+                                                <p style="color: var(--text-secondary) !important; font-size: 0.875rem; margin: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="{{ feedback.additional_comments }}">
+                                                    {{ feedback.additional_comments }}
+                                                </p>
+                                            </div>
+                                        {% else %}
+                                            <span style="color: var(--text-muted) !important; font-style: italic; font-size: 0.875rem;">No comments</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <span style="color: var(--text-muted) !important; font-size: 0.75rem;">
+                                            {{ feedback.timestamp.strftime('%d/%m/%Y') }}<br>
+                                            <span style="color: var(--text-muted) !important;">{{ feedback.timestamp.strftime('%H:%M') }}</span>
+                                        </span>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <!-- Sample feedback data for demo -->
+                    <div class="table-responsive">
+                        <table class="table table-hover" style="background: transparent !important;">
+                            <thead>
+                                <tr>
+                                    <th style="color: var(--neon-cyan) !important; font-weight: 700 !important; border-bottom: 2px solid var(--neon-cyan) !important;">Student</th>
+                                    <th style="color: var(--neon-cyan) !important; font-weight: 700 !important; border-bottom: 2px solid var(--neon-cyan) !important;">Subject</th>
+                                    <th style="color: var(--neon-cyan) !important; font-weight: 700 !important; border-bottom: 2px solid var(--neon-cyan) !important;">Rating</th>
+                                    <th style="color: var(--neon-cyan) !important; font-weight: 700 !important; border-bottom: 2px solid var(--neon-cyan) !important;">Comments</th>
+                                    <th style="color: var(--neon-cyan) !important; font-weight: 700 !important; border-bottom: 2px solid var(--neon-cyan) !important;">Date</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr style="border-bottom: 1px solid rgba(0, 245, 255, 0.1) !important;">
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <div class="rounded-circle d-flex align-items-center justify-content-center me-3" 
+                                                 style="width: 32px; height: 32px; background: linear-gradient(45deg, var(--neon-purple), var(--neon-pink));">
+                                                <i class="fas fa-user text-white" style="font-size: 0.75rem;"></i>
+                                            </div>
+                                            <span style="color: var(--text-primary) !important; font-weight: 500;">Rahul Sharma</span>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div>
+                                            <span class="badge" style="background-color: rgba(59, 130, 246, 0.3) !important; color: #3b82f6 !important; padding: 0.25rem 0.5rem !important;">CS101</span>
+                                            <p style="color: var(--text-muted) !important; font-size: 0.75rem; margin: 0.25rem 0 0 0;">Computer Science Fundamentals</p>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <div class="me-2">
+                                                <i class="fas fa-star" style="color: var(--neon-yellow) !important; font-size: 0.875rem;"></i>
+                                                <i class="fas fa-star" style="color: var(--neon-yellow) !important; font-size: 0.875rem;"></i>
+                                                <i class="fas fa-star" style="color: var(--neon-yellow) !important; font-size: 0.875rem;"></i>
+                                                <i class="fas fa-star" style="color: var(--neon-yellow) !important; font-size: 0.875rem;"></i>
+                                                <i class="far fa-star" style="color: var(--text-muted) !important; font-size: 0.875rem;"></i>
+                                            </div>
+                                            <span style="color: var(--neon-yellow) !important; font-weight: 600;">4/5</span>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <p style="color: var(--text-secondary) !important; font-size: 0.875rem; margin: 0;">Excellent teaching methods and clear explanations.</p>
+                                    </td>
+                                    <td>
+                                        <span style="color: var(--text-muted) !important; font-size: 0.75rem;">
+                                            28/12/2024<br>
+                                            <span style="color: var(--text-muted) !important;">14:30</span>
+                                        </span>
+                                    </td>
+                                </tr>
+                                <tr style="border-bottom: 1px solid rgba(0, 245, 255, 0.1) !important;">
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <div class="rounded-circle d-flex align-items-center justify-content-center me-3" 
+                                                 style="width: 32px; height: 32px; background: linear-gradient(45deg, var(--neon-green), var(--neon-teal));">
+                                                <i class="fas fa-user text-white" style="font-size: 0.75rem;"></i>
+                                            </div>
+                                            <span style="color: var(--text-primary) !important; font-weight: 500;">Priya Patel</span>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div>
+                                            <span class="badge" style="background-color: rgba(139, 92, 246, 0.3) !important; color: var(--neon-purple) !important; padding: 0.25rem 0.5rem !important;">CS102</span>
+                                            <p style="color: var(--text-muted) !important; font-size: 0.75rem; margin: 0.25rem 0 0 0;">Programming Lab</p>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <div class="me-2">
+                                                <i class="fas fa-star" style="color: var(--neon-yellow) !important; font-size: 0.875rem;"></i>
+                                                <i class="fas fa-star" style="color: var(--neon-yellow) !important; font-size: 0.875rem;"></i>
+                                                <i class="fas fa-star" style="color: var(--neon-yellow) !important; font-size: 0.875rem;"></i>
+                                                <i class="fas fa-star" style="color: var(--neon-yellow) !important; font-size: 0.875rem;"></i>
+                                                <i class="fas fa-star" style="color: var(--neon-yellow) !important; font-size: 0.875rem;"></i>
+                                            </div>
+                                            <span style="color: var(--neon-yellow) !important; font-weight: 600;">5/5</span>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <p style="color: var(--text-secondary) !important; font-size: 0.875rem; margin: 0;">Very helpful during lab sessions. Great support!</p>
+                                    </td>
+                                    <td>
+                                        <span style="color: var(--text-muted) !important; font-size: 0.75rem;">
+                                            27/12/2024<br>
+                                            <span style="color: var(--text-muted) !important;">16:45</span>
+                                        </span>
+                                    </td>
+                                </tr>
+                                <tr style="border-bottom: 1px solid rgba(0, 245, 255, 0.1) !important;">
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <div class="rounded-circle d-flex align-items-center justify-content-center me-3" 
+                                                 style="width: 32px; height: 32px; background: linear-gradient(45deg, var(--neon-cyan), var(--neon-teal));">
+                                                <i class="fas fa-user text-white" style="font-size: 0.75rem;"></i>
+                                            </div>
+                                            <span style="color: var(--text-primary) !important; font-weight: 500;">Amit Kumar</span>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div>
+                                            <span class="badge" style="background-color: rgba(0, 212, 170, 0.3) !important; color: var(--neon-teal) !important; padding: 0.25rem 0.5rem !important;">CS201</span>
+                                            <p style="color: var(--text-muted) !important; font-size: 0.75rem; margin: 0.25rem 0 0 0;">Data Structures</p>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <div class="me-2">
+                                                <i class="fas fa-star" style="color: var(--neon-yellow) !important; font-size: 0.875rem;"></i>
+                                                <i class="fas fa-star" style="color: var(--neon-yellow) !important; font-size: 0.875rem;"></i>
+                                                <i class="fas fa-star" style="color: var(--neon-yellow) !important; font-size: 0.875rem;"></i>
+                                                <i class="fas fa-star" style="color: var(--neon-yellow) !important; font-size: 0.875rem;"></i>
+                                                <i class="far fa-star" style="color: var(--text-muted) !important; font-size: 0.875rem;"></i>
+                                            </div>
+                                            <span style="color: var(--neon-yellow) !important; font-weight: 600;">4/5</span>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <p style="color: var(--text-secondary) !important; font-size: 0.875rem; margin: 0;">Good explanations of complex topics.</p>
+                                    </td>
+                                    <td>
+                                        <span style="color: var(--text-muted) !important; font-size: 0.75rem;">
+                                            26/12/2024<br>
+                                            <span style="color: var(--text-muted) !important;">11:20</span>
+                                        </span>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <div class="text-center py-5" style="margin-top: 2rem;">
+                        <i class="fas fa-comments fa-4x mb-4" style="color: var(--text-muted) !important;"></i>
+                        <h4 style="color: var(--text-muted) !important; margin-bottom: 1rem;">Sample Student Feedback</h4>
+                        <p style="color: var(--text-muted) !important; margin-bottom: 2rem;">Above are sample feedback entries. Real student feedback will appear here once submitted.</p>
+                        <div class="alert" style="background: rgba(59, 130, 246, 0.1) !important; border: 1px solid rgba(59, 130, 246, 0.3) !important; color: #3b82f6 !important; max-width: 500px; margin: 0 auto;">
+                            <i class="fas fa-lightbulb me-2"></i>
+                            <strong>Tip:</strong> Encourage your students to provide feedback to help improve your teaching methods.
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Feedback Statistics (if feedback exists) -->
+{% if feedback_records %}
+<div class="row mt-4">
+    <!-- Average Rating -->
+    <div class="col-md-4 mb-3">
+        <div class="card" style="background: rgba(18, 18, 24, 0.9) !important; border: 1px solid rgba(255, 215, 0, 0.3) !important;">
+            <div class="card-body text-center">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <p style="color: var(--text-muted) !important; font-size: 0.875rem; margin-bottom: 0.5rem;">Average Rating</p>
+                        <p style="color: var(--neon-yellow) !important; font-size: 2rem; font-weight: 700; margin: 0;">
+                            {% set avg_rating = feedback_records | map(attribute='overall_satisfaction') | list | sum / feedback_records | length %}
+                            {{ "%.1f" | format(avg_rating) }}/5
+                        </p>
+                    </div>
+                    <i class="fas fa-star" style="color: var(--neon-yellow) !important; font-size: 3rem;"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Total Feedback -->
+    <div class="col-md-4 mb-3">
+        <div class="card" style="background: rgba(18, 18, 24, 0.9) !important; border: 1px solid rgba(0, 245, 255, 0.3) !important;">
+            <div class="card-body text-center">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <p style="color: var(--text-muted) !important; font-size: 0.875rem; margin-bottom: 0.5rem;">Total Feedback</p>
+                        <p style="color: var(--neon-cyan) !important; font-size: 2rem; font-weight: 700; margin: 0;">{{ feedback_records | length }}</p>
+                    </div>
+                    <i class="fas fa-comments" style="color: var(--neon-cyan) !important; font-size: 3rem;"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- With Comments -->
+    <div class="col-md-4 mb-3">
+        <div class="card" style="background: rgba(18, 18, 24, 0.9) !important; border: 1px solid rgba(139, 92, 246, 0.3) !important;">
+            <div class="card-body text-center">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <p style="color: var(--text-muted) !important; font-size: 0.875rem; margin-bottom: 0.5rem;">With Comments</p>
+                        <p style="color: var(--neon-purple) !important; font-size: 2rem; font-weight: 700; margin: 0;">
+                            {{ feedback_records | selectattr('additional_comments') | list | length }}
+                        </p>
+                    </div>
+                    <i class="fas fa-comment-dots" style="color: var(--neon-purple) !important; font-size: 3rem;"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<div class="d-flex justify-content-end mt-4">
+    <a href="{{ url_for('faculty_dashboard') }}" class="btn btn-secondary" style="background: rgba(0, 0, 0, 0.5) !important; border: 1px solid var(--text-secondary) !important; color: var(--text-secondary) !important; font-weight: 600 !important;">
+        <i class="fas fa-arrow-left me-2"></i> Back to Dashboard
+    </a>
+</div>
+{% endblock %}

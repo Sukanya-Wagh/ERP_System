@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>CC Dashboard - Class Coordinator</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet"/>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"/>
+  <style>
+    :root{--cy:#00f5ff;--mg:#ff00ff;--pu:#8b5cf6;--gr:#00ff9d;--ye:#ffd700;--or:#ff8c00;--re:#ff3864;--bg:#050508;--cd:#0d0d14;--cs:#12121c;--bd:rgba(0,245,255,.12);--bg2:rgba(0,245,255,.4);--tp:#e5e7eb;--ts:#9ca3af;--tm:#6b7280;--sw:270px;--r:14px;}
+    *{margin:0;padding:0;box-sizing:border-box;}html{scroll-behavior:smooth;}
+    body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--tp);overflow-x:hidden;min-height:100vh;}
+    body::before{content:'';position:fixed;top:0;left:0;width:100%;height:100%;background:radial-gradient(ellipse 80% 50% at 20% 20%,rgba(0,245,255,.04),transparent 60%),radial-gradient(ellipse 60% 40% at 80% 80%,rgba(139,92,246,.05),transparent 60%),linear-gradient(rgba(0,245,255,.015) 1px,transparent 1px),linear-gradient(90deg,rgba(0,245,255,.015) 1px,transparent 1px);background-size:100% 100%,100% 100%,30px 30px,30px 30px;z-index:-1;pointer-events:none;}
+    .orb{position:fixed;border-radius:50%;filter:blur(80px);pointer-events:none;z-index:-1;animation:floatOrb 12s ease-in-out infinite;}
+    .orb-1{width:350px;height:350px;background:rgba(0,245,255,.06);top:-80px;left:-80px;}
+    .orb-2{width:280px;height:280px;background:rgba(139,92,246,.07);bottom:-40px;right:-40px;animation-delay:-4s;}
+    .orb-3{width:180px;height:180px;background:rgba(255,0,255,.05);top:40%;left:45%;animation-delay:-8s;}
+    @keyframes floatOrb{0%,100%{transform:translate(0,0) scale(1);}33%{transform:translate(25px,-18px) scale(1.05);}66%{transform:translate(-18px,25px) scale(.95);}}
+    ::-webkit-scrollbar{width:5px;}::-webkit-scrollbar-track{background:var(--cd);}::-webkit-scrollbar-thumb{background:linear-gradient(var(--cy),var(--pu));border-radius:3px;}
+    .layout{display:flex;min-height:100vh;}
+    /* SIDEBAR */
+    .sidebar{width:270px;background:rgba(13,13,20,.96);backdrop-filter:blur(24px);border-right:1px solid var(--bd);position:fixed;height:100vh;overflow-y:auto;z-index:1000;display:flex;flex-direction:column;}
+    .sidebar::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--cy),var(--pu),var(--mg));box-shadow:0 0 20px rgba(0,245,255,.6);}
+    .sb-brand{padding:1.6rem 1.4rem 1.3rem;border-bottom:1px solid var(--bd);text-align:center;}
+    .sb-logo{width:60px;height:60px;border-radius:50%;background:linear-gradient(135deg,rgba(0,245,255,.15),rgba(139,92,246,.15));border:2px solid rgba(0,245,255,.4);display:flex;align-items:center;justify-content:center;margin:0 auto .9rem;animation:pulse 3s ease-in-out infinite;}
+    @keyframes pulse{0%,100%{box-shadow:0 0 18px rgba(0,245,255,.3);}50%{box-shadow:0 0 32px rgba(0,245,255,.55);}}
+    .sb-logo i{font-size:1.6rem;color:var(--cy);text-shadow:0 0 12px var(--cy);}
+    .sb-title{font-family:'Orbitron',monospace;font-size:.95rem;font-weight:700;color:var(--cy);letter-spacing:2px;text-shadow:0 0 8px rgba(0,245,255,.5);}
+    .sb-sub{color:var(--tm);font-size:.72rem;margin-top:.2rem;}
+    .nav-lbl{padding:.9rem 1.4rem .35rem;font-size:.62rem;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:var(--tm);}
+    .nav-menu{padding:.4rem 0;flex:1;}
+    .ni{margin:.18rem .65rem;}
+    .nl{display:flex;align-items:center;padding:.75rem .9rem;color:var(--ts);text-decoration:none;border-radius:9px;transition:all .22s;position:relative;overflow:hidden;font-size:.86rem;font-weight:500;border:1px solid transparent;cursor:pointer;}
+    .nl i{width:18px;margin-right:.8rem;font-size:.95rem;transition:all .22s;}
+    .nl .nb{margin-left:auto;background:rgba(255,56,100,.2);color:var(--re);border:1px solid rgba(255,56,100,.4);border-radius:20px;font-size:.62rem;padding:.1rem .45rem;font-weight:700;}
+    .nl:hover,.nl.active{color:var(--cy);background:rgba(0,245,255,.08);border-color:rgba(0,245,255,.22);text-shadow:0 0 7px rgba(0,245,255,.4);text-decoration:none;}
+    .nl:hover i,.nl.active i{color:var(--cy);text-shadow:0 0 9px var(--cy);}
+    .nl.active::before{content:'';position:absolute;left:0;top:20%;height:60%;width:3px;background:var(--cy);border-radius:0 3px 3px 0;box-shadow:0 0 9px var(--cy);}
+    .sb-foot{padding:.9rem .65rem;border-top:1px solid var(--bd);}
+    /* MAIN */
+    .main{margin-left:270px;flex:1;min-height:100vh;overflow-x:hidden;}
+    /* TOPBAR */
+    .topbar{background:linear-gradient(135deg,rgba(13,13,20,.98),rgba(26,26,40,.98));border-bottom:1px solid var(--bd);padding:1.3rem 1.8rem;position:sticky;top:0;z-index:100;backdrop-filter:blur(20px);display:flex;align-items:center;justify-content:space-between;}
+    .topbar::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--cy),var(--pu),transparent);opacity:.5;}
+    .tb-l h1{font-family:'Orbitron',monospace;font-size:1.3rem;font-weight:700;color:var(--cy);text-shadow:0 0 14px rgba(0,245,255,.4);margin-bottom:.15rem;}
+    .tb-l p{color:var(--tm);font-size:.8rem;}
+    .tb-r{display:flex;align-items:center;gap:.9rem;}
+    .tb-time .t{font-family:'Orbitron',monospace;font-size:1.1rem;color:var(--cy);font-weight:600;text-align:right;}
+    .tb-time .d{font-size:.68rem;color:var(--tm);text-align:right;}
+    .tb-av{width:42px;height:42px;border-radius:50%;background:linear-gradient(135deg,var(--cy),var(--pu));display:flex;align-items:center;justify-content:center;font-size:1rem;color:#000;font-weight:700;box-shadow:0 0 14px rgba(0,245,255,.4);text-decoration:none;transition:all .3s;}
+    .tb-av:hover{box-shadow:0 0 24px rgba(0,245,255,.7);transform:scale(1.05);}
+    /* CONTENT */
+    .content{padding:1.4rem;}
+    .sec{display:none;animation:fadeUp .3s ease;}
+    .sec.active{display:block;}
+    @keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+    /* WELCOME */
+    .welcome{background:linear-gradient(135deg,rgba(0,245,255,.07),rgba(139,92,246,.07) 50%,rgba(255,0,255,.04));border:1px solid rgba(0,245,255,.2);border-radius:var(--r);padding:1.8rem 2.2rem;margin-bottom:1.8rem;position:relative;overflow:hidden;}
+    .welcome::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--cy),var(--pu),var(--mg));box-shadow:0 0 14px rgba(0,245,255,.5);}
+    .welcome::after{content:'CC';position:absolute;right:1.5rem;top:50%;transform:translateY(-50%);font-family:'Orbitron',monospace;font-size:5rem;font-weight:900;color:rgba(0,245,255,.04);pointer-events:none;}
+    .w-icon{width:52px;height:52px;border-radius:13px;background:linear-gradient(135deg,rgba(0,245,255,.2),rgba(139,92,246,.2));border:1px solid rgba(0,245,255,.4);display:flex;align-items:center;justify-content:center;font-size:1.5rem;margin-right:1.3rem;flex-shrink:0;}
+    .w-title{font-family:'Orbitron',monospace;font-size:1.35rem;font-weight:700;color:#fff;}
+    .w-sub{color:var(--ts);font-size:.86rem;margin-top:.2rem;}
+    .w-stats{display:flex;gap:1.8rem;margin-top:.9rem;}
+    .w-stat .val{font-family:'Orbitron',monospace;font-size:1.3rem;font-weight:700;color:var(--cy);}
+    .w-stat .lbl{font-size:.68rem;color:var(--tm);text-transform:uppercase;letter-spacing:1px;}
+    /* STAT CARDS */
+    .sc{background:var(--cd);border:1px solid var(--bd);border-radius:var(--r);padding:1.3rem;transition:all .3s;position:relative;overflow:hidden;}
+    .sc:hover{transform:translateY(-4px);border-color:var(--bg2);box-shadow:0 0 18px rgba(0,245,255,.14);}
+    .sc-icon{width:44px;height:44px;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:1.2rem;margin-bottom:.9rem;}
+    .sc-num{font-size:1.9rem;font-weight:700;font-family:'Orbitron',monospace;}
+    .sc-lbl{font-size:.75rem;color:var(--tm);text-transform:uppercase;letter-spacing:1px;margin-top:.2rem;}
+    /* CARD BOX */
+    .cb{background:var(--cd);border:1px solid var(--bd);border-radius:var(--r);padding:1.4rem;margin-bottom:1.4rem;}
+    .cb-head{display:flex;align-items:center;gap:.6rem;margin-bottom:1.1rem;padding-bottom:.9rem;border-bottom:1px solid var(--bd);}
+    .cb-head h3{font-size:.92rem;font-weight:700;margin:0;}
+    /* TABLE */
+    .dt{width:100%;border-collapse:collapse;}
+    .dt th{background:rgba(255,255,255,.02);color:var(--tm);font-size:.74rem;padding:10px 11px;text-align:left;text-transform:uppercase;letter-spacing:.5px;border-bottom:1px solid var(--bd);}
+    .dt td{padding:11px;border-bottom:1px solid rgba(255,255,255,.04);font-size:.85rem;}
+    .dt tr:hover td{background:rgba(255,255,255,.02);}
+    /* BADGES */
+    .bx{padding:3px 9px;border-radius:20px;font-size:.72rem;font-weight:600;display:inline-block;}
+    .bc{background:rgba(0,245,255,.1);color:var(--cy);border:1px solid rgba(0,245,255,.3);}
+    .bg{background:rgba(0,255,157,.1);color:var(--gr);border:1px solid rgba(0,255,157,.3);}
+    .br{background:rgba(255,56,100,.1);color:var(--re);border:1px solid rgba(255,56,100,.3);}
+    .by{background:rgba(255,215,0,.1);color:var(--ye);border:1px solid rgba(255,215,0,.3);}
+    .bp{background:rgba(139,92,246,.1);color:var(--pu);border:1px solid rgba(139,92,246,.3);}
+    /* PROGRESS */
+    .pb-wrap{margin-bottom:.65rem;}
+    .pb-lbl{display:flex;justify-content:space-between;margin-bottom:.25rem;font-size:.78rem;color:var(--ts);}
+    .pb-bg{background:rgba(255,255,255,.07);border-radius:20px;height:7px;overflow:hidden;}
+    .pb-fill{height:100%;border-radius:20px;transition:width 1.2s ease;}
+    /* MOBILE */
+    .mob-btn{display:none;position:fixed;top:.9rem;left:.9rem;z-index:1001;background:var(--cy);color:#000;border:none;padding:.65rem;border-radius:8px;cursor:pointer;}
+    @media(max-width:1200px){.sidebar{transform:translateX(-100%)}.main{margin-left:0 !important}.sidebar.show{transform:translateX(0)}.mob-btn{display:block}}
+    @media(max-width:768px){.content{padding:.9rem}}
+  </style>
+</head>
+<body>
+<div class="orb orb-1"></div><div class="orb orb-2"></div><div class="orb orb-3"></div>
+<button class="mob-btn" onclick="document.getElementById('sb').classList.toggle('show')"><i class="fas fa-bars"></i></button>
+<div class="layout">
+
+<!-- SIDEBAR -->
+<nav class="sidebar" id="sb">
+  <div class="sb-brand">
+    <div class="sb-logo"><i class="fas fa-chalkboard-teacher"></i></div>
+    <div class="sb-title">CC Panel</div>
+    <div class="sb-sub">Class Coordinator System</div>
+  </div>
+  <div class="nav-menu">
+    <div class="nav-lbl">Main</div>
+    <div class="ni"><a class="nl active" onclick="sw('overview',this)"><i class="fas fa-tachometer-alt"></i>Dashboard</a></div>
+    <div class="nav-lbl">Class</div>
+    <div class="ni"><a class="nl" onclick="sw('timetable',this)"><i class="fas fa-calendar-alt"></i>Timetable</a></div>
+    <div class="ni"><a class="nl" onclick="sw('attendance',this)"><i class="fas fa-clipboard-check"></i>Attendance</a></div>
+    <div class="ni"><a class="nl" onclick="sw('students',this)"><i class="fas fa-user-graduate"></i>Students</a></div>
+    <div class="ni"><a class="nl" onclick="sw('assignments',this)"><i class="fas fa-tasks"></i>Assignments</a></div>
+    <div class="nav-lbl">Faculty</div>
+    <div class="ni"><a class="nl" onclick="sw('faculty',this)"><i class="fas fa-chalkboard-teacher"></i>Faculty Panel</a></div>
+    <div class="nav-lbl">Academic</div>
+    <div class="ni"><a class="nl" onclick="sw('marks',this)"><i class="fas fa-chart-bar"></i>Internal Marks</a></div>
+    <div class="ni"><a class="nl" onclick="sw('performance',this)"><i class="fas fa-trophy"></i>Performance</a></div>
+    <div class="ni"><a class="nl" onclick="sw('reports',this)"><i class="fas fa-file-alt"></i>Reports</a></div>
+    <div class="nav-lbl">Other</div>
+    <div class="ni"><a class="nl" onclick="sw('notifications',this)"><i class="fas fa-bell"></i>Notifications</a></div>
+    <div class="ni"><a href="{{ url_for('cc_leave_requests') }}" class="nl"><i class="fas fa-calendar-check"></i>Leave Requests</a></div>
+    <div class="nav-lbl">Account</div>
+    <div class="ni"><a href="{{ url_for('profile') }}" class="nl"><i class="fas fa-user"></i>Profile</a></div>
+    <div class="ni"><a href="{{ url_for('logout') }}" class="nl" style="color:var(--re);"><i class="fas fa-sign-out-alt"></i>Logout</a></div>
+  </div>
+</nav>
+
+<!-- MAIN -->
+<div class="main" style="margin-left:270px;flex:1;min-height:100vh;overflow-x:hidden;">
+  <div class="topbar">
+    <div class="tb-l">
+      <h1><i class="fas fa-chalkboard-teacher me-2"></i>CC Dashboard</h1>
+      <p>Class Coordinator — {{ current_user.full_name or current_user.username }}</p>
+    </div>
+    <div class="tb-r">
+      <div class="tb-time"><div class="t" id="liveTime">--:--</div><div class="d" id="liveDate">---</div></div>
+      <a href="{{ url_for('profile') }}" class="tb-av">{{ (current_user.full_name or current_user.username)[0]|upper }}</a>
+    </div>
+  </div>
+
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+    <div style="padding:0 1.4rem;margin-top:.9rem;">
+      {% for cat,msg in messages %}
+      <div class="alert alert-{{ cat }} alert-dismissible fade show">{{ msg }}<button type="button" class="btn-close" data-bs-dismiss="alert"></button></div>
+      {% endfor %}
+    </div>
+    {% endif %}
+  {% endwith %}
+
+  <div class="content">
+
+  <!-- ══ OVERVIEW ══ -->
+  <div id="overview" class="sec active">
+
+    <!-- Welcome -->
+    <div class="welcome mb-4">
+      <div class="d-flex align-items-center">
+        <div class="w-icon">🎓</div>
+        <div>
+          <div class="w-title">Welcome, {{ current_user.full_name or current_user.username }}</div>
+          <div class="w-sub">Class Coordinator — Academic ERP System</div>
+          <div class="w-stats">
+            <div class="w-stat"><div class="val">{{ total_students }}</div><div class="lbl">Students</div></div>
+            <div class="w-stat"><div class="val">{{ total_subjects }}</div><div class="lbl">Subjects</div></div>
+            <div class="w-stat"><div class="val">{{ total_faculty }}</div><div class="lbl">Faculty</div></div>
+            <div class="w-stat"><div class="val">{{ att_pct }}%</div><div class="lbl">Attendance</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Top Stats Cards -->
+    <div class="row g-3 mb-4">
+      <div class="col-lg col-md-4 col-6">
+        <div class="sc">
+          <div class="sc-icon" style="background:rgba(0,245,255,.1);color:var(--cy);"><i class="fas fa-user-graduate"></i></div>
+          <div class="sc-num" style="color:var(--cy);" data-target="{{ total_students }}">0</div>
+          <div class="sc-lbl">👨‍🎓 Total Students</div>
+        </div>
+      </div>
+      <div class="col-lg col-md-4 col-6">
+        <div class="sc">
+          <div class="sc-icon" style="background:rgba(0,255,157,.1);color:var(--gr);"><i class="fas fa-book"></i></div>
+          <div class="sc-num" style="color:var(--gr);" data-target="{{ total_subjects }}">0</div>
+          <div class="sc-lbl">📚 Total Subjects</div>
+        </div>
+      </div>
+      <div class="col-lg col-md-4 col-6">
+        <div class="sc">
+          <div class="sc-icon" style="background:rgba(139,92,246,.1);color:var(--pu);"><i class="fas fa-chalkboard-teacher"></i></div>
+          <div class="sc-num" style="color:var(--pu);" data-target="{{ total_faculty }}">0</div>
+          <div class="sc-lbl">👩‍🏫 Total Faculty</div>
+        </div>
+      </div>
+      <div class="col-lg col-md-4 col-6">
+        <div class="sc">
+          <div class="sc-icon" style="background:rgba(255,215,0,.1);color:var(--ye);"><i class="fas fa-clipboard-check"></i></div>
+          <div class="sc-num" style="color:var(--ye);" data-target="{{ att_pct }}">0</div>
+          <div class="sc-lbl">📊 Attendance %</div>
+        </div>
+      </div>
+      <div class="col-lg col-md-4 col-6">
+        <div class="sc">
+          <div class="sc-icon" style="background:rgba(255,56,100,.1);color:var(--re);"><i class="fas fa-tasks"></i></div>
+          <div class="sc-num" style="color:var(--re);" data-target="{{ pending_assignments|length }}">0</div>
+          <div class="sc-lbl">⏳ Pending Tasks</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Charts Row -->
+    <div class="row g-3 mb-4">
+      <div class="col-lg-5">
+        <div class="cb" style="height:100%;">
+          <div class="cb-head"><i class="fas fa-chart-bar" style="color:var(--cy);"></i><h3 style="color:var(--cy);">Subject-wise Attendance</h3></div>
+          <canvas id="attChart" style="max-height:220px;"></canvas>
+        </div>
+      </div>
+      <div class="col-lg-3">
+        <div class="cb" style="height:100%;">
+          <div class="cb-head"><i class="fas fa-chart-pie" style="color:var(--pu);"></i><h3 style="color:var(--pu);">Attendance Split</h3></div>
+          <canvas id="attPie" style="max-height:200px;"></canvas>
+        </div>
+      </div>
+      <div class="col-lg-4">
+        <div class="cb" style="height:100%;">
+          <div class="cb-head"><i class="fas fa-tasks" style="color:var(--ye);"></i><h3 style="color:var(--ye);">Class Stats</h3></div>
+          <div class="pb-wrap"><div class="pb-lbl"><span>Overall Attendance</span><span style="color:var(--cy);">{{ att_pct }}%</span></div><div class="pb-bg"><div class="pb-fill" style="width:{{ att_pct }}%;background:linear-gradient(90deg,var(--cy),var(--pu));"></div></div></div>
+          <div class="pb-wrap"><div class="pb-lbl"><span>Low Attendance Students</span><span style="color:var(--re);">{{ low_att|length }}</span></div><div class="pb-bg"><div class="pb-fill" style="width:{{ [low_att|length * 5, 100]|min }}%;background:linear-gradient(90deg,var(--re),var(--mg));"></div></div></div>
+          <div class="pb-wrap"><div class="pb-lbl"><span>Assignments Pending</span><span style="color:var(--ye);">{{ pending_assignments|length }}</span></div><div class="pb-bg"><div class="pb-fill" style="width:{{ [pending_assignments|length * 10, 100]|min }}%;background:linear-gradient(90deg,var(--ye),var(--or));"></div></div></div>
+          <div class="pb-wrap"><div class="pb-lbl"><span>Complaints Pending</span><span style="color:var(--re);">{{ pending_complaints }}</span></div><div class="pb-bg"><div class="pb-fill" style="width:{{ [pending_complaints * 10, 100]|min }}%;background:linear-gradient(90deg,var(--re),var(--mg));"></div></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Low Attendance Alert -->
+    {% if low_att %}
+    <div class="cb" style="border-left:4px solid var(--re);">
+      <div class="cb-head"><i class="fas fa-exclamation-triangle" style="color:var(--re);"></i><h3 style="color:var(--re);">Low Attendance Alert ({{ low_att|length }} students below 75%)</h3></div>
+      <div style="display:flex;flex-wrap:wrap;gap:10px;">
+        {% for s in low_att[:8] %}
+        <div style="background:rgba(255,56,100,.07);border:1px solid rgba(255,56,100,.25);border-radius:9px;padding:10px 14px;min-width:140px;">
+          <div style="font-weight:700;font-size:.86rem;">{{ s.name }}</div>
+          <div style="color:var(--re);font-size:.78rem;margin-top:2px;">{{ s.att }}% attendance</div>
+          <div style="color:var(--tm);font-size:.74rem;">Roll: {{ s.roll }}</div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+    {% endif %}
+  </div>
+
+
+  <!-- ══ TIMETABLE ══ -->
+  <div id="timetable" class="sec">
+    <div class="cb">
+      <div class="cb-head"><i class="fas fa-calendar-alt" style="color:var(--cy);"></i><h3 style="color:var(--cy);">Today's Timetable — {{ today_name }}</h3></div>
+      {% set slots=[('08:00-09:00','Mathematics','Prof. A.M.Sawant','Room 101','active'),('09:00-10:00','Physics','Prof. N.V.Kulkarni','Room 102','active'),('10:00-11:00','Computer Science','Prof. S.S.Pawar','Room 103','next'),('11:00-12:00','English','Prof. R.M.Jadhav','Room 104','upcoming'),('12:00-01:00','LUNCH BREAK','—','—','break'),('01:00-02:00','Lab Practice','Prof. V.A.More','Lab 1','upcoming'),('02:00-03:00','Drawing','Prof. A.M.Sawant','Room 105','upcoming'),('03:00-04:00','Sports/Activity','—','Ground','upcoming')] %}
+      <div style="display:flex;flex-direction:column;gap:10px;">
+        {% for slot in slots %}
+        <div style="display:flex;align-items:center;gap:14px;padding:13px 16px;border-radius:10px;border:1px solid {% if slot[4]=='active' %}rgba(0,245,255,.3){% elif slot[4]=='next' %}rgba(255,215,0,.3){% elif slot[4]=='break' %}rgba(255,255,255,.08){% else %}rgba(255,255,255,.06){% endif %};background:{% if slot[4]=='active' %}rgba(0,245,255,.06){% elif slot[4]=='next' %}rgba(255,215,0,.06){% elif slot[4]=='break' %}rgba(255,255,255,.03){% else %}rgba(255,255,255,.02){% endif %};">
+          <div style="min-width:110px;font-family:'Orbitron',monospace;font-size:.75rem;color:{% if slot[4]=='active' %}var(--cy){% elif slot[4]=='next' %}var(--ye){% else %}var(--tm){% endif %};">{{ slot[0] }}</div>
+          <div style="flex:1;">
+            <div style="font-weight:700;font-size:.9rem;">{{ slot[1] }}</div>
+            <div style="font-size:.76rem;color:var(--tm);margin-top:2px;"><i class="fas fa-user me-1"></i>{{ slot[2] }} &nbsp;·&nbsp; <i class="fas fa-door-open me-1"></i>{{ slot[3] }}</div>
+          </div>
+          {% if slot[4]=='active' %}<span class="bx bc">🟢 Now</span>
+          {% elif slot[4]=='next' %}<span class="bx by">⏭ Next</span>
+          {% elif slot[4]=='break' %}<span class="bx" style="background:rgba(255,255,255,.05);color:var(--tm);border:1px solid rgba(255,255,255,.1);">Break</span>
+          {% else %}<span class="bx" style="background:rgba(255,255,255,.03);color:var(--tm);border:1px solid rgba(255,255,255,.08);">Upcoming</span>{% endif %}
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ ATTENDANCE ══ -->
+  <div id="attendance" class="sec">
+    <div class="row g-3 mb-3">
+      <div class="col-lg-8">
+        <div class="cb">
+          <div class="cb-head"><i class="fas fa-clipboard-check" style="color:var(--gr);"></i><h3 style="color:var(--gr);">Subject-wise Attendance</h3></div>
+          <table class="dt">
+            <thead><tr><th>#</th><th>Subject</th><th>Code</th><th>Attendance %</th><th>Status</th></tr></thead>
+            <tbody>
+              {% for s in subj_att %}
+              <tr>
+                <td style="color:var(--tm);">{{ loop.index }}</td>
+                <td style="font-weight:600;">{{ s.name }}</td>
+                <td><span class="bx bc">{{ s.code }}</span></td>
+                <td>
+                  <div style="display:flex;align-items:center;gap:10px;">
+                    <div class="pb-bg" style="flex:1;"><div class="pb-fill" style="width:{{ s.pct }}%;background:{% if s.pct>=75 %}linear-gradient(90deg,var(--gr),var(--cy)){% else %}linear-gradient(90deg,var(--re),var(--mg)){% endif %};"></div></div>
+                    <span style="font-weight:700;color:{% if s.pct>=75 %}var(--gr){% else %}var(--re){% endif %};min-width:40px;">{{ s.pct }}%</span>
+                  </div>
+                </td>
+                <td>{% if s.pct>=75 %}<span class="bx bg">Good</span>{% else %}<span class="bx br">Low</span>{% endif %}</td>
+              </tr>
+              {% else %}
+              <tr><td colspan="5" style="text-align:center;padding:20px;color:var(--tm);">No attendance data yet.</td></tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="col-lg-4">
+        <div class="cb">
+          <div class="cb-head"><i class="fas fa-exclamation-triangle" style="color:var(--re);"></i><h3 style="color:var(--re);">Low Attendance Students</h3></div>
+          {% if low_att %}
+          {% for s in low_att %}
+          <div style="background:rgba(255,56,100,.06);border:1px solid rgba(255,56,100,.2);border-radius:8px;padding:10px 13px;margin-bottom:8px;display:flex;align-items:center;gap:10px;">
+            <div style="width:32px;height:32px;background:rgba(255,56,100,.2);border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--re);font-weight:700;font-size:.85rem;flex-shrink:0;">{{ s.name[0]|upper }}</div>
+            <div style="flex:1;"><div style="font-weight:600;font-size:.85rem;">{{ s.name }}</div><div style="font-size:.74rem;color:var(--re);">{{ s.att }}% — Roll: {{ s.roll }}</div></div>
+          </div>
+          {% endfor %}
+          {% else %}
+          <div style="text-align:center;padding:24px;color:var(--gr);"><i class="fas fa-check-circle fa-2x mb-2"></i><br>All students above 75%</div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ STUDENTS ══ -->
+  <div id="students" class="sec">
+    <div class="cb">
+      <div class="cb-head"><i class="fas fa-user-graduate" style="color:var(--cy);"></i><h3 style="color:var(--cy);">Student List ({{ student_data|length }})</h3></div>
+      <div style="overflow-x:auto;">
+        <table class="dt">
+          <thead><tr><th>#</th><th>Roll No</th><th>Name</th><th>Avg Marks</th><th>Attendance</th><th>Status</th></tr></thead>
+          <tbody>
+            {% for s in student_data %}
+            <tr>
+              <td style="color:var(--tm);">{{ loop.index }}</td>
+              <td><span class="bx bc">{{ s.roll }}</span></td>
+              <td style="font-weight:600;">{{ s.name }}</td>
+              <td>{% if s.avg %}<span style="color:{% if s.avg>=60 %}var(--gr){% elif s.avg>=40 %}var(--ye){% else %}var(--re){% endif %};font-weight:700;">{{ s.avg }}%</span>{% else %}<span style="color:var(--tm);">—</span>{% endif %}</td>
+              <td>{% if s.att %}<span style="color:{% if s.att>=75 %}var(--gr){% else %}var(--re){% endif %};font-weight:700;">{{ s.att }}%</span>{% else %}<span style="color:var(--tm);">—</span>{% endif %}</td>
+              <td>{% if s.avg and s.avg<40 %}<span class="bx br">At Risk</span>{% elif s.att and s.att<75 %}<span class="bx by">Low Att</span>{% else %}<span class="bx bg">Good</span>{% endif %}</td>
+            </tr>
+            {% else %}
+            <tr><td colspan="6" style="text-align:center;padding:20px;color:var(--tm);">No students found.</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ ASSIGNMENTS ══ -->
+  <div id="assignments" class="sec">
+    <div class="cb">
+      <div class="cb-head"><i class="fas fa-tasks" style="color:var(--ye);"></i><h3 style="color:var(--ye);">Pending Assignments & Deadlines</h3></div>
+      {% if pending_assignments %}
+      <table class="dt">
+        <thead><tr><th>#</th><th>Title</th><th>Subject</th><th>Due Date</th><th>Status</th></tr></thead>
+        <tbody>
+          {% for a in pending_assignments %}
+          <tr>
+            <td style="color:var(--tm);">{{ loop.index }}</td>
+            <td style="font-weight:600;">{{ a.title }}</td>
+            <td><span class="bx bc">{{ a.subject.name if a.subject else 'N/A' }}</span></td>
+            <td style="color:var(--ye);">{{ a.due_date.strftime('%d %b %Y') if a.due_date else '—' }}</td>
+            <td><span class="bx by">Pending</span></td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% else %}
+      <div style="text-align:center;padding:30px;color:var(--tm);">No pending assignments.</div>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- ══ FACULTY ══ -->
+  <div id="faculty" class="sec">
+    <div class="cb">
+      <div class="cb-head"><i class="fas fa-chalkboard-teacher" style="color:var(--pu);"></i><h3 style="color:var(--pu);">Faculty Coordination Panel</h3></div>
+      <div class="row g-3">
+        {% for f in faculty_list %}
+        <div class="col-lg-4 col-md-6">
+          <div style="background:rgba(139,92,246,.05);border:1px solid rgba(139,92,246,.2);border-radius:11px;padding:15px;display:flex;align-items:center;gap:13px;transition:all .25s;" onmouseover="this.style.borderColor='rgba(139,92,246,.5)'" onmouseout="this.style.borderColor='rgba(139,92,246,.2)'">
+            <div style="width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,var(--cy),var(--pu));display:flex;align-items:center;justify-content:center;font-size:1rem;color:#000;font-weight:700;flex-shrink:0;">{{ (f.full_name or f.username)[0]|upper }}</div>
+            <div>
+              <div style="font-weight:700;font-size:.88rem;">{{ f.full_name or f.username }}</div>
+              <div style="font-size:.76rem;color:var(--tm);margin-top:2px;">{{ f.department or 'Faculty' }}</div>
+              <span class="bx bg" style="font-size:.68rem;margin-top:4px;display:inline-block;">Active</span>
+            </div>
+          </div>
+        </div>
+        {% else %}
+        <div class="col-12" style="text-align:center;padding:24px;color:var(--tm);">No faculty assigned.</div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ INTERNAL MARKS ══ -->
+  <div id="marks" class="sec">
+    <div class="cb">
+      <div class="cb-head"><i class="fas fa-chart-bar" style="color:var(--cy);"></i><h3 style="color:var(--cy);">Internal Marks Overview</h3></div>
+      {% if marks_summary %}
+      <table class="dt">
+        <thead><tr><th>#</th><th>Subject</th><th>Code</th><th>Avg Marks</th><th>Entries</th><th>Status</th></tr></thead>
+        <tbody>
+          {% for m in marks_summary %}
+          <tr>
+            <td style="color:var(--tm);">{{ loop.index }}</td>
+            <td style="font-weight:600;">{{ m.subject }}</td>
+            <td><span class="bx bc">{{ m.code }}</span></td>
+            <td><span style="font-weight:700;color:{% if m.avg>=60 %}var(--gr){% elif m.avg>=40 %}var(--ye){% else %}var(--re){% endif %};">{{ m.avg }}</span></td>
+            <td><span class="bx bp">{{ m.count }} students</span></td>
+            <td>{% if m.avg>=60 %}<span class="bx bg">Good</span>{% elif m.avg>=40 %}<span class="bx by">Average</span>{% else %}<span class="bx br">Poor</span>{% endif %}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% else %}
+      <div style="text-align:center;padding:30px;color:var(--tm);">No marks data available.</div>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- ══ PERFORMANCE ══ -->
+  <div id="performance" class="sec">
+    <div class="row g-3">
+      <div class="col-lg-6">
+        <div class="cb">
+          <div class="cb-head"><i class="fas fa-trophy" style="color:var(--ye);"></i><h3 style="color:var(--ye);">Top Students</h3></div>
+          {% for s in top_students %}
+          <div style="display:flex;align-items:center;gap:12px;padding:11px 13px;background:rgba(255,215,0,.05);border:1px solid rgba(255,215,0,.15);border-radius:9px;margin-bottom:8px;">
+            <div style="width:32px;height:32px;background:linear-gradient(135deg,var(--ye),var(--or));border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;color:#000;font-size:.85rem;flex-shrink:0;">{{ loop.index }}</div>
+            <div style="flex:1;"><div style="font-weight:700;font-size:.88rem;">{{ s.name }}</div><div style="font-size:.74rem;color:var(--tm);">Roll: {{ s.roll }}</div></div>
+            <span style="font-family:'Orbitron',monospace;font-size:1rem;font-weight:700;color:var(--ye);">{{ s.avg }}%</span>
+          </div>
+          {% else %}
+          <div style="text-align:center;padding:20px;color:var(--tm);">No data available.</div>
+          {% endfor %}
+        </div>
+      </div>
+      <div class="col-lg-6">
+        <div class="cb">
+          <div class="cb-head"><i class="fas fa-exclamation-circle" style="color:var(--re);"></i><h3 style="color:var(--re);">Weak Students (Below 40%)</h3></div>
+          {% for s in weak_students %}
+          <div style="display:flex;align-items:center;gap:12px;padding:11px 13px;background:rgba(255,56,100,.05);border:1px solid rgba(255,56,100,.15);border-radius:9px;margin-bottom:8px;">
+            <div style="width:32px;height:32px;background:rgba(255,56,100,.2);border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--re);font-weight:700;font-size:.85rem;flex-shrink:0;">{{ s.name[0]|upper }}</div>
+            <div style="flex:1;"><div style="font-weight:700;font-size:.88rem;">{{ s.name }}</div><div style="font-size:.74rem;color:var(--tm);">Roll: {{ s.roll }}</div></div>
+            <span style="font-family:'Orbitron',monospace;font-size:1rem;font-weight:700;color:var(--re);">{{ s.avg }}%</span>
+          </div>
+          {% else %}
+          <div style="text-align:center;padding:20px;color:var(--gr);"><i class="fas fa-check-circle me-2"></i>No weak students</div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+    <div class="cb mt-0">
+      <div class="cb-head"><i class="fas fa-chart-line" style="color:var(--cy);"></i><h3 style="color:var(--cy);">Class Performance Chart</h3></div>
+      <canvas id="perfChart" style="max-height:220px;"></canvas>
+    </div>
+  </div>
+
+  <!-- ══ REPORTS ══ -->
+  <div id="reports" class="sec">
+    <div class="row g-3">
+      <div class="col-lg-4">
+        <div class="cb" style="text-align:center;cursor:pointer;" onclick="window.print()">
+          <div style="font-size:2.5rem;margin-bottom:1rem;">📊</div>
+          <h4 style="color:var(--cy);margin-bottom:.5rem;">Attendance Report</h4>
+          <p style="color:var(--tm);font-size:.85rem;margin-bottom:1.2rem;">Download subject-wise and student-wise attendance report</p>
+          <button style="background:rgba(0,245,255,.1);border:1px solid var(--cy);color:var(--cy);padding:9px 20px;border-radius:8px;font-weight:600;cursor:pointer;"><i class="fas fa-download me-2"></i>Download PDF</button>
+        </div>
+      </div>
+      <div class="col-lg-4">
+        <div class="cb" style="text-align:center;cursor:pointer;" onclick="window.print()">
+          <div style="font-size:2.5rem;margin-bottom:1rem;">📈</div>
+          <h4 style="color:var(--gr);margin-bottom:.5rem;">Performance Report</h4>
+          <p style="color:var(--tm);font-size:.85rem;margin-bottom:1.2rem;">Class performance summary with top and weak students</p>
+          <button style="background:rgba(0,255,157,.1);border:1px solid var(--gr);color:var(--gr);padding:9px 20px;border-radius:8px;font-weight:600;cursor:pointer;"><i class="fas fa-download me-2"></i>Download PDF</button>
+        </div>
+      </div>
+      <div class="col-lg-4">
+        <div class="cb" style="text-align:center;cursor:pointer;" onclick="window.print()">
+          <div style="font-size:2.5rem;margin-bottom:1rem;">📝</div>
+          <h4 style="color:var(--ye);margin-bottom:.5rem;">Marks Report</h4>
+          <p style="color:var(--tm);font-size:.85rem;margin-bottom:1.2rem;">Internal marks overview and subject-wise result summary</p>
+          <button style="background:rgba(255,215,0,.1);border:1px solid var(--ye);color:var(--ye);padding:9px 20px;border-radius:8px;font-weight:600;cursor:pointer;"><i class="fas fa-download me-2"></i>Download PDF</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ NOTIFICATIONS ══ -->
+  <div id="notifications" class="sec">
+    <div class="cb">
+      <div class="cb-head"><i class="fas fa-bell" style="color:var(--ye);"></i><h3 style="color:var(--ye);">Notifications & Announcements</h3></div>
+      {% for a in announcements %}
+      <div style="background:rgba(255,215,0,.04);border:1px solid rgba(255,215,0,.15);border-radius:10px;padding:14px 16px;margin-bottom:10px;">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:5px;">
+          <h4 style="color:var(--ye);font-size:.9rem;font-weight:700;">{{ a.title }}</h4>
+          <span style="color:var(--tm);font-size:.74rem;white-space:nowrap;margin-left:10px;">{{ a.timestamp.strftime('%d %b %Y') }}</span>
+        </div>
+        <p style="color:var(--tp);font-size:.84rem;margin-bottom:5px;">{{ a.content }}</p>
+        <span class="bx {% if a.priority=='high' %}br{% else %}bc{% endif %}" style="font-size:.7rem;">{{ a.priority|capitalize }}</span>
+      </div>
+      {% else %}
+      <div style="text-align:center;padding:30px;color:var(--tm);">No announcements.</div>
+      {% endfor %}
+    </div>
+  </div>
+
+  </div><!-- /content -->
+</div><!-- /main -->
+</div><!-- /layout -->
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+  // Clock
+  function tick(){const n=new Date();document.getElementById('liveTime').textContent=n.toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'});document.getElementById('liveDate').textContent=n.toLocaleDateString('en-IN',{weekday:'short',day:'2-digit',month:'short'});}
+  tick();setInterval(tick,1000);
+
+  // Tab switch
+  function sw(id,el){
+    document.querySelectorAll('.sec').forEach(s=>s.classList.remove('active'));
+    document.querySelectorAll('.nl').forEach(s=>s.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    if(el)el.classList.add('active');
+  }
+
+  // Counters
+  document.querySelectorAll('.sc-num[data-target]').forEach(el=>{
+    const t=parseFloat(el.dataset.target),isF=t%1!==0;
+    let c=0,step=t/50;
+    const tm=setInterval(()=>{c+=step;if(c>=t){c=t;clearInterval(tm);}el.textContent=isF?c.toFixed(1):Math.floor(c);},30);
+  });
+
+  const co={responsive:true,plugins:{legend:{labels:{color:'#9ca3af'}}},scales:{y:{beginAtZero:true,grid:{color:'rgba(255,255,255,.05)'},ticks:{color:'#6b7280'}},x:{grid:{display:false},ticks:{color:'#6b7280',maxRotation:35,font:{size:10}}}}};
+
+  // Attendance bar chart
+  const aL=[{% for s in subj_att %}"{{ s.code }}"{% if not loop.last %},{% endif %}{% endfor %}];
+  const aD=[{% for s in subj_att %}{{ s.pct }}{% if not loop.last %},{% endif %}{% endfor %}];
+  if(aL.length) new Chart(document.getElementById('attChart'),{type:'bar',data:{labels:aL,datasets:[{label:'Attendance %',data:aD,backgroundColor:aD.map(v=>v>=75?'rgba(0,255,157,.3)':'rgba(255,56,100,.3)'),borderColor:aD.map(v=>v>=75?'#00ff9d':'#ff3864'),borderWidth:2,borderRadius:5}]},options:co});
+
+  // Attendance pie
+  const above=aD.filter(v=>v>=75).length,below=aD.filter(v=>v<75).length;
+  if(document.getElementById('attPie')) new Chart(document.getElementById('attPie'),{type:'doughnut',data:{labels:['Above 75%','Below 75%'],datasets:[{data:[above,below],backgroundColor:['rgba(0,255,157,.7)','rgba(255,56,100,.7)'],borderWidth:0}]},options:{responsive:true,plugins:{legend:{labels:{color:'#9ca3af'}}}}});
+
+  // Performance chart
+  const pL=[{% for s in student_data[:15] %}"{{ s.roll }}"{% if not loop.last %},{% endif %}{% endfor %}];
+  const pD=[{% for s in student_data[:15] %}{{ s.avg or 0 }}{% if not loop.last %},{% endif %}{% endfor %}];
+  if(document.getElementById('perfChart')&&pL.length) new Chart(document.getElementById('perfChart'),{type:'line',data:{labels:pL,datasets:[{label:'Avg Marks %',data:pD,borderColor:'#00f5ff',backgroundColor:'rgba(0,245,255,.1)',fill:true,tension:.4,pointBackgroundColor:'#00f5ff',pointRadius:4}]},options:co});
+</script>
+</body>
+</html>

@@ -1,0 +1,961 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Leave Management - Principal Portal</title>
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <style>
+        :root {
+            --bg-primary: #0a0a0a;
+            --bg-secondary: #1a1a1a;
+            --bg-tertiary: #2a2a2a;
+            --card-bg: rgba(255, 255, 255, 0.02);
+            --card-border: rgba(255, 255, 255, 0.1);
+            --text-primary: #ffffff;
+            --text-secondary: #b0b0b0;
+            --text-muted: #808080;
+            --neon-cyan: #00f0ff;
+            --neon-purple: #8b5cf6;
+            --neon-green: #00ff9d;
+            --neon-gold: #f59e0b;
+            --neon-red: #ff3864;
+            --neon-pink: #ec4899;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 280px;
+            height: 100vh;
+            background: var(--bg-secondary);
+            border-right: 1px solid var(--card-border);
+            z-index: 1000;
+            overflow-y: auto;
+        }
+
+        .sidebar-header {
+            padding: 25px 20px;
+            border-bottom: 1px solid var(--card-border);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-family: 'Orbitron', monospace;
+            font-weight: 700;
+            font-size: 1.2rem;
+            color: var(--neon-cyan);
+        }
+
+        .logo i {
+            font-size: 1.5rem;
+        }
+
+        .nav-menu {
+            padding: 20px 0;
+        }
+
+        .nav-item {
+            display: block;
+            padding: 15px 25px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            border-left: 3px solid transparent;
+        }
+
+        .nav-item:hover, .nav-item.active {
+            background: rgba(0, 240, 255, 0.1);
+            color: var(--neon-cyan);
+            border-left-color: var(--neon-cyan);
+        }
+
+        .nav-item i {
+            width: 20px;
+            margin-right: 12px;
+        }
+
+        /* Main Content */
+        .main-content {
+            margin-left: 280px;
+            padding: 30px;
+            min-height: 100vh;
+        }
+
+        .page-header {
+            margin-bottom: 40px;
+        }
+
+        .page-title {
+            font-family: 'Orbitron', monospace;
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .page-title i {
+            color: var(--neon-cyan);
+        }
+
+        .breadcrumb {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .breadcrumb a {
+            color: var(--neon-cyan);
+            text-decoration: none;
+        }
+
+        .breadcrumb a:hover {
+            text-decoration: underline;
+        }
+
+        /* Stats Cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+
+        .stat-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 12px;
+            padding: 25px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: linear-gradient(90deg, var(--neon-cyan), var(--neon-purple));
+        }
+
+        .stat-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3rem;
+            margin-bottom: 15px;
+        }
+
+        .stat-icon.blue { background: rgba(0, 240, 255, 0.1); color: var(--neon-cyan); }
+        .stat-icon.green { background: rgba(0, 255, 157, 0.1); color: var(--neon-green); }
+        .stat-icon.purple { background: rgba(139, 92, 246, 0.1); color: var(--neon-purple); }
+        .stat-icon.gold { background: rgba(245, 158, 11, 0.1); color: var(--neon-gold); }
+
+        .stat-value {
+            font-family: 'Orbitron', monospace;
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        /* Leave Management Section */
+        .leave-management-section {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 40px;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .section-title {
+            font-family: 'Orbitron', monospace;
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-title i {
+            color: var(--neon-cyan);
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border-radius: 8px;
+            border: none;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--neon-cyan), var(--neon-purple));
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 240, 255, 0.4);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--neon-cyan);
+            border: 1px solid var(--neon-cyan);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(0, 240, 255, 0.1);
+        }
+
+        .btn-success {
+            background: rgba(0, 255, 157, 0.1);
+            color: var(--neon-green);
+            border: 1px solid rgba(0, 255, 157, 0.3);
+        }
+
+        .btn-success:hover {
+            background: rgba(0, 255, 157, 0.2);
+        }
+
+        .btn-danger {
+            background: rgba(255, 56, 100, 0.1);
+            color: var(--neon-red);
+            border: 1px solid rgba(255, 56, 100, 0.3);
+        }
+
+        .btn-danger:hover {
+            background: rgba(255, 56, 100, 0.2);
+        }
+
+        .filter-controls {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+        }
+
+        .search-box {
+            flex: 1;
+            min-width: 250px;
+            position: relative;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 12px 15px 12px 45px;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--card-border);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-size: 0.9rem;
+        }
+
+        .search-box i {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+        }
+
+        .filter-dropdown {
+            padding: 12px 15px;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--card-border);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-size: 0.9rem;
+            min-width: 150px;
+        }
+
+        .leave-table {
+            width: 100%;
+            background: transparent;
+            border-collapse: collapse;
+        }
+
+        .leave-table thead {
+            background: rgba(0, 240, 255, 0.05);
+        }
+
+        .leave-table th {
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+            color: var(--neon-cyan);
+            border-bottom: 1px solid var(--card-border);
+            font-family: 'Orbitron', monospace;
+            font-size: 0.9rem;
+        }
+
+        .leave-table td {
+            padding: 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            color: var(--text-primary);
+        }
+
+        .leave-table tbody tr {
+            transition: all 0.3s ease;
+        }
+
+        .leave-table tbody tr:hover {
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .leave-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .leave-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            background: rgba(0, 240, 255, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--neon-cyan);
+            margin-right: 12px;
+        }
+
+        .leave-details {
+            flex: 1;
+        }
+
+        .leave-name {
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 5px;
+        }
+
+        .leave-role {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+        }
+
+        .leave-dates {
+            display: flex;
+            gap: 20px;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+
+        .status-badge {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .status-badge.pending {
+            background: rgba(245, 158, 11, 0.1);
+            color: var(--neon-gold);
+            border: 1px solid rgba(245, 158, 11, 0.3);
+        }
+
+        .status-badge.approved {
+            background: rgba(0, 255, 157, 0.1);
+            color: var(--neon-green);
+            border: 1px solid rgba(0, 255, 157, 0.3);
+        }
+
+        .status-badge.rejected {
+            background: rgba(255, 56, 100, 0.1);
+            color: var(--neon-red);
+            border: 1px solid rgba(255, 56, 100, 0.3);
+        }
+
+        .action-icons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .action-icon {
+            width: 30px;
+            height: 30px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .action-icon.approve {
+            background: rgba(0, 255, 157, 0.1);
+            color: var(--neon-green);
+        }
+
+        .action-icon.approve:hover {
+            background: rgba(0, 255, 157, 0.2);
+        }
+
+        .action-icon.reject {
+            background: rgba(255, 56, 100, 0.1);
+            color: var(--neon-red);
+        }
+
+        .action-icon.reject:hover {
+            background: rgba(255, 56, 100, 0.2);
+        }
+
+        .action-icon.view {
+            background: rgba(0, 240, 255, 0.1);
+            color: var(--neon-cyan);
+        }
+
+        .action-icon.view:hover {
+            background: rgba(0, 240, 255, 0.2);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+
+            .main-content {
+                margin-left: 0;
+                padding: 20px;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .section-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .filter-controls {
+                flex-direction: column;
+            }
+
+            .search-box {
+                min-width: 100%;
+            }
+
+            .leave-table {
+                font-size: 0.85rem;
+            }
+
+            .leave-table th,
+            .leave-table td {
+                padding: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <div class="logo">
+                <i class="fas fa-graduation-cap"></i>
+                <span>Principal Portal</span>
+            </div>
+        </div>
+        <nav class="nav-menu">
+            <a href="/principal_dashboard" class="nav-item">
+                <i class="fas fa-tachometer-alt"></i>
+                Dashboard
+            </a>
+            <a href="/student_feedback_full" class="nav-item">
+                <i class="fas fa-comments"></i>
+                Student Feedback
+            </a>
+            <a href="/leave_management_full" class="nav-item active">
+                <i class="fas fa-calendar-times"></i>
+                Leave Management
+            </a>
+            <a href="/workload_planning" class="nav-item">
+                <i class="fas fa-calendar-alt"></i>
+                Workload Planning
+            </a>
+            <a href="/analytics_dashboard" class="nav-item">
+                <i class="fas fa-chart-line"></i>
+                Analytics
+            </a>
+            <a href="/department_settings" class="nav-item">
+                <i class="fas fa-cogs"></i>
+                Settings
+            </a>
+        </nav>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Page Header -->
+        <div class="page-header">
+            <h1 class="page-title">
+                <i class="fas fa-calendar-times"></i>
+                Leave Management
+            </h1>
+            <div class="breadcrumb">
+                <a href="/principal_dashboard">Dashboard</a>
+                <i class="fas fa-chevron-right"></i>
+                <span>Leave Management</span>
+            </div>
+        </div>
+
+        <!-- Stats Cards -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon blue">
+                    <i class="fas fa-hourglass-half"></i>
+                </div>
+                <div class="stat-value">15</div>
+                <div class="stat-label">Pending Requests</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon green">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <div class="stat-value">68</div>
+                <div class="stat-label">Approved This Month</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon purple">
+                    <i class="fas fa-times-circle"></i>
+                </div>
+                <div class="stat-value">12</div>
+                <div class="stat-label">Rejected This Month</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon gold">
+                    <i class="fas fa-calendar-check"></i>
+                </div>
+                <div class="stat-value">234</div>
+                <div class="stat-label">Total Leave Days</div>
+            </div>
+        </div>
+
+        <!-- Leave Management Section -->
+        <div class="leave-management-section">
+            <div class="section-header">
+                <h2 class="section-title">
+                    <i class="fas fa-list"></i>
+                    All Leave Requests
+                </h2>
+                <div class="action-buttons">
+                    <button class="btn btn-secondary">
+                        <i class="fas fa-download"></i>
+                        Export Report
+                    </button>
+                    <button class="btn btn-primary">
+                        <i class="fas fa-plus"></i>
+                        New Leave Request
+                    </button>
+                </div>
+            </div>
+
+            <div class="filter-controls">
+                <div class="search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" placeholder="Search by staff name, department, or leave type...">
+                </div>
+                <select class="filter-dropdown">
+                    <option>All Status</option>
+                    <option>Pending</option>
+                    <option>Approved</option>
+                    <option>Rejected</option>
+                </select>
+                <select class="filter-dropdown">
+                    <option>All Departments</option>
+                    <option>Computer Science</option>
+                    <option>Information Technology</option>
+                    <option>Electronics</option>
+                    <option>Mechanical</option>
+                </select>
+                <select class="filter-dropdown">
+                    <option>All Leave Types</option>
+                    <option>Sick Leave</option>
+                    <option>Casual Leave</option>
+                    <option>Maternity Leave</option>
+                    <option>Study Leave</option>
+                    <option>Emergency Leave</option>
+                </select>
+            </div>
+
+            <table class="leave-table">
+                <thead>
+                    <tr>
+                        <th>Staff Member</th>
+                        <th>Department</th>
+                        <th>Leave Type</th>
+                        <th>Duration</th>
+                        <th>Reason</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>
+                            <div class="leave-info">
+                                <div class="leave-avatar">
+                                    <i class="fas fa-user-tie"></i>
+                                </div>
+                                <div class="leave-details">
+                                    <div class="leave-name">Dr. Rajesh Kumar</div>
+                                    <div class="leave-role">Computer Science Department</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>Computer Science</td>
+                        <td>Sick Leave</td>
+                        <td>
+                            <div class="leave-dates">
+                                <span><i class="fas fa-calendar"></i> Dec 15-17, 2024</span>
+                                <span>(3 days)</span>
+                            </div>
+                        </td>
+                        <td>Fever and medical consultation</td>
+                        <td>
+                            <span class="status-badge pending">Pending</span>
+                        </td>
+                        <td>
+                            <div class="action-icons">
+                                <div class="action-icon approve">
+                                    <i class="fas fa-check"></i>
+                                </div>
+                                <div class="action-icon reject">
+                                    <i class="fas fa-times"></i>
+                                </div>
+                                <div class="action-icon view">
+                                    <i class="fas fa-eye"></i>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="leave-info">
+                                <div class="leave-avatar">
+                                    <i class="fas fa-user-tie"></i>
+                                </div>
+                                <div class="leave-details">
+                                    <div class="leave-name">Prof. Anita Sharma</div>
+                                    <div class="leave-role">Information Technology Department</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>Information Technology</td>
+                        <td>Casual Leave</td>
+                        <td>
+                            <div class="leave-dates">
+                                <span><i class="fas fa-calendar"></i> Dec 20-21, 2024</span>
+                                <span>(2 days)</span>
+                            </div>
+                        </td>
+                        <td>Personal work at hometown</td>
+                        <td>
+                            <span class="status-badge approved">Approved</span>
+                        </td>
+                        <td>
+                            <div class="action-icons">
+                                <div class="action-icon view">
+                                    <i class="fas fa-eye"></i>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="leave-info">
+                                <div class="leave-avatar">
+                                    <i class="fas fa-user-tie"></i>
+                                </div>
+                                <div class="leave-details">
+                                    <div class="leave-name">Dr. Vikram Singh</div>
+                                    <div class="leave-role">Computer Science Department</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>Computer Science</td>
+                        <td>Study Leave</td>
+                        <td>
+                            <div class="leave-dates">
+                                <span><i class="fas fa-calendar"></i> Jan 5-15, 2025</span>
+                                <span>(10 days)</span>
+                            </div>
+                        </td>
+                        <td>Conference attendance and paper presentation</td>
+                        <td>
+                            <span class="status-badge approved">Approved</span>
+                        </td>
+                        <td>
+                            <div class="action-icons">
+                                <div class="action-icon view">
+                                    <i class="fas fa-eye"></i>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="leave-info">
+                                <div class="leave-avatar">
+                                    <i class="fas fa-user-tie"></i>
+                                </div>
+                                <div class="leave-details">
+                                    <div class="leave-name">Dr. Priya Patel</div>
+                                    <div class="leave-role">Electronics Department</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>Electronics</td>
+                        <td>Maternity Leave</td>
+                        <td>
+                            <div class="leave-dates">
+                                <span><i class="fas fa-calendar"></i> Jan 10 - Mar 10, 2025</span>
+                                <span>(60 days)</span>
+                            </div>
+                        </td>
+                        <td>Pregnancy and postnatal care</td>
+                        <td>
+                            <span class="status-badge approved">Approved</span>
+                        </td>
+                        <td>
+                            <div class="action-icons">
+                                <div class="action-icon view">
+                                    <i class="fas fa-eye"></i>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="leave-info">
+                                <div class="leave-avatar">
+                                    <i class="fas fa-user-tie"></i>
+                                </div>
+                                <div class="leave-details">
+                                    <div class="leave-name">Prof. Amit Desai</div>
+                                    <div class="leave-role">Mechanical Department</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>Mechanical</td>
+                        <td>Sick Leave</td>
+                        <td>
+                            <div class="leave-dates">
+                                <span><i class="fas fa-calendar"></i> Dec 18, 2024</span>
+                                <span>(1 day)</span>
+                            </div>
+                        </td>
+                        <td>Dental treatment</td>
+                        <td>
+                            <span class="status-badge rejected">Rejected</span>
+                        </td>
+                        <td>
+                            <div class="action-icons">
+                                <div class="action-icon view">
+                                    <i class="fas fa-eye"></i>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="leave-info">
+                                <div class="leave-avatar">
+                                    <i class="fas fa-user-tie"></i>
+                                </div>
+                                <div class="leave-details">
+                                    <div class="leave-name">Dr. Suresh Kumar</div>
+                                    <div class="leave-role">Computer Science Department</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>Computer Science</td>
+                        <td>Emergency Leave</td>
+                        <td>
+                            <div class="leave-dates">
+                                <span><i class="fas fa-calendar"></i> Dec 22-23, 2024</span>
+                                <span>(2 days)</span>
+                            </div>
+                        </td>
+                        <td>Family emergency</td>
+                        <td>
+                            <span class="status-badge approved">Approved</span>
+                        </td>
+                        <td>
+                            <div class="action-icons">
+                                <div class="action-icon view">
+                                    <i class="fas fa-eye"></i>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Search functionality
+        document.querySelector('.search-box input').addEventListener('input', function(e) {
+            const searchTerm = e.target.value.toLowerCase();
+            const rows = document.querySelectorAll('.leave-table tbody tr');
+            
+            rows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                row.style.display = text.includes(searchTerm) ? '' : 'none';
+            });
+        });
+
+        // Filter functionality
+        document.querySelectorAll('.filter-dropdown').forEach(dropdown => {
+            dropdown.addEventListener('change', function() {
+                console.log('Filter changed:', this.value);
+                // Implement filter logic here
+            });
+        });
+
+        // Action buttons
+        document.querySelectorAll('.action-icon.approve').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const staffName = this.closest('tr').querySelector('.leave-name').textContent;
+                if (confirm(`Approve leave request for ${staffName}?`)) {
+                    console.log('Approve leave:', staffName);
+                    // Implement approve logic here
+                    alert(`Leave request approved for ${staffName}\n\nNotification will be sent to:\n- Staff member\n- Department head\n- HR department\n- Update leave balance`);
+                    
+                    // Update status badge
+                    const statusBadge = this.closest('tr').querySelector('.status-badge');
+                    statusBadge.className = 'status-badge approved';
+                    statusBadge.textContent = 'Approved';
+                    
+                    // Update action icons
+                    const actionIcons = this.closest('tr').querySelector('.action-icons');
+                    actionIcons.innerHTML = `
+                        <div class="action-icon view">
+                            <i class="fas fa-eye"></i>
+                        </div>
+                    `;
+                }
+            });
+        });
+
+        document.querySelectorAll('.action-icon.reject').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const staffName = this.closest('tr').querySelector('.leave-name').textContent;
+                const reason = prompt(`Please provide reason for rejecting ${staffName}'s leave request:`);
+                if (reason) {
+                    console.log('Reject leave:', staffName, 'Reason:', reason);
+                    // Implement reject logic here
+                    alert(`Leave request rejected for ${staffName}\n\nReason: ${reason}\n\nNotification will be sent to staff member`);
+                    
+                    // Update status badge
+                    const statusBadge = this.closest('tr').querySelector('.status-badge');
+                    statusBadge.className = 'status-badge rejected';
+                    statusBadge.textContent = 'Rejected';
+                    
+                    // Update action icons
+                    const actionIcons = this.closest('tr').querySelector('.action-icons');
+                    actionIcons.innerHTML = `
+                        <div class="action-icon view">
+                            <i class="fas fa-eye"></i>
+                        </div>
+                    `;
+                }
+            });
+        });
+
+        document.querySelectorAll('.action-icon.view').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const staffName = this.closest('tr').querySelector('.leave-name').textContent;
+                const leaveType = this.closest('tr').querySelectorAll('td')[2].textContent;
+                const duration = this.closest('tr').querySelectorAll('td')[3].textContent;
+                const reason = this.closest('tr').querySelectorAll('td')[4].textContent;
+                
+                console.log('View leave details:', staffName);
+                alert(`Leave Application Details\n\nStaff Member: ${staffName}\nLeave Type: ${leaveType}\nDuration: ${duration}\nReason: ${reason}\n\nThis would show:\n- Complete application form\n- Supporting documents\n- Approval workflow\n- Leave balance\n- Contact information`);
+            });
+        });
+
+        // New Leave Request button
+        document.querySelector('.btn-primary').addEventListener('click', function() {
+            console.log('Open new leave request form');
+            alert('New Leave Request\n\nThis would open:\n- Leave application form\n- Document upload\n- Leave balance check\n- Approval workflow\n- Calendar integration\n- Notification settings');
+        });
+
+        // Export Report button
+        document.querySelector('.btn-secondary').addEventListener('click', function() {
+            console.log('Export leave report');
+            alert('Export Leave Report\n\nThis would generate:\n- Complete leave summary report\n- Department-wise statistics\n- Leave balance status\n- Monthly trends\n- Approval analytics\n- Export in PDF/Excel format');
+        });
+    </script>
+</body>
+</html>

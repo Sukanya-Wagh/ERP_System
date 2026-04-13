@@ -1,0 +1,157 @@
+{% extends "faculty_base.html" %}
+
+{% block title %}My Leave Requests{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="card" style="background: rgba(18, 18, 24, 0.9) !important; border: 2px solid var(--neon-cyan) !important;">
+            <div class="card-header d-flex align-items-center justify-content-between" style="background: rgba(0, 245, 255, 0.1) !important; border-bottom: 2px solid var(--neon-cyan) !important;">
+                <div class="d-flex align-items-center">
+                    <i class="fas fa-calendar-alt me-2" style="color: var(--neon-cyan) !important;"></i>
+                    <h5 class="mb-0" style="color: var(--neon-cyan) !important; font-weight: 700 !important;">My Leave Requests</h5>
+                </div>
+                <div class="d-flex gap-2">
+                    <a href="{{ url_for('faculty_submit_leave') }}" 
+                       class="btn btn-success" style="background: rgba(0, 255, 157, 0.2) !important; border: 1px solid var(--neon-green) !important; color: var(--neon-green) !important; font-weight: 600 !important;">
+                        <i class="fas fa-plus me-2"></i>Submit New Request
+                    </a>
+                    <a href="{{ url_for('faculty_dashboard') }}" 
+                       class="btn btn-secondary" style="background: rgba(0, 0, 0, 0.5) !important; border: 1px solid var(--text-secondary) !important; color: var(--text-secondary) !important; font-weight: 600 !important;">
+                        <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
+                    </a>
+                </div>
+            </div>
+            
+            <div class="card-body" style="padding: 2rem !important;">
+                <div class="icon-container" style="margin-bottom: 2rem !important;">
+                    <i class="fas fa-calendar-check"></i>
+                </div>
+                
+                {% if leave_requests %}
+                    <div class="table-responsive">
+                        <table class="table table-hover" style="background: transparent !important;">
+                            <thead>
+                                <tr>
+                                    <th style="color: var(--neon-cyan) !important; font-weight: 700 !important; border-bottom: 2px solid var(--neon-cyan) !important;">Leave Type</th>
+                                    <th style="color: var(--neon-cyan) !important; font-weight: 700 !important; border-bottom: 2px solid var(--neon-cyan) !important;">Duration</th>
+                                    <th style="color: var(--neon-cyan) !important; font-weight: 700 !important; border-bottom: 2px solid var(--neon-cyan) !important;">Reason</th>
+                                    <th style="color: var(--neon-cyan) !important; font-weight: 700 !important; border-bottom: 2px solid var(--neon-cyan) !important;">Status</th>
+                                    <th style="color: var(--neon-cyan) !important; font-weight: 700 !important; border-bottom: 2px solid var(--neon-cyan) !important;">Submitted</th>
+                                    <th style="color: var(--neon-cyan) !important; font-weight: 700 !important; border-bottom: 2px solid var(--neon-cyan) !important;">Comments</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for request in leave_requests %}
+                                <tr style="border-bottom: 1px solid rgba(0, 245, 255, 0.1) !important;">
+                                    <td>
+                                        <span class="badge" style="background-color: rgba(59, 130, 246, 0.3) !important; color: #3b82f6 !important; padding: 0.5rem 0.75rem !important;">
+                                            {{ request.leave_type.title() }}
+                                        </span>
+                                    </td>
+                                    <td style="color: var(--text-secondary) !important;">
+                                        {{ request.start_date.strftime('%d/%m/%Y') }} - {{ request.end_date.strftime('%d/%m/%Y') }}
+                                    </td>
+                                    <td style="color: var(--text-secondary) !important;">
+                                        <div style="max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="{{ request.reason }}">
+                                            {{ request.reason[:50] }}{% if request.reason|length > 50 %}...{% endif %}
+                                        </div>
+                                    </td>
+                                    <td>
+                                        {% if request.status == 'Pending' %}
+                                            <span class="badge" style="background-color: rgba(255, 215, 0, 0.3) !important; color: var(--neon-yellow) !important; padding: 0.5rem 0.75rem !important;">
+                                                <i class="fas fa-clock me-1"></i>Pending
+                                            </span>
+                                        {% elif request.status == 'Approved' %}
+                                            <span class="badge" style="background-color: rgba(0, 255, 157, 0.3) !important; color: var(--neon-green) !important; padding: 0.5rem 0.75rem !important;">
+                                                <i class="fas fa-check me-1"></i>Approved
+                                            </span>
+                                        {% else %}
+                                            <span class="badge" style="background-color: rgba(255, 56, 100, 0.3) !important; color: var(--error) !important; padding: 0.5rem 0.75rem !important;">
+                                                <i class="fas fa-times me-1"></i>Rejected
+                                            </span>
+                                        {% endif %}
+                                    </td>
+                                    <td style="color: var(--text-muted) !important; font-size: 0.85rem;">
+                                        {{ request.timestamp.strftime('%d/%m/%Y %H:%M') }}
+                                    </td>
+                                    <td style="color: var(--text-secondary) !important;">
+                                        {% if request.comments %}
+                                            <div style="max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="{{ request.comments }}">
+                                                {{ request.comments }}
+                                            </div>
+                                        {% else %}
+                                            <span style="color: var(--text-muted) !important; font-style: italic;">No comments</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <!-- Sample leave requests for demo -->
+                    <div class="table-responsive">
+                        <table class="table table-hover" style="background: transparent !important;">
+                            <thead>
+                                <tr>
+                                    <th style="color: var(--neon-cyan) !important; font-weight: 700 !important; border-bottom: 2px solid var(--neon-cyan) !important;">Leave Type</th>
+                                    <th style="color: var(--neon-cyan) !important; font-weight: 700 !important; border-bottom: 2px solid var(--neon-cyan) !important;">Duration</th>
+                                    <th style="color: var(--neon-cyan) !important; font-weight: 700 !important; border-bottom: 2px solid var(--neon-cyan) !important;">Reason</th>
+                                    <th style="color: var(--neon-cyan) !important; font-weight: 700 !important; border-bottom: 2px solid var(--neon-cyan) !important;">Status</th>
+                                    <th style="color: var(--neon-cyan) !important; font-weight: 700 !important; border-bottom: 2px solid var(--neon-cyan) !important;">Submitted</th>
+                                    <th style="color: var(--neon-cyan) !important; font-weight: 700 !important; border-bottom: 2px solid var(--neon-cyan) !important;">Comments</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr style="border-bottom: 1px solid rgba(0, 245, 255, 0.1) !important;">
+                                    <td>
+                                        <span class="badge" style="background-color: rgba(59, 130, 246, 0.3) !important; color: #3b82f6 !important; padding: 0.5rem 0.75rem !important;">
+                                            Medical Leave
+                                        </span>
+                                    </td>
+                                    <td style="color: var(--text-secondary) !important;">25/12/2024 - 27/12/2024</td>
+                                    <td style="color: var(--text-secondary) !important;">Medical checkup and treatment</td>
+                                    <td>
+                                        <span class="badge" style="background-color: rgba(0, 255, 157, 0.3) !important; color: var(--neon-green) !important; padding: 0.5rem 0.75rem !important;">
+                                            <i class="fas fa-check me-1"></i>Approved
+                                        </span>
+                                    </td>
+                                    <td style="color: var(--text-muted) !important; font-size: 0.85rem;">20/12/2024 14:30</td>
+                                    <td style="color: var(--text-secondary) !important;">Approved by HOD</td>
+                                </tr>
+                                <tr style="border-bottom: 1px solid rgba(0, 245, 255, 0.1) !important;">
+                                    <td>
+                                        <span class="badge" style="background-color: rgba(139, 92, 246, 0.3) !important; color: var(--neon-purple) !important; padding: 0.5rem 0.75rem !important;">
+                                            Personal Leave
+                                        </span>
+                                    </td>
+                                    <td style="color: var(--text-secondary) !important;">02/01/2025 - 03/01/2025</td>
+                                    <td style="color: var(--text-secondary) !important;">Family function attendance</td>
+                                    <td>
+                                        <span class="badge" style="background-color: rgba(255, 215, 0, 0.3) !important; color: var(--neon-yellow) !important; padding: 0.5rem 0.75rem !important;">
+                                            <i class="fas fa-clock me-1"></i>Pending
+                                        </span>
+                                    </td>
+                                    <td style="color: var(--text-muted) !important; font-size: 0.85rem;">28/12/2024 10:15</td>
+                                    <td style="color: var(--text-muted) !important; font-style: italic;">Under review</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <div class="text-center py-5" style="margin-top: 2rem;">
+                        <i class="fas fa-calendar-times fa-4x mb-4" style="color: var(--text-muted) !important;"></i>
+                        <h4 style="color: var(--text-muted) !important; margin-bottom: 1rem;">Sample Leave Requests</h4>
+                        <p style="color: var(--text-muted) !important; margin-bottom: 2rem;">Above are sample leave requests. Your actual requests will appear here once submitted.</p>
+                        <a href="{{ url_for('faculty_submit_leave') }}" 
+                           class="btn btn-success" style="background: rgba(0, 255, 157, 0.2) !important; border: 1px solid var(--neon-green) !important; color: var(--neon-green) !important; font-weight: 600 !important;">
+                            <i class="fas fa-plus me-2"></i>Submit Your First Request
+                        </a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,149 @@
+{% extends "faculty_base.html" %}
+
+{% block title %}Submit Leave Request - Faculty Dashboard{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card" style="background: rgba(18, 18, 24, 0.9) !important; border: 2px solid var(--neon-cyan) !important;">
+            <div class="card-header d-flex align-items-center" style="background: rgba(0, 245, 255, 0.1) !important; border-bottom: 2px solid var(--neon-cyan) !important;">
+                <i class="fas fa-calendar-plus me-2" style="color: var(--neon-cyan) !important;"></i>
+                <h5 class="mb-0" style="color: var(--neon-cyan) !important; font-weight: 700 !important;">Submit Leave Request</h5>
+            </div>
+            <div class="card-body" style="padding: 2rem !important;">
+                <div class="icon-container" style="margin-bottom: 2rem !important;">
+                    <i class="fas fa-calendar-check"></i>
+                </div>
+                
+                <form method="POST">
+                    {{ form.hidden_tag() }}
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                {{ form.leave_type.label(class="form-label", style="color: var(--text-primary) !important; font-weight: 600 !important;") }}
+                                {{ form.leave_type(class="form-select", style="background: rgba(18, 18, 24, 0.6) !important; border: 1px solid rgba(0, 245, 255, 0.3) !important; color: var(--text-primary) !important;") }}
+                                {% if form.leave_type.errors %}
+                                    <div class="text-danger small mt-1">
+                                        {% for error in form.leave_type.errors %}
+                                            {{ error }}
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label class="form-label" style="color: var(--text-primary) !important; font-weight: 600 !important;">Duration</label>
+                                <div class="form-control-plaintext">
+                                    <span class="badge bg-info" id="duration-badge" style="background-color: var(--info) !important; color: var(--cyber-dark) !important;">Select dates to calculate</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                {{ form.start_date.label(class="form-label", style="color: var(--text-primary) !important; font-weight: 600 !important;") }}
+                                {{ form.start_date(class="form-control", id="start-date", style="background: rgba(18, 18, 24, 0.6) !important; border: 1px solid rgba(0, 245, 255, 0.3) !important; color: var(--text-primary) !important;") }}
+                                {% if form.start_date.errors %}
+                                    <div class="text-danger small mt-1">
+                                        {% for error in form.start_date.errors %}
+                                            {{ error }}
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                {{ form.end_date.label(class="form-label", style="color: var(--text-primary) !important; font-weight: 600 !important;") }}
+                                {{ form.end_date(class="form-control", id="end-date", style="background: rgba(18, 18, 24, 0.6) !important; border: 1px solid rgba(0, 245, 255, 0.3) !important; color: var(--text-primary) !important;") }}
+                                {% if form.end_date.errors %}
+                                    <div class="text-danger small mt-1">
+                                        {% for error in form.end_date.errors %}
+                                            {{ error }}
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        {{ form.reason.label(class="form-label", style="color: var(--text-primary) !important; font-weight: 600 !important;") }}
+                        {{ form.reason(class="form-control", rows="4", placeholder="Please provide detailed reason for leave request", style="background: rgba(18, 18, 24, 0.6) !important; border: 1px solid rgba(0, 245, 255, 0.3) !important; color: var(--text-primary) !important;") }}
+                        {% if form.reason.errors %}
+                            <div class="text-danger small mt-1">
+                                {% for error in form.reason.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="alert alert-info mb-4" style="background: rgba(0, 245, 255, 0.1) !important; border: 1px solid rgba(0, 245, 255, 0.3) !important; color: #00f5ff !important;">
+                        <i class="fas fa-info-circle me-2"></i>
+                        <strong style="color: #00f5ff !important;">Important:</strong> Your leave request will be sent to the HOD for approval. You will receive a notification once it's reviewed.
+                    </div>
+                    
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-primary" style="background: rgba(0, 0, 0, 0.5) !important; border: 1px solid var(--neon-cyan) !important; color: var(--neon-cyan) !important; font-weight: 600 !important;">
+                            <i class="fas fa-paper-plane me-2"></i>Submit Request
+                        </button>
+                        <a href="{{ url_for('faculty_dashboard') }}" class="btn btn-secondary" style="background: rgba(0, 0, 0, 0.5) !important; border: 1px solid var(--text-secondary) !important; color: var(--text-secondary) !important; font-weight: 600 !important;">
+                            <i class="fas fa-times me-2"></i>Cancel
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="d-flex justify-content-end mt-4">
+    <a href="{{ url_for('my_leave_requests') }}" class="btn btn-secondary" style="background: rgba(0, 0, 0, 0.5) !important; border: 1px solid var(--text-secondary) !important; color: var(--text-secondary) !important; font-weight: 600 !important;">
+        <i class="fas fa-list me-2"></i> View My Requests
+    </a>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+    // Calculate duration between dates
+    function calculateDuration() {
+        const startDate = document.getElementById('start-date').value;
+        const endDate = document.getElementById('end-date').value;
+        const durationBadge = document.getElementById('duration-badge');
+        
+        if (startDate && endDate) {
+            const start = new Date(startDate);
+            const end = new Date(endDate);
+            const timeDiff = end.getTime() - start.getTime();
+            const daysDiff = Math.ceil(timeDiff / (1000 * 3600 * 24)) + 1;
+            
+            if (daysDiff > 0) {
+                durationBadge.textContent = `${daysDiff} day${daysDiff > 1 ? 's' : ''}`;
+                durationBadge.className = 'badge bg-success';
+                durationBadge.style.backgroundColor = 'var(--success)';
+                durationBadge.style.color = 'var(--cyber-dark)';
+            } else {
+                durationBadge.textContent = 'Invalid date range';
+                durationBadge.className = 'badge bg-danger';
+                durationBadge.style.backgroundColor = 'var(--error)';
+                durationBadge.style.color = 'white';
+            }
+        } else {
+            durationBadge.textContent = 'Select dates to calculate';
+            durationBadge.className = 'badge bg-info';
+            durationBadge.style.backgroundColor = 'var(--info)';
+            durationBadge.style.color = 'var(--cyber-dark)';
+        }
+    }
+    
+    // Add event listeners
+    document.getElementById('start-date').addEventListener('change', calculateDuration);
+    document.getElementById('end-date').addEventListener('change', calculateDuration);
+</script>
+{% endblock %}

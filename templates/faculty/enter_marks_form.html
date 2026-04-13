@@ -1,0 +1,427 @@
+{% extends "faculty_base.html" %}
+
+{% block title %}Bulk Marks Entry{% endblock %}
+
+{% block extra_styles %}
+<style>
+    :root {
+        --max-marks: 30;
+    }
+    
+    .marks-header {
+        position: sticky;
+        top: 0;
+        z-index: 100;
+        background: var(--card-bg);
+        border-bottom: 2px solid var(--neon-cyan);
+        padding: 20px;
+        border-radius: 10px 10px 0 0;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+    }
+    
+    .stats-container {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: rgba(0, 240, 255, 0.05);
+        padding: 15px 20px;
+        border-radius: 8px;
+        border: 1px solid rgba(0, 240, 255, 0.2);
+        margin-top: 15px;
+    }
+
+    .progress-text {
+        font-family: 'Orbitron', monospace;
+        color: var(--neon-cyan);
+        font-size: 1.2rem;
+        font-weight: 600;
+    }
+
+    .table-container {
+        max-height: 60vh;
+        overflow-y: auto;
+        border: 1px solid var(--card-border);
+        border-radius: 0 0 10px 10px;
+        background: var(--card-bg);
+    }
+    
+    .data-table { width: 100%; border-collapse: collapse; }
+    .data-table th { 
+        position: sticky; 
+        top: 0; 
+        background: #1a1a24; 
+        color: var(--neon-cyan); 
+        padding: 15px; 
+        font-size: 0.9rem;
+        text-transform: uppercase;
+        z-index: 50;
+        border-bottom: 1px solid var(--neon-cyan);
+    }
+    .data-table td {
+        padding: 12px 15px;
+        border-bottom: 1px solid rgba(255,255,255,0.05);
+        color: var(--text-primary);
+        vertical-align: middle;
+        transition: background 0.2s;
+    }
+    
+    .data-table tr.active-row {
+        background: rgba(255, 255, 255, 0.05);
+        border-left: 3px solid var(--neon-cyan);
+    }
+    
+    .data-table tr:hover { background: rgba(0, 240, 255, 0.03); }
+
+    .mark-input {
+        background: rgba(0,0,0,0.5);
+        border: 1px solid rgba(0, 240, 255, 0.3);
+        color: var(--neon-cyan);
+        padding: 8px 12px;
+        border-radius: 6px;
+        font-family: 'Orbitron', monospace;
+        font-weight: bold;
+        width: 100px;
+        text-align: center;
+        transition: all 0.3s;
+    }
+
+    .mark-input:focus {
+        outline: none;
+        border-color: var(--neon-cyan);
+        box-shadow: 0 0 10px rgba(0, 240, 255, 0.3);
+        background: rgba(0,0,0,0.8);
+    }
+
+    .mark-input.input-error {
+        border-color: var(--neon-red);
+        color: var(--neon-red);
+        background: rgba(255,56,100,0.1);
+        box-shadow: 0 0 10px rgba(255,56,100,0.3);
+    }
+
+    .btn-save-row {
+        background: transparent;
+        color: var(--neon-green);
+        border: 1px solid var(--neon-green);
+        padding: 5px 15px;
+        border-radius: 4px;
+        font-size: 0.85rem;
+        cursor: pointer;
+        transition: all 0.3s;
+    }
+
+    .btn-save-row:hover { background: rgba(0, 255, 157, 0.1); }
+    .btn-save-row.saved { background: var(--neon-green); color: #000; border-color: var(--neon-green); }
+
+    .submit-bar {
+        position: fixed;
+        bottom: 0;
+        left: 280px; /* Offset for sidebar */
+        right: 0;
+        background: rgba(18, 18, 24, 0.95);
+        backdrop-filter: blur(10px);
+        border-top: 1px solid var(--neon-cyan);
+        padding: 20px 40px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        z-index: 1000;
+        box-shadow: 0 -5px 20px rgba(0,0,0,0.5);
+    }
+
+    .btn-submit-all {
+        background: linear-gradient(90deg, var(--neon-cyan), #007bb5);
+        color: #000;
+        font-weight: bold;
+        padding: 12px 30px;
+        border: none;
+        border-radius: 6px;
+        font-size: 1.1rem;
+        cursor: pointer;
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .btn-submit-all:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(0, 240, 255, 0.4);
+    }
+    
+    .btn-submit-all:disabled {
+        background: #333;
+        color: #666;
+        cursor: not-allowed;
+        box-shadow: none;
+        transform: none;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="marks-header">
+    <h2 style="font-family: 'Orbitron', monospace; color: var(--neon-cyan); margin:0;">
+        <i class="fas fa-edit"></i> Batch Marks Entry 
+    </h2>
+    <div style="color: var(--text-muted); margin-top:5px;">
+        Subject: <span style="color:white">{{ subject }}</span> | Test: <span style="color:white">{{ test_number }}</span>
+    </div>
+    
+    <div class="stats-container">
+        <div class="progress-text">
+            Entered: <span id="entered-count" style="color:white;">0</span> / <span id="total-count">{{ students|length }}</span> Students
+        </div>
+        <div>
+            <span style="color:var(--neon-green); font-size: 0.9rem;" id="save-status"><i class="fas fa-check-circle"></i> Drafts auto-saved to browser</span>
+        </div>
+    </div>
+</div>
+
+<div class="table-container">
+    <table class="data-table" id="marksTable">
+        <thead>
+            <tr>
+                <th width="15%">Roll No</th>
+                <th width="35%">Student Name</th>
+                <th width="20%">Marks (0-{{ total_marks }} / AB)</th>
+                <th width="15%">Paper Photo</th>
+                <th width="15%">Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for student in students %}
+            <tr data-student-id="{{ student.id }}" onclick="highlightRow(this)">
+                <td style="color: var(--neon-purple); font-weight: bold;">{{ student.roll_number if student.roll_number else loop.index }}</td>
+                <td>{{ student.full_name or student.username }}</td>
+                <td>
+                    <input type="text" 
+                           class="mark-input" 
+                           data-sid="{{ student.id }}"
+                           placeholder="-"
+                           onblur="validateAndSave(this)">
+                </td>
+                <td>
+                    <input type="file" id="paper_proof_{{ student.id }}" 
+                           class="form-control file-input" accept="image/*" 
+                           style="background:transparent; color: var(--text-muted); border:1px solid #333; font-size:0.8rem;">
+                </td>
+                <td>
+                    <button type="button" class="btn-save-row" onclick="forceSaveRow(this, '{{ student.id }}')">
+                        Save Row
+                    </button>
+                    <span class="error-msg" style="color:var(--neon-red); font-size:0.8rem; display:none; margin-left:10px;">Invalid</span>
+                </td>
+            </tr>
+            {% endfor %}
+            {% if not students %}
+            <tr><td colspan="5" style="text-align:center; padding: 30px;">No students enrolled.</td></tr>
+            {% endif %}
+        </tbody>
+    </table>
+</div>
+
+<div class="submit-bar">
+    <div>
+        <p style="margin:0; color:var(--neon-gold); font-size:0.9rem;"><i class="fas fa-exclamation-triangle"></i> After submission, marks are finalized and immediately visible to students.</p>
+    </div>
+    <button type="button" class="btn-submit-all" id="btnSubmitAll" onclick="submitAllMarks()">
+        <i class="fas fa-cloud-upload-alt"></i> Submit All Marks Permanently
+    </button>
+</div>
+
+<script>
+    // Configuration
+    const subjectId = "{{ subject | urlencode }}";
+    const testNumber = "{{ test_number }}";
+    const totalMarks = {{ total_marks }};
+    const storageKeyPrefix = `marks_draft_sub${subjectId}_test${testNumber}_std`;
+    const totalStudents = parseInt(document.getElementById('total-count').innerText);
+
+    // Initialize Page
+    document.addEventListener("DOMContentLoaded", () => {
+        loadDrafts();
+        updateProgress();
+    });
+
+    // Row Highlighting
+    function highlightRow(row) {
+        document.querySelectorAll('#marksTable tr').forEach(r => r.classList.remove('active-row'));
+        row.classList.add('active-row');
+    }
+
+    // Validation & Local Save Logic
+    function validateAndSave(input) {
+        let valStr = input.value.trim().toUpperCase();
+        let row = input.closest('tr');
+        let errorSpan = row.querySelector('.error-msg');
+        let saveBtn = row.querySelector('.btn-save-row');
+        let sid = input.getAttribute('data-sid');
+
+        if(valStr === "") {
+            // Cleared input
+            input.classList.remove('input-error');
+            errorSpan.style.display = 'none';
+            saveBtn.classList.remove('saved');
+            saveBtn.innerText = 'Save Row';
+            localStorage.removeItem(`${storageKeyPrefix}${sid}`);
+            updateProgress();
+            return;
+        }
+
+        let isValid = false;
+        if (valStr === "AB") {
+            isValid = true;
+        } else {
+            let val = parseFloat(valStr);
+            if (!isNaN(val) && val >= 0 && val <= totalMarks) {
+                isValid = true;
+            }
+        }
+
+        if(!isValid) {
+            input.classList.add('input-error');
+            errorSpan.innerText = `0-${totalMarks} or AB`;
+            errorSpan.style.display = 'inline';
+            saveBtn.classList.remove('saved');
+            saveBtn.innerText = 'Save Row';
+        } else {
+            // Valid State
+            input.value = valStr; // normalized to uppercase AB if applicable
+            input.classList.remove('input-error');
+            errorSpan.style.display = 'none';
+            localStorage.setItem(`${storageKeyPrefix}${sid}`, valStr);
+            
+            // Visual feedback
+            saveBtn.classList.add('saved');
+            saveBtn.innerHTML = '<i class="fas fa-check"></i> Saved';
+            
+            // Revert visual after a while
+            setTimeout(() => {
+                if(saveBtn.classList.contains('saved')) {
+                    saveBtn.classList.remove('saved');
+                    saveBtn.innerText = 'Save Row';
+                }
+            }, 3000);
+        }
+        updateProgress();
+    }
+
+    function forceSaveRow(btn, sid) {
+        let input = document.querySelector(`input[data-sid="${sid}"]`);
+        validateAndSave(input);
+    }
+
+    function loadDrafts() {
+        document.querySelectorAll('.mark-input').forEach(input => {
+            let sid = input.getAttribute('data-sid');
+            let savedVal = localStorage.getItem(`${storageKeyPrefix}${sid}`);
+            if(savedVal !== null) {
+                input.value = savedVal;
+                validateAndSave(input);
+            }
+        });
+    }
+
+    function updateProgress() {
+        let count = 0;
+        let hasErrors = false;
+        
+        document.querySelectorAll('.mark-input').forEach(input => {
+            if(input.classList.contains('input-error')) hasErrors = true;
+            if(input.value.trim() !== "" && !input.classList.contains('input-error')) {
+                count++;
+            }
+        });
+
+        document.getElementById('entered-count').innerText = count;
+        
+        let submitBtn = document.getElementById('btnSubmitAll');
+        if(hasErrors) {
+            submitBtn.disabled = true;
+            submitBtn.innerText = "Fix Errors to Submit";
+        } else {
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = '<i class="fas fa-cloud-upload-alt"></i> Submit All Marks Permanently';
+        }
+    }
+
+    // Final Bulk Submit via AJAX (FormData for Files)
+    function submitAllMarks() {
+        // First validate all inputs
+        document.querySelectorAll('.mark-input').forEach(input => {
+            if(input.value.trim() !== "") validateAndSave(input);
+        });
+
+        let hasErrors = false;
+        let firstErrorRow = null;
+        let payloadMap = [];
+        let form_data = new FormData();
+
+        form_data.append("subject_id", subjectId);
+        form_data.append("test_number", testNumber);
+        form_data.append("total_marks", "{{ total_marks }}");
+
+        document.querySelectorAll('.mark-input').forEach(input => {
+            if(input.classList.contains('input-error')) {
+                hasErrors = true;
+                if(!firstErrorRow) firstErrorRow = input.closest('tr');
+            }
+            let val = input.value.trim();
+            if(val !== "") {
+                let sid = input.getAttribute('data-sid');
+                payloadMap.push({
+                    student_id: sid,
+                    marks_obtained: val
+                });
+                let fileInput = document.getElementById(`paper_proof_${sid}`);
+                if (fileInput && fileInput.files.length > 0) {
+                    form_data.append(`paper_proof_${sid}`, fileInput.files[0]);
+                }
+            }
+        });
+
+        if(hasErrors) {
+            if(firstErrorRow) firstErrorRow.scrollIntoView({behavior:'smooth', block:'center'});
+            alert("Please fix all red fields before submitting.");
+            return;
+        }
+
+        if(payloadMap.length === 0) {
+            alert("No marks entered to submit.");
+            return;
+        }
+
+        form_data.append("marks_data", JSON.stringify(payloadMap));
+
+        if(confirm(`You are about to permanently submit marks for ${payloadMap.length} students. This action will make marks visible to students. Proceed?`)) {
+            
+            document.getElementById('btnSubmitAll').innerHTML = '<i class="fas fa-spinner fa-spin"></i> Submitting...';
+            document.getElementById('btnSubmitAll').disabled = true;
+
+            fetch('/faculty/submit_bulk_marks', {
+                method: 'POST',
+                body: form_data
+            })
+            .then(response => response.json())
+            .then(data => {
+                if(data.status === 'success') {
+                    // Clear local storage drafts for these students
+                    payloadMap.forEach(p => {
+                        localStorage.removeItem(`${storageKeyPrefix}${p.student_id}`);
+                    });
+                    alert("Success! All marks submitted to database.");
+                    window.location.href = "{{ back_url if back_url is defined else url_for('faculty_dashboard') }}";
+                } else {
+                    alert("Error: " + data.message);
+                    document.getElementById('btnSubmitAll').innerHTML = '<i class="fas fa-cloud-upload-alt"></i> Submit All Marks Permanently';
+                    document.getElementById('btnSubmitAll').disabled = false;
+                }
+            })
+            .catch(err => {
+                console.error(err);
+                alert("Failed to reach server. Check connection.");
+                document.getElementById('btnSubmitAll').innerHTML = '<i class="fas fa-cloud-upload-alt"></i> Submit All Marks Permanently';
+                document.getElementById('btnSubmitAll').disabled = false;
+            });
+        }
+    }
+</script>
+{% endblock %}

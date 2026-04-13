@@ -1,0 +1,1532 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Marks Entry System - Faculty Dashboard</title>
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <style>
+        :root {
+            --bg-primary: #0a0a0a;
+            --bg-secondary: #1a1a1a;
+            --bg-tertiary: #2a2a2a;
+            --card-bg: rgba(255, 255, 255, 0.02);
+            --card-border: rgba(255, 255, 255, 0.1);
+            --text-primary: #ffffff;
+            --text-secondary: #b0b0b0;
+            --text-muted: #808080;
+            --neon-cyan: #00f0ff;
+            --neon-purple: #8b5cf6;
+            --neon-green: #00ff9d;
+            --neon-gold: #f59e0b;
+            --neon-red: #ff3864;
+            --neon-pink: #ec4899;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 280px;
+            height: 100vh;
+            background: var(--bg-secondary);
+            border-right: 1px solid var(--card-border);
+            z-index: 1000;
+            overflow-y: auto;
+        }
+
+        .sidebar-header {
+            padding: 25px 20px;
+            border-bottom: 1px solid var(--card-border);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-family: 'Orbitron', monospace;
+            font-weight: 700;
+            font-size: 1.2rem;
+            color: var(--neon-cyan);
+        }
+
+        .logo i {
+            font-size: 1.5rem;
+        }
+
+        .nav-menu {
+            padding: 20px 0;
+        }
+
+        .nav-item {
+            display: block;
+            padding: 15px 25px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            border-left: 3px solid transparent;
+        }
+
+        .nav-item:hover, .nav-item.active {
+            background: rgba(0, 240, 255, 0.1);
+            color: var(--neon-cyan);
+            border-left-color: var(--neon-cyan);
+        }
+
+        .nav-item i {
+            width: 20px;
+            margin-right: 12px;
+        }
+
+        /* Main Content */
+        .main-content {
+            margin-left: 280px;
+            padding: 30px;
+            min-height: 100vh;
+        }
+
+        .page-header {
+            margin-bottom: 40px;
+        }
+
+        .page-title {
+            font-family: 'Orbitron', monospace;
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .page-title i {
+            color: var(--neon-cyan);
+        }
+
+        .breadcrumb {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .breadcrumb a {
+            color: var(--neon-cyan);
+            text-decoration: none;
+        }
+
+        .breadcrumb a:hover {
+            text-decoration: underline;
+        }
+
+        /* Course Info Card */
+        .course-info-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 30px;
+        }
+
+        .course-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .course-title {
+            font-family: 'Orbitron', monospace;
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .course-title i {
+            color: var(--neon-cyan);
+        }
+
+        .course-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .detail-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .detail-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0, 240, 255, 0.1);
+            color: var(--neon-cyan);
+        }
+
+        .detail-info h4 {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            margin-bottom: 5px;
+        }
+
+        .detail-info p {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        /* Progress Indicator */
+        .progress-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 30px;
+        }
+
+        .progress-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .progress-title {
+            font-family: 'Orbitron', monospace;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .progress-title i {
+            color: var(--neon-green);
+        }
+
+        .progress-stats {
+            display: flex;
+            gap: 30px;
+            flex-wrap: wrap;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-family: 'Orbitron', monospace;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--neon-green);
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        .progress-bar-container {
+            width: 100%;
+            height: 12px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 6px;
+            overflow: hidden;
+            margin-top: 15px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--neon-green), var(--neon-cyan));
+            border-radius: 6px;
+            transition: width 0.3s ease;
+        }
+
+        /* Marks Entry Section */
+        .marks-section {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .section-title {
+            font-family: 'Orbitron', monospace;
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-title i {
+            color: var(--neon-cyan);
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border-radius: 8px;
+            border: none;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--neon-cyan), var(--neon-purple));
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 240, 255, 0.4);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, var(--neon-green), #00d466);
+            color: white;
+        }
+
+        .btn-success:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 255, 157, 0.4);
+        }
+
+        .btn-warning {
+            background: linear-gradient(135deg, var(--neon-gold), #f59e0b);
+            color: white;
+        }
+
+        .btn-warning:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(245, 158, 11, 0.4);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, var(--neon-red), #ff3864);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(255, 56, 100, 0.4);
+        }
+
+        /* Filter Controls */
+        .filter-controls {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+        }
+
+        .search-box {
+            flex: 1;
+            min-width: 250px;
+            position: relative;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 12px 15px 12px 45px;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--card-border);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-size: 0.9rem;
+        }
+
+        .search-box i {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+        }
+
+        .filter-dropdown {
+            padding: 12px 15px;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--card-border);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-size: 0.9rem;
+            min-width: 150px;
+        }
+
+        /* Marks Table */
+        .marks-table-container {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--card-border);
+            border-radius: 12px;
+            overflow: hidden;
+            margin-bottom: 25px;
+        }
+
+        .marks-table {
+            width: 100%;
+            background: transparent;
+            border-collapse: collapse;
+        }
+
+        .marks-table thead {
+            background: rgba(0, 240, 255, 0.05);
+        }
+
+        .marks-table th {
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+            color: var(--neon-cyan);
+            border-bottom: 1px solid var(--card-border);
+            font-family: 'Orbitron', monospace;
+            font-size: 0.9rem;
+        }
+
+        .marks-table td {
+            padding: 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            color: var(--text-primary);
+        }
+
+        .marks-table tbody tr {
+            transition: all 0.3s ease;
+        }
+
+        .marks-table tbody tr:hover {
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .marks-table tbody tr.current-row {
+            background: rgba(0, 240, 255, 0.05);
+            border-left: 3px solid var(--neon-cyan);
+        }
+
+        .marks-table tbody tr.saved-row {
+            background: rgba(0, 255, 157, 0.05);
+            border-left: 3px solid var(--neon-green);
+        }
+
+        .marks-table tbody tr.error-row {
+            background: rgba(255, 56, 100, 0.05);
+            border-left: 3px solid var(--neon-red);
+        }
+
+        .student-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .student-avatar {
+            width: 35px;
+            height: 35px;
+            border-radius: 8px;
+            background: rgba(0, 240, 255, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--neon-cyan);
+            font-size: 0.9rem;
+        }
+
+        .student-details {
+            flex: 1;
+        }
+
+        .student-name {
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 3px;
+        }
+
+        .student-roll {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        .marks-input {
+            width: 80px;
+            padding: 8px 12px;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--card-border);
+            border-radius: 6px;
+            color: var(--text-primary);
+            font-size: 0.9rem;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .marks-input:focus {
+            outline: none;
+            border-color: var(--neon-cyan);
+            box-shadow: 0 0 0 3px rgba(0, 240, 255, 0.1);
+        }
+
+        .marks-input.error {
+            border-color: var(--neon-red);
+            box-shadow: 0 0 0 3px rgba(255, 56, 100, 0.1);
+        }
+
+        .marks-input.success {
+            border-color: var(--neon-green);
+            box-shadow: 0 0 0 3px rgba(0, 255, 157, 0.1);
+        }
+
+        .status-badge {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .status-badge.pending {
+            background: rgba(245, 158, 11, 0.1);
+            color: var(--neon-gold);
+            border: 1px solid rgba(245, 158, 11, 0.3);
+        }
+
+        .status-badge.saved {
+            background: rgba(0, 255, 157, 0.1);
+            color: var(--neon-green);
+            border: 1px solid rgba(0, 255, 157, 0.3);
+        }
+
+        .status-badge.error {
+            background: rgba(255, 56, 100, 0.1);
+            color: var(--neon-red);
+            border: 1px solid rgba(255, 56, 100, 0.3);
+        }
+
+        .action-buttons-row {
+            display: flex;
+            gap: 8px;
+        }
+
+        .action-btn {
+            padding: 6px 12px;
+            border-radius: 6px;
+            border: none;
+            font-size: 0.8rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .action-btn.save {
+            background: rgba(0, 255, 157, 0.1);
+            color: var(--neon-green);
+        }
+
+        .action-btn.save:hover {
+            background: rgba(0, 255, 157, 0.2);
+        }
+
+        .action-btn.edit {
+            background: rgba(0, 240, 255, 0.1);
+            color: var(--neon-cyan);
+        }
+
+        .action-btn.edit:hover {
+            background: rgba(0, 240, 255, 0.2);
+        }
+
+        .action-btn.delete {
+            background: rgba(255, 56, 100, 0.1);
+            color: var(--neon-red);
+        }
+
+        .action-btn.delete:hover {
+            background: rgba(255, 56, 100, 0.2);
+        }
+
+        /* Error Message */
+        .error-message {
+            color: var(--neon-red);
+            font-size: 0.8rem;
+            margin-top: 5px;
+            display: none;
+        }
+
+        .error-message.show {
+            display: block;
+        }
+
+        /* Final Submission */
+        .submission-section {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 12px;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .submission-title {
+            font-family: 'Orbitron', monospace;
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 15px;
+        }
+
+        .submission-description {
+            color: var(--text-muted);
+            margin-bottom: 25px;
+        }
+
+        .submission-warning {
+            background: rgba(255, 56, 100, 0.1);
+            border: 1px solid rgba(255, 56, 100, 0.3);
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 25px;
+            color: var(--neon-red);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+
+            .main-content {
+                margin-left: 0;
+                padding: 20px;
+            }
+
+            .page-title {
+                font-size: 1.5rem;
+            }
+
+            .course-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .progress-stats {
+                justify-content: center;
+            }
+
+            .section-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .filter-controls {
+                flex-direction: column;
+            }
+
+            .search-box {
+                min-width: 100%;
+            }
+
+            .marks-table {
+                font-size: 0.85rem;
+            }
+
+            .marks-table th,
+            .marks-table td {
+                padding: 10px;
+            }
+
+            .marks-input {
+                width: 60px;
+            }
+
+            .action-buttons-row {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <div class="logo">
+                <i class="fas fa-graduation-cap"></i>
+                <span>Faculty Portal</span>
+            </div>
+        </div>
+        <nav class="nav-menu">
+            <a href="/faculty_dashboard" class="nav-item">
+                <i class="fas fa-tachometer-alt"></i>
+                Dashboard
+            </a>
+            <a href="/marks_entry" class="nav-item active">
+                <i class="fas fa-edit"></i>
+                Marks Entry
+            </a>
+            <a href="/faculty_study_materials" class="nav-item">
+                <i class="fas fa-book"></i>
+                Study Materials
+            </a>
+            <a href="/faculty_submit_leave" class="nav-item">
+                <i class="fas fa-calendar-plus"></i>
+                Submit Leave
+            </a>
+            <a href="/my_leave_requests" class="nav-item">
+                <i class="fas fa-calendar-alt"></i>
+                My Leave Requests
+            </a>
+        </nav>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Page Header -->
+        <div class="page-header">
+            <h1 class="page-title">
+                <i class="fas fa-edit"></i>
+                Marks Entry System
+            </h1>
+            <div class="breadcrumb">
+                <a href="/faculty_dashboard">Dashboard</a>
+                <i class="fas fa-chevron-right"></i>
+                <span>Marks Entry</span>
+            </div>
+        </div>
+
+        <!-- Course Information -->
+        <div class="course-info-card">
+            <div class="course-header">
+                <h2 class="course-title">
+                    <i class="fas fa-book"></i>
+                    Data Structures - SE Computer
+                </h2>
+                <div class="status-badge pending">In Progress</div>
+            </div>
+            <div class="course-details">
+                <div class="detail-item">
+                    <div class="detail-icon">
+                        <i class="fas fa-calendar"></i>
+                    </div>
+                    <div class="detail-info">
+                        <h4>Exam Type</h4>
+                        <p>Internal Assessment 1</p>
+                    </div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-icon">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <div class="detail-info">
+                        <h4>Total Marks</h4>
+                        <p>30 Marks</p>
+                    </div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <div class="detail-info">
+                        <h4>Total Students</h4>
+                        <p>72 Students</p>
+                    </div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-icon">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <div class="detail-info">
+                        <h4>Duration</h4>
+                        <p>2 Hours</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Progress Indicator -->
+        <div class="progress-card">
+            <div class="progress-header">
+                <h3 class="progress-title">
+                    <i class="fas fa-chart-line"></i>
+                    Entry Progress
+                </h3>
+                <div class="status-badge saved">Auto-save Enabled</div>
+            </div>
+            <div class="progress-stats">
+                <div class="stat-item">
+                    <div class="stat-value" id="entered-count">0</div>
+                    <div class="stat-label">Entered</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="saved-count">0</div>
+                    <div class="stat-label">Saved</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value">72</div>
+                    <div class="stat-label">Total</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="progress-percentage">0%</div>
+                    <div class="stat-label">Progress</div>
+                </div>
+            </div>
+            <div class="progress-bar-container">
+                <div class="progress-fill" id="progress-bar" style="width: 0%"></div>
+            </div>
+        </div>
+
+        <!-- Marks Entry Section -->
+        <div class="marks-section">
+            <div class="section-header">
+                <h2 class="section-title">
+                    <i class="fas fa-list"></i>
+                    Student Marks Entry
+                </h2>
+                <div class="action-buttons">
+                    <button class="btn btn-warning" onclick="exportMarks()">
+                        <i class="fas fa-download"></i>
+                        Export Draft
+                    </button>
+                    <button class="btn btn-primary" onclick="importMarks()">
+                        <i class="fas fa-upload"></i>
+                        Import Marks
+                    </button>
+                </div>
+            </div>
+
+            <div class="filter-controls">
+                <div class="search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" placeholder="Search by roll number or name..." id="search-input">
+                </div>
+                <select class="filter-dropdown" id="status-filter">
+                    <option value="all">All Students</option>
+                    <option value="pending">Pending Entry</option>
+                    <option value="saved">Saved</option>
+                    <option value="error">Has Errors</option>
+                </select>
+                <select class="filter-dropdown" id="sort-filter">
+                    <option value="roll">Sort by Roll No</option>
+                    <option value="name">Sort by Name</option>
+                    <option value="status">Sort by Status</option>
+                </select>
+            </div>
+
+            <!-- Marks Table -->
+            <div class="marks-table-container">
+                <table class="marks-table" id="marks-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 50px;">#</th>
+                            <th>Student Information</th>
+                            <th style="width: 120px;">Marks (0-30)</th>
+                            <th style="width: 100px;">Status</th>
+                            <th style="width: 150px;">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="marks-tbody">
+                        <!-- Students will be populated here -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Final Submission -->
+        <div class="submission-section">
+            <h3 class="submission-title">
+                <i class="fas fa-check-circle"></i>
+                Final Submission
+            </h3>
+            <p class="submission-description">
+                Once you submit all marks, they will be visible to students in their dashboard. This action cannot be undone.
+            </p>
+            <div class="submission-warning">
+                <i class="fas fa-exclamation-triangle"></i>
+                <strong>Warning:</strong> After submission, marks will be visible to students and cannot be edited without department approval.
+            </div>
+            <button class="btn btn-success" onclick="submitAllMarks()" id="submit-btn">
+                <i class="fas fa-check-circle"></i>
+                Submit All Marks
+            </button>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Student data (72 students)
+        const students = [
+            { roll: 'SEC001', name: 'Aarav Patel' },
+            { roll: 'SEC002', name: 'Aditi Sharma' },
+            { roll: 'SEC003', name: 'Amit Kumar' },
+            { roll: 'SEC004', name: 'Anjali Gupta' },
+            { roll: 'SEC005', name: 'Arjun Singh' },
+            { roll: 'SEC006', name: 'Ashwini Joshi' },
+            { roll: 'SEC007', name: 'Bhavna Mehta' },
+            { roll: 'SEC008', name: 'Chetan Desai' },
+            { roll: 'SEC009', name: 'Deepak Reddy' },
+            { roll: 'SEC010', name: 'Divya Nair' },
+            { roll: 'SEC011', name: 'Esha Verma' },
+            { roll: 'SEC012', name: 'Farhan Khan' },
+            { roll: 'SEC013', name: 'Gayatri Iyer' },
+            { roll: 'SEC014', name: 'Harsh Patel' },
+            { roll: 'SEC015', name: 'Isha Sharma' },
+            { roll: 'SEC016', name: 'Jatin Kumar' },
+            { roll: 'SEC017', name: 'Kavya Singh' },
+            { roll: 'SEC018', name: 'Lokesh Gupta' },
+            { roll: 'SEC019', name: 'Madhuri Joshi' },
+            { roll: 'SEC020', name: 'Nikhil Desai' },
+            { roll: 'SEC021', name: 'Priya Reddy' },
+            { roll: 'SEC022', name: 'Rahul Nair' },
+            { roll: 'SEC023', name: 'Sanjana Verma' },
+            { roll: 'SEC024', name: 'Tarun Khan' },
+            { roll: 'SEC025', name: 'Usha Iyer' },
+            { roll: 'SEC026', name: 'Vikram Patel' },
+            { roll: 'SEC027', name: 'Yash Sharma' },
+            { roll: 'SEC028', name: 'Zoya Singh' },
+            { roll: 'SEC029', name: 'Abhishek Kumar' },
+            { roll: 'SEC030', name: 'Ankita Gupta' },
+            { roll: 'SEC031', name: 'Brijesh Singh' },
+            { roll: 'SEC032', name: 'Chhaya Joshi' },
+            { roll: 'SEC033', name: 'Dinesh Mehta' },
+            { roll: 'SEC034', name: 'Ekta Desai' },
+            { roll: 'SEC035', name: 'Firoz Reddy' },
+            { roll: 'SEC036', name: 'Gauri Nair' },
+            { roll: 'SEC037', name: 'Hemant Verma' },
+            { roll: 'SEC038', name: 'Indira Khan' },
+            { roll: 'SEC039', name: 'Jagan Iyer' },
+            { roll: 'SEC040', name: 'Kavita Patel' },
+            { roll: 'SEC041', name: 'Lalit Sharma' },
+            { roll: 'SEC042', name: 'Meena Kumar' },
+            { roll: 'SEC043', name: 'Naveen Singh' },
+            { roll: 'SEC044', name: 'Pooja Gupta' },
+            { roll: 'SEC045', name: 'Quddus Joshi' },
+            { roll: 'SEC046', name: 'Rashmi Desai' },
+            { roll: 'SEC047', name: 'Suresh Reddy' },
+            { roll: 'SEC048', name: 'Tanuja Nair' },
+            { roll: 'SEC049', name: 'Umesh Verma' },
+            { roll: 'SEC050', name: 'Vijaya Khan' },
+            { roll: 'SEC051', name: 'Wasim Iyer' },
+            { roll: 'SEC052', name: 'Xavier Patel' },
+            { roll: 'SEC053', name: 'Yamini Sharma' },
+            { roll: 'SEC054', name: 'Zeenat Kumar' },
+            { roll: 'SEC055', name: 'Amit Singh' },
+            { roll: 'SEC056', name: 'Babita Gupta' },
+            { roll: 'SEC057', name: 'Chetan Joshi' },
+            { roll: 'SEC058', name: 'Dipti Mehta' },
+            { roll: 'SEC059', name: 'Ejaz Desai' },
+            { roll: 'SEC060', name: 'Farida Reddy' },
+            { roll: 'SEC061', name: 'Gagan Nair' },
+            { roll: 'SEC062', name: 'Hema Verma' },
+            { roll: 'SEC063', name: 'Iqbal Khan' },
+            { roll: 'SEC064', name: 'Jyoti Iyer' },
+            { roll: 'SEC065', name: 'Karan Patel' },
+            { roll: 'SEC066', name: 'Lavina Sharma' },
+            { roll: 'SEC067', name: 'Manish Kumar' },
+            { roll: 'SEC068', name: 'Neha Singh' },
+            { roll: 'SEC069', name: 'Omar Gupta' },
+            { roll: 'SEC070', name: 'Pankaj Joshi' },
+            { roll: 'SEC071', name: 'Qurat Mehta' },
+            { roll: 'SEC072', name: 'Rashid Desai' }
+        ];
+
+        // Marks storage
+        let marksData = {};
+        let currentEditingRow = null;
+        let autoSaveTimer = null;
+
+        // Initialize the table
+        function initializeTable() {
+            const tbody = document.getElementById('marks-tbody');
+            tbody.innerHTML = '';
+
+            students.forEach((student, index) => {
+                const row = document.createElement('tr');
+                row.id = `row-${index}`;
+                row.innerHTML = `
+                    <td>${index + 1}</td>
+                    <td>
+                        <div class="student-info">
+                            <div class="student-avatar">
+                                <i class="fas fa-user"></i>
+                            </div>
+                            <div class="student-details">
+                                <div class="student-name">${student.name}</div>
+                                <div class="student-roll">${student.roll}</div>
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <input type="number" 
+                               class="marks-input" 
+                               id="marks-${index}" 
+                               min="0" 
+                               max="30" 
+                               placeholder="0-30"
+                               data-roll="${student.roll}"
+                               data-name="${student.name}">
+                        <div class="error-message" id="error-${index}"></div>
+                    </td>
+                    <td>
+                        <span class="status-badge pending" id="status-${index}">Pending</span>
+                    </td>
+                    <td>
+                        <div class="action-buttons-row">
+                            <button class="action-btn save" onclick="saveMarks(${index})">
+                                <i class="fas fa-save"></i> Save
+                            </button>
+                            <button class="action-btn edit" onclick="editMarks(${index})" style="display: none;">
+                                <i class="fas fa-edit"></i> Edit
+                            </button>
+                            <button class="action-btn delete" onclick="deleteMarks(${index})">
+                                <i class="fas fa-trash"></i> Delete
+                            </button>
+                        </div>
+                    </td>
+                `;
+                tbody.appendChild(row);
+
+                // Add event listeners
+                const marksInput = document.getElementById(`marks-${index}`);
+                marksInput.addEventListener('input', function() {
+                    validateMarks(index);
+                    startAutoSave(index);
+                });
+
+                marksInput.addEventListener('focus', function() {
+                    setCurrentRow(index);
+                });
+            });
+        }
+
+        // Validate marks
+        function validateMarks(index) {
+            const input = document.getElementById(`marks-${index}`);
+            const errorDiv = document.getElementById(`error-${index}`);
+            const value = input.value.trim();
+            const statusBadge = document.getElementById(`status-${index}`);
+
+            // Remove previous classes
+            input.classList.remove('error', 'success');
+            errorDiv.classList.remove('show');
+
+            if (value === '') {
+                statusBadge.className = 'status-badge pending';
+                statusBadge.textContent = 'Pending';
+                return false;
+            }
+
+            const marks = parseFloat(value);
+
+            if (isNaN(marks)) {
+                input.classList.add('error');
+                errorDiv.textContent = 'Please enter a valid number';
+                errorDiv.classList.add('show');
+                statusBadge.className = 'status-badge error';
+                statusBadge.textContent = 'Error';
+                return false;
+            }
+
+            if (marks < 0 || marks > 30) {
+                input.classList.add('error');
+                errorDiv.textContent = 'Marks must be between 0 and 30';
+                errorDiv.classList.add('show');
+                statusBadge.className = 'status-badge error';
+                statusBadge.textContent = 'Error';
+                return false;
+            }
+
+            input.classList.add('success');
+            statusBadge.className = 'status-badge saved';
+            statusBadge.textContent = 'Saved';
+            return true;
+        }
+
+        // Save marks
+        function saveMarks(index) {
+            const input = document.getElementById(`marks-${index}`);
+            const value = input.value.trim();
+
+            if (!validateMarks(index)) {
+                return false;
+            }
+
+            const marks = parseFloat(value);
+            const student = students[index];
+
+            // Save to storage
+            marksData[student.roll] = {
+                name: student.name,
+                marks: marks,
+                timestamp: new Date().toISOString()
+            };
+
+            // Update UI
+            const row = document.getElementById(`row-${index}`);
+            row.classList.add('saved-row');
+            row.classList.remove('current-row', 'error-row');
+
+            // Update buttons
+            document.querySelector(`#row-${index} .action-btn.save`).style.display = 'none';
+            document.querySelector(`#row-${index} .action-btn.edit`).style.display = 'inline-block';
+
+            // Update progress
+            updateProgress();
+
+            // Show success message
+            showNotification(`Marks saved for ${student.name}: ${marks}/30`, 'success');
+
+            // Move to next student
+            moveToNextStudent(index);
+
+            return true;
+        }
+
+        // Edit marks
+        function editMarks(index) {
+            const input = document.getElementById(`marks-${index}`);
+            const student = students[index];
+
+            // Enable editing
+            input.focus();
+            input.select();
+
+            // Update UI
+            const row = document.getElementById(`row-${index}`);
+            row.classList.add('current-row');
+            row.classList.remove('saved-row');
+
+            // Update buttons
+            document.querySelector(`#row-${index} .action-btn.save`).style.display = 'inline-block';
+            document.querySelector(`#row-${index} .action-btn.edit`).style.display = 'none';
+
+            // Update status
+            const statusBadge = document.getElementById(`status-${index}`);
+            statusBadge.className = 'status-badge pending';
+            statusBadge.textContent = 'Editing';
+
+            showNotification(`Editing marks for ${student.name}`, 'info');
+        }
+
+        // Delete marks
+        function deleteMarks(index) {
+            const student = students[index];
+
+            if (confirm(`Are you sure you want to delete marks for ${student.name}?`)) {
+                // Remove from storage
+                delete marksData[student.roll];
+
+                // Reset input
+                const input = document.getElementById(`marks-${index}`);
+                input.value = '';
+                input.classList.remove('success', 'error');
+
+                // Update UI
+                const row = document.getElementById(`row-${index}`);
+                row.classList.remove('saved-row', 'error-row');
+
+                // Update buttons
+                document.querySelector(`#row-${index} .action-btn.save`).style.display = 'inline-block';
+                document.querySelector(`#row-${index} .action-btn.edit`).style.display = 'none';
+
+                // Update status
+                const statusBadge = document.getElementById(`status-${index}`);
+                statusBadge.className = 'status-badge pending';
+                statusBadge.textContent = 'Pending';
+
+                // Update progress
+                updateProgress();
+
+                showNotification(`Marks deleted for ${student.name}`, 'warning');
+            }
+        }
+
+        // Set current row
+        function setCurrentRow(index) {
+            // Remove current class from all rows
+            document.querySelectorAll('.marks-table tbody tr').forEach(row => {
+                row.classList.remove('current-row');
+            });
+
+            // Add current class to selected row
+            const row = document.getElementById(`row-${index}`);
+            row.classList.add('current-row');
+
+            currentEditingRow = index;
+        }
+
+        // Move to next student
+        function moveToNextStudent(currentIndex) {
+            const nextIndex = currentIndex + 1;
+            if (nextIndex < students.length) {
+                const nextInput = document.getElementById(`marks-${nextIndex}`);
+                nextInput.focus();
+                setCurrentRow(nextIndex);
+            }
+        }
+
+        // Auto-save functionality
+        function startAutoSave(index) {
+            // Clear existing timer
+            if (autoSaveTimer) {
+                clearTimeout(autoSaveTimer);
+            }
+
+            // Set new timer
+            autoSaveTimer = setTimeout(() => {
+                if (validateMarks(index)) {
+                    saveMarks(index);
+                    showNotification('Auto-saved', 'info');
+                }
+            }, 2000); // Auto-save after 2 seconds
+        }
+
+        // Update progress
+        function updateProgress() {
+            const total = students.length;
+            const saved = Object.keys(marksData).length;
+            const percentage = Math.round((saved / total) * 100);
+
+            document.getElementById('entered-count').textContent = saved;
+            document.getElementById('saved-count').textContent = saved;
+            document.getElementById('progress-percentage').textContent = percentage + '%';
+            document.getElementById('progress-bar').style.width = percentage + '%';
+
+            // Enable/disable submit button
+            const submitBtn = document.getElementById('submit-btn');
+            if (saved === total) {
+                submitBtn.disabled = false;
+                submitBtn.classList.remove('btn-warning');
+                submitBtn.classList.add('btn-success');
+            } else {
+                submitBtn.disabled = true;
+                submitBtn.classList.remove('btn-success');
+                submitBtn.classList.add('btn-warning');
+            }
+        }
+
+        // Search functionality
+        document.getElementById('search-input').addEventListener('input', function(e) {
+            const searchTerm = e.target.value.toLowerCase();
+            const rows = document.querySelectorAll('.marks-table tbody tr');
+
+            rows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                row.style.display = text.includes(searchTerm) ? '' : 'none';
+            });
+        });
+
+        // Filter functionality
+        document.getElementById('status-filter').addEventListener('change', function(e) {
+            const filterValue = e.target.value;
+            const rows = document.querySelectorAll('.marks-table tbody tr');
+
+            rows.forEach((row, index) => {
+                const statusBadge = document.getElementById(`status-${index}`);
+                const status = statusBadge.textContent.toLowerCase();
+
+                let show = false;
+                switch (filterValue) {
+                    case 'all':
+                        show = true;
+                        break;
+                    case 'pending':
+                        show = status === 'pending';
+                        break;
+                    case 'saved':
+                        show = status === 'saved';
+                        break;
+                    case 'error':
+                        show = status === 'error';
+                        break;
+                }
+
+                row.style.display = show ? '' : 'none';
+            });
+        });
+
+        // Sort functionality
+        document.getElementById('sort-filter').addEventListener('change', function(e) {
+            const sortValue = e.target.value;
+            const tbody = document.getElementById('marks-tbody');
+            const rows = Array.from(tbody.querySelectorAll('tr'));
+
+            rows.sort((a, b) => {
+                let aValue, bValue;
+
+                switch (sortValue) {
+                    case 'roll':
+                        aValue = a.querySelector('.student-roll').textContent;
+                        bValue = b.querySelector('.student-roll').textContent;
+                        break;
+                    case 'name':
+                        aValue = a.querySelector('.student-name').textContent;
+                        bValue = b.querySelector('.student-name').textContent;
+                        break;
+                    case 'status':
+                        aValue = a.querySelector('.status-badge').textContent;
+                        bValue = b.querySelector('.status-badge').textContent;
+                        break;
+                }
+
+                return aValue.localeCompare(bValue);
+            });
+
+            // Re-append sorted rows
+            rows.forEach(row => tbody.appendChild(row));
+        });
+
+        // Export marks
+        function exportMarks() {
+            const data = {
+                course: 'Data Structures - SE Computer',
+                examType: 'Internal Assessment 1',
+                totalMarks: 30,
+                students: students.map(student => ({
+                    roll: student.roll,
+                    name: student.name,
+                    marks: marksData[student.roll] ? marksData[student.roll].marks : null
+                })),
+                timestamp: new Date().toISOString()
+            };
+
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `marks_export_${new Date().toISOString().split('T')[0]}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+
+            showNotification('Marks exported successfully', 'success');
+        }
+
+        // Import marks
+        function importMarks() {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = '.json';
+            input.onchange = function(e) {
+                const file = e.target.files[0];
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    try {
+                        const data = JSON.parse(event.target.result);
+                        
+                        // Validate data structure
+                        if (!data.students || !Array.isArray(data.students)) {
+                            throw new Error('Invalid data format');
+                        }
+
+                        // Import marks
+                        data.students.forEach(studentData => {
+                            const student = students.find(s => s.roll === studentData.roll);
+                            if (student && studentData.marks !== null) {
+                                const index = students.indexOf(student);
+                                const input = document.getElementById(`marks-${index}`);
+                                input.value = studentData.marks;
+                                saveMarks(index);
+                            }
+                        });
+
+                        showNotification('Marks imported successfully', 'success');
+                    } catch (error) {
+                        showNotification('Error importing marks: ' + error.message, 'error');
+                    }
+                };
+                reader.readAsText(file);
+            };
+            input.click();
+        }
+
+        // Submit all marks
+        function submitAllMarks() {
+            const total = students.length;
+            const saved = Object.keys(marksData).length;
+
+            if (saved !== total) {
+                showNotification(`Please enter marks for all ${total} students before submitting. Currently ${saved} students have marks.`, 'error');
+                return;
+            }
+
+            if (confirm(`Are you sure you want to submit all marks? Once submitted, marks will be visible to students and cannot be edited without department approval.`)) {
+                // Simulate submission
+                showNotification('Submitting marks to database...', 'info');
+
+                setTimeout(() => {
+                    showNotification('All marks submitted successfully! Students can now view their marks in their dashboard.', 'success');
+                    
+                    // Disable all inputs
+                    document.querySelectorAll('.marks-input').forEach(input => {
+                        input.disabled = true;
+                    });
+
+                    // Hide all action buttons
+                    document.querySelectorAll('.action-btn').forEach(btn => {
+                        btn.style.display = 'none';
+                    });
+
+                    // Update status
+                    document.querySelectorAll('.status-badge').forEach(badge => {
+                        badge.className = 'status-badge saved';
+                        badge.textContent = 'Submitted';
+                    });
+
+                    // Hide submit button
+                    document.getElementById('submit-btn').style.display = 'none';
+
+                    // Show completion message
+                    const submissionSection = document.querySelector('.submission-section');
+                    submissionSection.innerHTML = `
+                        <div style="text-align: center; padding: 40px;">
+                            <i class="fas fa-check-circle" style="font-size: 4rem; color: var(--neon-green); margin-bottom: 20px;"></i>
+                            <h3 style="color: var(--neon-green); margin-bottom: 15px;">Marks Submitted Successfully!</h3>
+                            <p style="color: var(--text-muted); margin-bottom: 25px;">All ${total} students' marks have been submitted and are now visible to students in their dashboard.</p>
+                            <div style="background: rgba(0, 255, 157, 0.1); border: 1px solid rgba(0, 255, 157, 0.3); border-radius: 8px; padding: 15px; margin-bottom: 25px;">
+                                <strong>Submission Details:</strong><br>
+                                Course: Data Structures - SE Computer<br>
+                                Exam: Internal Assessment 1<br>
+                        Total Students: ${total}<br>
+                                Submission Time: ${new Date().toLocaleString()}
+                            </div>
+                            <button class="btn btn-primary" onclick="window.print()">
+                                <i class="fas fa-print"></i> Print Report
+                            </button>
+                        </div>
+                    `;
+
+                }, 2000);
+            }
+        }
+
+        // Show notification
+        function showNotification(message, type) {
+            // Create notification element
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                padding: 15px 20px;
+                border-radius: 8px;
+                color: white;
+                font-weight: 500;
+                z-index: 10000;
+                max-width: 300px;
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+                transform: translateX(100%);
+                transition: transform 0.3s ease;
+            `;
+
+            // Set background color based on type
+            switch (type) {
+                case 'success':
+                    notification.style.background = 'linear-gradient(135deg, var(--neon-green), #00d466)';
+                    break;
+                case 'error':
+                    notification.style.background = 'linear-gradient(135deg, var(--neon-red), #ff3864)';
+                    break;
+                case 'warning':
+                    notification.style.background = 'linear-gradient(135deg, var(--neon-gold), #f59e0b)';
+                    break;
+                case 'info':
+                    notification.style.background = 'linear-gradient(135deg, var(--neon-cyan), var(--neon-purple))';
+                    break;
+            }
+
+            notification.textContent = message;
+            document.body.appendChild(notification);
+
+            // Show notification
+            setTimeout(() => {
+                notification.style.transform = 'translateX(0)';
+            }, 100);
+
+            // Hide notification after 3 seconds
+            setTimeout(() => {
+                notification.style.transform = 'translateX(100%)';
+                setTimeout(() => {
+                    document.body.removeChild(notification);
+                }, 300);
+            }, 3000);
+        }
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeTable();
+            updateProgress();
+            showNotification('Marks Entry System loaded successfully. Enter marks for each student and click Save.', 'info');
+        });
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', function(e) {
+            // Ctrl+S to save current student
+            if (e.ctrlKey && e.key === 's') {
+                e.preventDefault();
+                if (currentEditingRow !== null) {
+                    saveMarks(currentEditingRow);
+                }
+            }
+
+            // Ctrl+Enter to submit all marks
+            if (e.ctrlKey && e.key === 'Enter') {
+                e.preventDefault();
+                submitAllMarks();
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,704 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Principal Dashboard - Academic ERP</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet"/>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"/>
+  <style>
+    :root{
+      --cyan:#00f5ff;--magenta:#ff00ff;--purple:#8b5cf6;--green:#00ff9d;
+      --yellow:#ffd700;--orange:#ff8c00;--red:#ff3864;
+      --bg:#050508;--card:#0d0d14;--surface:#12121c;--elevated:#1a1a28;
+      --bdim:rgba(0,245,255,0.12);--bglow:rgba(0,245,255,0.4);
+      --tp:#e5e7eb;--ts:#9ca3af;--tm:#6b7280;--sw:280px;--r:14px;
+    }
+    *{margin:0;padding:0;box-sizing:border-box;}
+    html{scroll-behavior:smooth;}
+    body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--tp);overflow-x:hidden;min-height:100vh;}
+    body::before{content:'';position:fixed;top:0;left:0;width:100%;height:100%;
+      background:radial-gradient(ellipse 80% 50% at 20% 20%,rgba(0,245,255,.04) 0%,transparent 60%),
+                radial-gradient(ellipse 60% 40% at 80% 80%,rgba(139,92,246,.05) 0%,transparent 60%),
+                linear-gradient(rgba(0,245,255,.015) 1px,transparent 1px),
+                linear-gradient(90deg,rgba(0,245,255,.015) 1px,transparent 1px);
+      background-size:100% 100%,100% 100%,30px 30px,30px 30px;z-index:-1;pointer-events:none;}
+    .orb{position:fixed;border-radius:50%;filter:blur(80px);pointer-events:none;z-index:-1;animation:floatOrb 12s ease-in-out infinite;}
+    .orb-1{width:400px;height:400px;background:rgba(0,245,255,.06);top:-100px;left:-100px;}
+    .orb-2{width:300px;height:300px;background:rgba(139,92,246,.07);bottom:-50px;right:-50px;animation-delay:-4s;}
+    .orb-3{width:200px;height:200px;background:rgba(255,0,255,.05);top:50%;left:50%;animation-delay:-8s;}
+    @keyframes floatOrb{0%,100%{transform:translate(0,0) scale(1);}33%{transform:translate(30px,-20px) scale(1.05);}66%{transform:translate(-20px,30px) scale(.95);}}
+    ::-webkit-scrollbar{width:6px;}::-webkit-scrollbar-track{background:var(--card);}
+    ::-webkit-scrollbar-thumb{background:linear-gradient(var(--cyan),var(--purple));border-radius:3px;}
+    .layout{display:flex;min-height:100vh;}
+    /* SIDEBAR */
+    .sidebar{width:var(--sw);background:rgba(13,13,20,.95);backdrop-filter:blur(24px);border-right:1px solid var(--bdim);position:fixed;height:100vh;overflow-y:auto;z-index:1000;transition:transform .3s;display:flex;flex-direction:column;}
+    .sidebar::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--cyan),var(--purple),var(--magenta));box-shadow:0 0 20px rgba(0,245,255,.6);}
+    .sb-brand{padding:1.8rem 1.5rem 1.5rem;border-bottom:1px solid var(--bdim);text-align:center;}
+    .sb-logo{width:64px;height:64px;border-radius:50%;background:linear-gradient(135deg,rgba(0,245,255,.15),rgba(139,92,246,.15));border:2px solid rgba(0,245,255,.4);display:flex;align-items:center;justify-content:center;margin:0 auto 1rem;box-shadow:0 0 20px rgba(0,245,255,.3),inset 0 0 20px rgba(0,245,255,.05);animation:pulseBrand 3s ease-in-out infinite;}
+    @keyframes pulseBrand{0%,100%{box-shadow:0 0 20px rgba(0,245,255,.3),inset 0 0 20px rgba(0,245,255,.05);}50%{box-shadow:0 0 35px rgba(0,245,255,.5),inset 0 0 30px rgba(0,245,255,.1);}}
+    .sb-logo i{font-size:1.8rem;color:var(--cyan);text-shadow:0 0 15px var(--cyan);}
+    .sb-title{font-family:'Orbitron',monospace;font-size:1rem;font-weight:700;color:var(--cyan);text-transform:uppercase;letter-spacing:2px;text-shadow:0 0 10px rgba(0,245,255,.5);margin-bottom:.25rem;}
+    .sb-sub{color:var(--tm);font-size:.75rem;}
+    .nav-label{padding:1rem 1.5rem .4rem;font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:var(--tm);}
+    .nav-menu{padding:.5rem 0;flex:1;}
+    .nav-item{margin:.2rem .75rem;}
+    .nav-link{display:flex;align-items:center;padding:.8rem 1rem;color:var(--ts);text-decoration:none;border-radius:10px;transition:all .25s;position:relative;overflow:hidden;font-size:.88rem;font-weight:500;border:1px solid transparent;}
+    .nav-link i{width:20px;margin-right:.85rem;font-size:1rem;transition:all .25s;}
+    .nav-link:hover,.nav-link.active{color:var(--cyan);background:rgba(0,245,255,.08);border-color:rgba(0,245,255,.25);text-shadow:0 0 8px rgba(0,245,255,.4);text-decoration:none;}
+    .nav-link:hover i,.nav-link.active i{color:var(--cyan);text-shadow:0 0 10px var(--cyan);}
+    .nav-link.active::before{content:'';position:absolute;left:0;top:20%;height:60%;width:3px;background:var(--cyan);border-radius:0 3px 3px 0;box-shadow:0 0 10px var(--cyan);}
+    .nav-link::after{content:'';position:absolute;top:0;left:-100%;width:100%;height:100%;background:linear-gradient(90deg,transparent,rgba(0,245,255,.06),transparent);transition:.5s;}
+    .nav-link:hover::after{left:100%;}
+    .sb-footer{padding:1rem .75rem;border-top:1px solid var(--bdim);}
+    /* MAIN */
+    .main{margin-left:var(--sw);flex:1;min-height:100vh;min-width:0;overflow-x:hidden;}
+    /* HEADER */
+    .topbar{background:linear-gradient(135deg,rgba(13,13,20,.98),rgba(26,26,40,.98));border-bottom:1px solid var(--bdim);padding:1.5rem 2rem;position:sticky;top:0;z-index:100;backdrop-filter:blur(20px);display:flex;align-items:center;justify-content:space-between;}
+    .topbar::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--cyan),var(--purple),transparent);opacity:.5;}
+    .tb-left h1{font-family:'Orbitron',monospace;font-size:1.4rem;font-weight:700;color:var(--cyan);text-shadow:0 0 15px rgba(0,245,255,.4);margin-bottom:.2rem;}
+    .tb-left p{color:var(--tm);font-size:.82rem;}
+    .tb-right{display:flex;align-items:center;gap:1rem;}
+    .tb-time{text-align:right;font-family:'Orbitron',monospace;}
+    .tb-time .t{font-size:1.2rem;color:var(--cyan);font-weight:600;}
+    .tb-time .d{font-size:.7rem;color:var(--tm);}
+    .tb-avatar{width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,var(--cyan),var(--purple));display:flex;align-items:center;justify-content:center;font-size:1.1rem;color:#000;font-weight:700;box-shadow:0 0 15px rgba(0,245,255,.4);cursor:pointer;transition:all .3s;text-decoration:none;}
+    .tb-avatar:hover{box-shadow:0 0 25px rgba(0,245,255,.7);transform:scale(1.05);}
+    .content{padding:1.5rem;}
+    /* WELCOME */
+    .welcome{background:linear-gradient(135deg,rgba(0,245,255,.08),rgba(139,92,246,.08) 50%,rgba(255,0,255,.05));border:1px solid rgba(0,245,255,.2);border-radius:var(--r);padding:2rem 2.5rem;margin-bottom:2rem;position:relative;overflow:hidden;}
+    .welcome::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--cyan),var(--purple),var(--magenta));box-shadow:0 0 15px rgba(0,245,255,.5);}
+    .welcome::after{content:'PRINCIPAL';position:absolute;right:2rem;top:50%;transform:translateY(-50%);font-family:'Orbitron',monospace;font-size:4rem;font-weight:900;color:rgba(0,245,255,.04);letter-spacing:4px;pointer-events:none;}
+    .w-icon{width:56px;height:56px;border-radius:14px;background:linear-gradient(135deg,rgba(255,215,0,.2),rgba(255,140,0,.2));border:1px solid rgba(255,215,0,.4);display:flex;align-items:center;justify-content:center;font-size:1.6rem;margin-right:1.5rem;flex-shrink:0;box-shadow:0 0 20px rgba(255,215,0,.2);}
+    .w-title{font-family:'Orbitron',monospace;font-size:1.5rem;font-weight:700;color:#fff;margin-bottom:.3rem;}
+    .w-sub{color:var(--ts);font-size:.9rem;}
+    .w-stats{display:flex;gap:2rem;margin-top:1rem;}
+    .w-stat .val{font-family:'Orbitron',monospace;font-size:1.4rem;font-weight:700;color:var(--cyan);}
+    .w-stat .lbl{font-size:.7rem;color:var(--tm);text-transform:uppercase;letter-spacing:1px;}
+    /* STAT CARDS */
+    .stat-card{background:var(--card);border:1px solid var(--bdim);border-radius:var(--r);padding:1.5rem;transition:all .3s;position:relative;overflow:hidden;}
+    .stat-card:hover{transform:translateY(-4px);border-color:var(--bglow);box-shadow:0 0 20px rgba(0,245,255,.15);}
+    .s-icon{width:48px;height:48px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.3rem;margin-bottom:1rem;}
+    .s-num{font-size:2rem;font-weight:700;font-family:'Orbitron',monospace;}
+    .s-lbl{font-size:.78rem;color:var(--tm);text-transform:uppercase;letter-spacing:1px;margin-top:.25rem;}
+    /* CHART CARD */
+    .chart-card{background:var(--card);border:1px solid var(--bdim);border-radius:var(--r);padding:1.5rem;height:100%;}
+    .c-title{color:var(--cyan);font-weight:700;font-size:.95rem;margin-bottom:1rem;display:flex;align-items:center;gap:.5rem;}
+    /* PROGRESS */
+    .prog-wrap{margin-bottom:.75rem;}
+    .prog-label{display:flex;justify-content:space-between;margin-bottom:.3rem;font-size:.8rem;color:var(--ts);}
+    .prog-bg{background:rgba(255,255,255,.07);border-radius:20px;height:8px;overflow:hidden;}
+    .prog-fill{height:100%;border-radius:20px;transition:width 1.2s ease;}
+    /* SECTION TABS */
+    .section{display:none;animation:fadeUp .3s ease;}
+    .section.active{display:block;}
+    @keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+    /* FEAT CARD */
+    .feat-card{background:rgba(13,13,20,.85);backdrop-filter:blur(15px);border:1px solid rgba(0,245,255,.2);border-radius:var(--r);padding:2rem;transition:all .3s;position:relative;overflow:hidden;height:100%;display:flex;flex-direction:column;}
+    .feat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg,var(--cyan),var(--magenta));}
+    .feat-card:hover{transform:translateY(-5px);border-color:rgba(0,245,255,.5);box-shadow:0 15px 35px rgba(0,0,0,.3);}
+    .f-icon-wrap{width:60px;height:60px;border-radius:50%;background:rgba(0,245,255,.1);border:1px solid rgba(0,245,255,.3);display:flex;align-items:center;justify-content:center;margin-right:1rem;box-shadow:0 0 15px rgba(0,245,255,.2);transition:all .3s;flex-shrink:0;}
+    .feat-card:hover .f-icon-wrap{transform:scale(1.1);box-shadow:0 0 25px rgba(0,245,255,.4);}
+    .btn-feat{display:block;background:rgba(0,0,0,.4);border:1px solid rgba(0,245,255,.4);color:var(--cyan);padding:.75rem 1.5rem;border-radius:6px;text-decoration:none;font-size:.88rem;font-weight:600;text-align:center;transition:all .3s;position:relative;overflow:hidden;margin-top:auto;}
+    .btn-feat:hover{background:rgba(0,245,255,.1);box-shadow:0 0 20px rgba(0,245,255,.3);color:var(--cyan);transform:translateY(-2px);}
+    /* TABLE */
+    .dtable{width:100%;border-collapse:collapse;}
+    .dtable th{background:rgba(255,255,255,.02);color:var(--tm);font-size:.78rem;padding:11px 12px;text-align:left;text-transform:uppercase;letter-spacing:.5px;border-bottom:1px solid var(--bdim);}
+    .dtable td{padding:13px 12px;border-bottom:1px solid rgba(255,255,255,.04);font-size:.88rem;}
+    .dtable tr:hover td{background:rgba(255,255,255,.02);}
+    /* BADGES */
+    .bx{padding:4px 10px;border-radius:20px;font-size:.75rem;font-weight:600;display:inline-block;}
+    .bx-c{background:rgba(0,245,255,.1);color:var(--cyan);border:1px solid rgba(0,245,255,.3);}
+    .bx-g{background:rgba(0,255,157,.1);color:var(--green);border:1px solid rgba(0,255,157,.3);}
+    .bx-r{background:rgba(255,56,100,.1);color:var(--red);border:1px solid rgba(255,56,100,.3);}
+    .bx-y{background:rgba(255,215,0,.1);color:var(--yellow);border:1px solid rgba(255,215,0,.3);}
+    .bx-p{background:rgba(139,92,246,.1);color:var(--purple);border:1px solid rgba(139,92,246,.3);}
+    /* FORM */
+    .f-input{width:100%;background:rgba(0,0,0,.5);border:1px solid rgba(0,245,255,.25);border-radius:8px;padding:10px 14px;color:var(--tp);font-size:.88rem;outline:none;transition:border-color .2s;}
+    .f-input:focus{border-color:var(--cyan);}
+    .f-label{color:var(--tm);font-size:.8rem;font-weight:600;margin-bottom:5px;display:block;text-transform:uppercase;letter-spacing:.5px;}
+    .btn-c{background:rgba(0,245,255,.1);border:1px solid var(--cyan);color:var(--cyan);padding:10px 22px;border-radius:8px;font-weight:600;font-size:.88rem;cursor:pointer;transition:all .2s;}
+    .btn-c:hover{background:rgba(0,245,255,.2);box-shadow:0 0 16px rgba(0,245,255,.3);}
+    /* HOD CARD */
+    .hod-card{background:rgba(0,245,255,.04);border:1px solid rgba(0,245,255,.2);border-radius:12px;padding:16px;display:flex;align-items:center;gap:14px;transition:all .25s;margin-bottom:10px;}
+    .hod-card:hover{border-color:rgba(0,245,255,.5);box-shadow:0 0 20px rgba(0,245,255,.1);}
+    .hod-av{width:46px;height:46px;border-radius:50%;background:linear-gradient(135deg,var(--cyan),var(--purple));display:flex;align-items:center;justify-content:center;font-size:1.1rem;color:#000;font-weight:700;flex-shrink:0;}
+    /* AI ALERT */
+    .ai-box{background:rgba(245,158,11,.05);border:1px solid rgba(245,158,11,.25);border-radius:10px;padding:14px 18px;margin-bottom:12px;display:flex;gap:12px;align-items:flex-start;}
+    .ai-box i{color:var(--yellow);margin-top:2px;flex-shrink:0;}
+    /* TIMELINE */
+    .tl-line{position:absolute;left:10px;top:0;bottom:0;width:2px;background:linear-gradient(to bottom,var(--cyan),var(--purple),var(--red));border-radius:2px;}
+    /* MOBILE */
+    .mob-toggle{display:none;position:fixed;top:1rem;left:1rem;z-index:1001;background:var(--cyan);color:#000;border:none;padding:.7rem;border-radius:8px;cursor:pointer;}
+    @media(max-width:1200px){.sidebar{transform:translateX(-100%)}.main{margin-left:0}.sidebar.show{transform:translateX(0)}.mob-toggle{display:block}}
+    @media(max-width:768px){.content{padding:1rem}}
+  </style>
+</head>
+<body>
+<div class="orb orb-1"></div><div class="orb orb-2"></div><div class="orb orb-3"></div>
+<button class="mob-toggle" onclick="document.getElementById('sb').classList.toggle('show')"><i class="fas fa-bars"></i></button>
+
+<div class="layout">
+<!-- ═══════════ SIDEBAR ═══════════ -->
+<nav class="sidebar" id="sb">
+  <div class="sb-brand">
+    <div class="sb-logo"><i class="fas fa-shield-alt"></i></div>
+    <div class="sb-title">Principal</div>
+    <div class="sb-sub">Academic ERP System</div>
+  </div>
+  <div class="nav-menu">
+    <div class="nav-label">Main</div>
+    <div class="nav-item"><a class="nav-link active" onclick="switchTab('overview',this)"><i class="fas fa-tachometer-alt"></i>Dashboard</a></div>
+    <div class="nav-item"><a class="nav-link" onclick="switchTab('hod_mgmt',this)"><i class="fas fa-user-tie"></i>HOD Management</a></div>
+    <div class="nav-label">Analytics</div>
+    <div class="nav-item"><a class="nav-link" onclick="switchTab('analytics',this)"><i class="fas fa-chart-pie"></i>Workload Analytics</a></div>
+    <div class="nav-item"><a class="nav-link" onclick="switchTab('daily',this)"><i class="fas fa-calendar-day"></i>Daily Activity</a></div>
+    <div class="nav-item"><a class="nav-link" onclick="switchTab('meetings',this)"><i class="fas fa-handshake"></i>Meetings & Events</a></div>
+    <div class="nav-label">Reports</div>
+    <div class="nav-item"><a class="nav-link" onclick="switchTab('workload',this)"><i class="fas fa-briefcase"></i>Staff Workload</a></div>
+    <div class="nav-item"><a class="nav-link" onclick="switchTab('leaves',this)"><i class="fas fa-calendar-check"></i>Leave Approvals</a></div>
+    <div class="nav-item"><a class="nav-link" onclick="switchTab('feedback',this)"><i class="fas fa-comments"></i>Student Feedback</a></div>
+    <div class="nav-item"><a class="nav-link" onclick="switchTab('notifications',this)"><i class="fas fa-bell"></i>HOD Notifications</a></div>
+    <div class="nav-label">Account</div>
+    <div class="nav-item"><a href="{{ url_for('profile') }}" class="nav-link"><i class="fas fa-user"></i>Profile</a></div>
+    <div class="nav-item"><a href="{{ url_for('logout') }}" class="nav-link" style="color:var(--red);"><i class="fas fa-sign-out-alt"></i>Logout</a></div>
+  </div>
+</nav>
+
+<!-- ═══════════ MAIN ═══════════ -->
+<div class="main">
+  <!-- TOP BAR -->
+  <div class="topbar">
+    <div class="tb-left">
+      <h1><i class="fas fa-shield-alt me-2"></i>Principal Dashboard</h1>
+      <p>Institution Overview & Management — SVERI College of Engineering</p>
+    </div>
+    <div class="tb-right">
+      <div class="tb-time"><div class="t" id="liveTime">--:--</div><div class="d" id="liveDate">---</div></div>
+      <a href="{{ url_for('profile') }}" class="tb-avatar">P</a>
+    </div>
+  </div>
+
+  <!-- FLASH -->
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+    <div style="padding:0 1.5rem;margin-top:1rem;">
+      {% for cat,msg in messages %}
+      <div class="alert alert-{{ cat }} alert-dismissible fade show">{{ msg }}<button type="button" class="btn-close" data-bs-dismiss="alert"></button></div>
+      {% endfor %}
+    </div>
+    {% endif %}
+  {% endwith %}
+
+  <div class="content">
+
+  <!-- ══════════ OVERVIEW ══════════ -->
+  <div id="overview" class="section active">
+
+    <!-- Welcome Banner -->
+    <div class="welcome mb-4">
+      <div class="d-flex align-items-center">
+        <div class="w-icon">🏛️</div>
+        <div>
+          <div class="w-title">Welcome, Principal</div>
+          <div class="w-sub">SVERI College of Engineering (Polytechnic) — Academic Workload Management System</div>
+          <div class="w-stats">
+            <div class="w-stat"><div class="val">{{ total_students }}</div><div class="lbl">Students</div></div>
+            <div class="w-stat"><div class="val">{{ total_faculty }}</div><div class="lbl">Faculty</div></div>
+            <div class="w-stat"><div class="val">{{ all_hods|length }}</div><div class="lbl">HODs</div></div>
+            <div class="w-stat"><div class="val">{{ pending_leaves }}</div><div class="lbl">Pending</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Stat Cards -->
+    <div class="row g-3 mb-4">
+      <div class="col-lg-3 col-md-6">
+        <div class="stat-card">
+          <div class="s-icon" style="background:rgba(0,245,255,.1);color:var(--cyan);"><i class="fas fa-users"></i></div>
+          <div class="s-num" style="color:var(--cyan);" data-target="{{ total_students }}">0</div>
+          <div class="s-lbl"><i class="fas fa-user-graduate me-1"></i>Total Students</div>
+        </div>
+      </div>
+      <div class="col-lg-3 col-md-6">
+        <div class="stat-card">
+          <div class="s-icon" style="background:rgba(0,255,157,.1);color:var(--green);"><i class="fas fa-chalkboard-teacher"></i></div>
+          <div class="s-num" style="color:var(--green);" data-target="{{ total_faculty }}">0</div>
+          <div class="s-lbl"><i class="fas fa-chalkboard me-1"></i>Total Faculty</div>
+        </div>
+      </div>
+      <div class="col-lg-3 col-md-6">
+        <div class="stat-card">
+          <div class="s-icon" style="background:rgba(255,215,0,.1);color:var(--yellow);"><i class="fas fa-chart-line"></i></div>
+          <div class="s-num" style="color:var(--yellow);" data-target="{{ overall_pass_percentage|round(1) }}">0</div>
+          <div class="s-lbl"><i class="fas fa-percent me-1"></i>Avg Pass Rate</div>
+        </div>
+      </div>
+      <div class="col-lg-3 col-md-6">
+        <div class="stat-card">
+          <div class="s-icon" style="background:rgba(255,56,100,.1);color:var(--red);"><i class="fas fa-exclamation-triangle"></i></div>
+          <div class="s-num" style="color:var(--red);" data-target="{{ active_issues }}">0</div>
+          <div class="s-lbl"><i class="fas fa-bell me-1"></i>Pending Complaints</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Charts + Progress -->
+    <div class="row g-3 mb-4">
+      <div class="col-lg-5">
+        <div class="chart-card">
+          <div class="c-title"><i class="fas fa-chart-bar"></i>Faculty Workload Distribution</div>
+          <canvas id="wlChart" height="200"></canvas>
+        </div>
+      </div>
+      <div class="col-lg-3">
+        <div class="chart-card">
+          <div class="c-title"><i class="fas fa-chart-pie"></i>Dept Workload Split</div>
+          <canvas id="deptPie" height="180"></canvas>
+        </div>
+      </div>
+      <div class="col-lg-4">
+        <div class="chart-card">
+          <div class="c-title"><i class="fas fa-tasks"></i>Institution Stats</div>
+          <div class="prog-wrap">
+            <div class="prog-label"><span>Faculty Utilization</span><span style="color:var(--cyan);">{{ [((total_faculty/10)*100)|round(0)|int, 100]|min }}%</span></div>
+            <div class="prog-bg"><div class="prog-fill" style="width:{{ [((total_faculty/10)*100)|round(0)|int, 100]|min }}%;background:linear-gradient(90deg,var(--cyan),var(--purple));"></div></div>
+          </div>
+          <div class="prog-wrap">
+            <div class="prog-label"><span>Pass Rate</span><span style="color:var(--green);">{{ overall_pass_percentage|round(1) }}%</span></div>
+            <div class="prog-bg"><div class="prog-fill" style="width:{{ overall_pass_percentage|round(0)|int }}%;background:linear-gradient(90deg,var(--green),var(--cyan));"></div></div>
+          </div>
+          <div class="prog-wrap">
+            <div class="prog-label"><span>Leave Approvals</span><span style="color:var(--yellow);">{{ approved_faculty_leaves|length }} approved</span></div>
+            <div class="prog-bg"><div class="prog-fill" style="width:{{ [approved_faculty_leaves|length * 10, 100]|min }}%;background:linear-gradient(90deg,var(--yellow),var(--orange));"></div></div>
+          </div>
+          <div class="prog-wrap">
+            <div class="prog-label"><span>Complaints Pending</span><span style="color:var(--red);">{{ active_issues }}</span></div>
+            <div class="prog-bg"><div class="prog-fill" style="width:{{ [active_issues * 10, 100]|min }}%;background:linear-gradient(90deg,var(--red),var(--magenta));"></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- AI Suggestions -->
+    {% if ai_suggestions %}
+    <div class="chart-card mb-4">
+      <div class="c-title"><i class="fas fa-robot"></i>AI Suggestions & Alerts</div>
+      {% for s in ai_suggestions %}
+      <div class="ai-box"><i class="fas fa-lightbulb"></i><span>{{ s }}</span></div>
+      {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- Feature Cards -->
+    <div class="row g-3">
+      <div class="col-lg-4 col-md-6">
+        <div class="feat-card">
+          <div class="d-flex align-items-center mb-3">
+            <div class="f-icon-wrap"><i class="fas fa-user-tie" style="font-size:1.5rem;color:var(--cyan);"></i></div>
+            <h4 style="color:var(--cyan);font-weight:700;font-size:1.1rem;margin:0;">HOD Management</h4>
+          </div>
+          <p style="color:var(--ts);font-size:.88rem;flex:1;margin-bottom:1.5rem;">Add and manage Heads of Department. Assign departments and control HOD access to the system.</p>
+          <a class="btn-feat" onclick="switchTab('hod_mgmt',null)"><i class="fas fa-plus me-2"></i>Manage HODs</a>
+        </div>
+      </div>
+      <div class="col-lg-4 col-md-6">
+        <div class="feat-card" style="border-color:rgba(0,255,157,.2);">
+          <div style="position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg,var(--green),#10B981);"></div>
+          <div class="d-flex align-items-center mb-3">
+            <div class="f-icon-wrap" style="background:rgba(0,255,157,.1);border-color:rgba(0,255,157,.3);"><i class="fas fa-chart-pie" style="font-size:1.5rem;color:var(--green);"></i></div>
+            <h4 style="color:var(--green);font-weight:700;font-size:1.1rem;margin:0;">Workload Analytics</h4>
+          </div>
+          <p style="color:var(--ts);font-size:.88rem;flex:1;margin-bottom:1.5rem;">View department-wise workload charts, faculty comparison, and monthly trends for quick decisions.</p>
+          <a class="btn-feat" style="border-color:rgba(0,255,157,.4);color:var(--green);" onclick="switchTab('analytics',null)"><i class="fas fa-chart-bar me-2"></i>View Analytics</a>
+        </div>
+      </div>
+      <div class="col-lg-4 col-md-6">
+        <div class="feat-card" style="border-color:rgba(255,215,0,.2);">
+          <div style="position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg,var(--yellow),var(--orange));"></div>
+          <div class="d-flex align-items-center mb-3">
+            <div class="f-icon-wrap" style="background:rgba(255,215,0,.1);border-color:rgba(255,215,0,.3);"><i class="fas fa-calendar-day" style="font-size:1.5rem;color:var(--yellow);"></i></div>
+            <h4 style="color:var(--yellow);font-weight:700;font-size:1.1rem;margin:0;">Daily Activity</h4>
+          </div>
+          <p style="color:var(--ts);font-size:.88rem;flex:1;margin-bottom:1.5rem;">Today's absent faculty, workload overload alerts, substitution needs and meeting reminders.</p>
+          <a class="btn-feat" style="border-color:rgba(255,215,0,.4);color:var(--yellow);" onclick="switchTab('daily',null)"><i class="fas fa-eye me-2"></i>View Today</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- At Risk + Top Students -->
+    <div class="row g-3 mt-3">
+      <div class="col-lg-6">
+        <div class="chart-card">
+          <div class="c-title" style="color:var(--red);"><i class="fas fa-shield-alt"></i>At-Risk Students</div>
+          <div style="max-height:200px;overflow-y:auto;">
+            <table class="dtable">
+              <thead><tr><th>Name</th><th>Risk Factors</th></tr></thead>
+              <tbody>
+                {% for rs in at_risk_students %}
+                <tr><td>{{ rs.name }}</td><td><span class="bx bx-r">{{ rs.reasons }}</span></td></tr>
+                {% else %}
+                <tr><td colspan="2" style="text-align:center;color:var(--green);padding:16px;">No students at risk ✓</td></tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-6">
+        <div class="chart-card">
+          <div class="c-title" style="color:var(--yellow);"><i class="fas fa-trophy"></i>Top Performing Students</div>
+          {% if top_students %}
+          <div style="display:flex;flex-wrap:wrap;gap:10px;">
+            {% for s in top_students %}
+            <div style="background:rgba(255,215,0,.06);border:1px solid rgba(255,215,0,.25);border-radius:10px;padding:12px 16px;text-align:center;min-width:110px;">
+              <div style="font-size:1.3rem;color:var(--yellow);font-weight:700;">{{ s.score }}%</div>
+              <div style="font-size:.78rem;color:var(--tm);margin-top:3px;">{{ s.name }}</div>
+            </div>
+            {% endfor %}
+          </div>
+          {% else %}
+          <div style="text-align:center;padding:20px;color:var(--tm);">No data available yet.</div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ══════════ HOD MANAGEMENT ══════════ -->
+  <div id="hod_mgmt" class="section">
+    <div class="row g-3">
+      <div class="col-lg-4">
+        <div class="chart-card">
+          <div class="c-title"><i class="fas fa-user-plus"></i>Add New HOD</div>
+          <form method="POST" action="{{ url_for('principal_add_hod') }}">
+            <div class="mb-3"><label class="f-label">Full Name</label><input class="f-input" type="text" name="full_name" placeholder="Dr. A.B. Bhatlawande" required/></div>
+            <div class="mb-3"><label class="f-label">Username</label><input class="f-input" type="text" name="username" placeholder="A.B.Bhatlawande" required/></div>
+            <div class="mb-3"><label class="f-label">Password</label><input class="f-input" type="password" name="password" placeholder="Set login password" required/></div>
+            <div class="mb-3"><label class="f-label">Department</label><input class="f-input" type="text" name="department" placeholder="e.g. Computer Technology"/></div>
+            <div class="mb-4"><label class="f-label">Email</label><input class="f-input" type="email" name="email" placeholder="hod@sveri.ac.in"/></div>
+            <button type="submit" class="btn-c w-100"><i class="fas fa-plus me-2"></i>Add HOD</button>
+          </form>
+        </div>
+      </div>
+      <div class="col-lg-8">
+        <div class="chart-card">
+          <div class="c-title" style="color:var(--purple);"><i class="fas fa-users-cog"></i>Existing HODs ({{ all_hods|length }})</div>
+          <div style="max-height:500px;overflow-y:auto;">
+            {% for hod in all_hods %}
+            <div class="hod-card">
+              <div class="hod-av">{{ (hod.full_name or hod.username)[0]|upper }}</div>
+              <div style="flex:1;">
+                <div style="font-weight:700;font-size:.95rem;">{{ hod.full_name or hod.username }}</div>
+                <div style="font-size:.8rem;color:var(--tm);margin-top:2px;">
+                  <i class="fas fa-building me-1"></i>{{ hod.department or 'No dept' }}
+                  {% if hod.email %}&nbsp;·&nbsp;<i class="fas fa-envelope me-1"></i>{{ hod.email }}{% endif %}
+                </div>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:6px;align-items:flex-end;">
+                {% if hod.is_active %}<span class="bx bx-g">Active</span>{% else %}<span class="bx bx-r">Inactive</span>{% endif %}
+                <form method="POST" action="{{ url_for('principal_toggle_hod', hod_id=hod.id) }}" style="margin:0;">
+                  {% if hod.is_active %}
+                  <button type="submit" style="background:rgba(255,56,100,.1);border:1px solid var(--red);color:var(--red);padding:4px 12px;border-radius:6px;font-size:.78rem;cursor:pointer;">Deactivate</button>
+                  {% else %}
+                  <button type="submit" style="background:rgba(0,255,157,.1);border:1px solid var(--green);color:var(--green);padding:4px 12px;border-radius:6px;font-size:.78rem;cursor:pointer;">Activate</button>
+                  {% endif %}
+                </form>
+              </div>
+            </div>
+            {% else %}
+            <div style="text-align:center;padding:30px;color:var(--tm);">No HODs added yet.</div>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════ WORKLOAD ANALYTICS ══════════ -->
+  <div id="analytics" class="section">
+    {% if overload_list %}
+    <div class="chart-card mb-4" style="border-left:4px solid var(--red);">
+      <div class="c-title" style="color:var(--red);"><i class="fas fa-exclamation-triangle"></i>Workload Overload Alerts</div>
+      <div style="display:flex;flex-wrap:wrap;gap:12px;">
+        {% for f in overload_list %}
+        <div style="background:rgba(255,56,100,.08);border:1px solid rgba(255,56,100,.3);border-radius:10px;padding:12px 18px;display:flex;align-items:center;gap:10px;">
+          <i class="fas fa-user-clock" style="color:var(--red);"></i>
+          <div><div style="font-weight:700;font-size:.9rem;">{{ f.name }}</div><div style="color:var(--red);font-size:.8rem;">{{ f.hours }} hrs/week — Overloaded</div></div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+    {% endif %}
+    <div class="row g-3 mb-4">
+      <div class="col-lg-6"><div class="chart-card"><div class="c-title"><i class="fas fa-building"></i>Department-wise Workload</div><canvas id="deptChart" style="max-height:240px;"></canvas></div></div>
+      <div class="col-lg-6"><div class="chart-card"><div class="c-title" style="color:var(--purple);"><i class="fas fa-users"></i>Faculty Workload Comparison</div><canvas id="facChart" style="max-height:240px;"></canvas></div></div>
+    </div>
+    <div class="chart-card"><div class="c-title" style="color:var(--green);"><i class="fas fa-chart-line"></i>Monthly Workload Trend</div><canvas id="monthlyChart" style="max-height:200px;"></canvas></div>
+  </div>
+
+  <!-- ══════════ DAILY ACTIVITY ══════════ -->
+  <div id="daily" class="section">
+    <div class="row g-3 mb-4">
+      <div class="col-lg-4">
+        <div class="chart-card">
+          <div class="c-title"><i class="fas fa-calendar-day"></i>Today — {{ today_str }}</div>
+          <div style="display:flex;flex-direction:column;gap:12px;">
+            <div style="background:rgba(0,245,255,.06);border:1px solid rgba(0,245,255,.2);border-radius:10px;padding:14px;display:flex;align-items:center;gap:12px;">
+              <div style="width:42px;height:42px;background:rgba(0,245,255,.15);border-radius:10px;display:flex;align-items:center;justify-content:center;color:var(--cyan);flex-shrink:0;"><i class="fas fa-chalkboard"></i></div>
+              <div><div style="font-size:1.4rem;font-weight:700;color:var(--cyan);">{{ total_classes }}</div><div style="color:var(--tm);font-size:.8rem;">Active Subjects</div></div>
+            </div>
+            <div style="background:rgba(255,56,100,.06);border:1px solid rgba(255,56,100,.2);border-radius:10px;padding:14px;display:flex;align-items:center;gap:12px;">
+              <div style="width:42px;height:42px;background:rgba(255,56,100,.15);border-radius:10px;display:flex;align-items:center;justify-content:center;color:var(--red);flex-shrink:0;"><i class="fas fa-user-times"></i></div>
+              <div><div style="font-size:1.4rem;font-weight:700;color:var(--red);">{{ absent_faculty|length }}</div><div style="color:var(--tm);font-size:.8rem;">Faculty on Leave Today</div></div>
+            </div>
+            <div style="background:rgba(255,215,0,.06);border:1px solid rgba(255,215,0,.2);border-radius:10px;padding:14px;display:flex;align-items:center;gap:12px;">
+              <div style="width:42px;height:42px;background:rgba(255,215,0,.15);border-radius:10px;display:flex;align-items:center;justify-content:center;color:var(--yellow);flex-shrink:0;"><i class="fas fa-hourglass-half"></i></div>
+              <div><div style="font-size:1.4rem;font-weight:700;color:var(--yellow);">{{ pending_leaves }}</div><div style="color:var(--tm);font-size:.8rem;">Pending Leave Requests</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-4">
+        <div class="chart-card">
+          <div class="c-title" style="color:var(--red);"><i class="fas fa-user-times"></i>Absent Faculty Today</div>
+          {% if absent_faculty %}
+          {% for name in absent_faculty %}
+          <div style="background:rgba(255,56,100,.06);border:1px solid rgba(255,56,100,.2);border-radius:8px;padding:10px 14px;display:flex;align-items:center;gap:10px;margin-bottom:8px;">
+            <div style="width:34px;height:34px;background:rgba(255,56,100,.2);border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--red);font-weight:700;flex-shrink:0;">{{ name[0]|upper }}</div>
+            <span style="font-weight:600;font-size:.88rem;">{{ name }}</span>
+            <span class="bx bx-r ms-auto" style="font-size:.72rem;">On Leave</span>
+          </div>
+          {% endfor %}
+          {% else %}
+          <div style="text-align:center;padding:24px;color:var(--green);"><i class="fas fa-check-circle fa-2x mb-2"></i><br>All faculty present today</div>
+          {% endif %}
+        </div>
+      </div>
+      <div class="col-lg-4">
+        <div class="chart-card">
+          <div class="c-title" style="color:var(--yellow);"><i class="fas fa-bolt"></i>Overload Alert</div>
+          {% if overload_list %}
+          {% for f in overload_list %}
+          <div style="background:rgba(255,56,100,.06);border:1px solid rgba(255,56,100,.2);border-radius:8px;padding:10px 14px;margin-bottom:8px;">
+            <div style="font-weight:700;font-size:.88rem;">{{ f.name }}</div>
+            <div style="color:var(--red);font-size:.8rem;margin-top:2px;">{{ f.hours }} hrs — Redistribute via HOD</div>
+          </div>
+          {% endfor %}
+          {% else %}
+          <div style="text-align:center;padding:24px;color:var(--green);"><i class="fas fa-check-circle fa-2x mb-2"></i><br>No overloaded faculty</div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════ MEETINGS & EVENTS ══════════ -->
+  <div id="meetings" class="section">
+    <div class="row g-3">
+      <div class="col-lg-6">
+        <div class="chart-card">
+          <div class="c-title"><i class="fas fa-handshake"></i>Upcoming Meetings</div>
+          {% set mtgs=[{'t':'HOD Monthly Review','d':'15 Apr 2026','tm':'10:00 AM','v':'Conference Room A'},{'t':'Faculty Performance Review','d':'18 Apr 2026','tm':'11:30 AM','v':'Principal Office'},{'t':'AICTE Compliance Discussion','d':'22 Apr 2026','tm':'02:00 PM','v':'Board Room'},{'t':'Department Heads Sync','d':'25 Apr 2026','tm':'09:00 AM','v':'Seminar Hall'}] %}
+          {% for m in mtgs %}
+          <div style="background:rgba(0,245,255,.04);border:1px solid rgba(0,245,255,.15);border-radius:10px;padding:12px 14px;display:flex;gap:12px;align-items:flex-start;margin-bottom:10px;">
+            <div style="background:rgba(0,245,255,.15);border-radius:8px;padding:6px 10px;text-align:center;flex-shrink:0;min-width:46px;">
+              <div style="font-size:.65rem;color:var(--tm);">{{ m.d.split(' ')[1] }}</div>
+              <div style="font-size:1.2rem;font-weight:700;color:var(--cyan);line-height:1;">{{ m.d.split(' ')[0] }}</div>
+            </div>
+            <div style="flex:1;"><div style="font-weight:700;font-size:.88rem;margin-bottom:2px;">{{ m.t }}</div><div style="font-size:.76rem;color:var(--tm);"><i class="fas fa-clock me-1"></i>{{ m.tm }} &nbsp;·&nbsp; <i class="fas fa-map-marker-alt me-1"></i>{{ m.v }}</div></div>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+      <div class="col-lg-6">
+        <div class="chart-card">
+          <div class="c-title" style="color:var(--yellow);"><i class="fas fa-calendar-alt"></i>College Events & Deadlines</div>
+          {% set evts=[('Mid-Semester Exam','20 Apr 2026','exam','r'),('NBA Documentation Deadline','28 Apr 2026','deadline','y'),('Annual Sports Day','05 May 2026','event','g'),('Result Declaration','10 May 2026','exam','r'),('Faculty Development Program','15 May 2026','event','p'),('MSBTE Practical Exam','20 May 2026','exam','r')] %}
+          {% for e in evts %}
+          <div style="display:flex;align-items:center;gap:12px;padding:10px 12px;background:rgba(255,255,255,.02);border-radius:8px;border-left:3px solid var(--{% if e[3]=='r' %}red{% elif e[3]=='y' %}yellow{% elif e[3]=='g' %}green{% else %}purple{% endif %});margin-bottom:8px;">
+            <div style="flex:1;"><div style="font-weight:600;font-size:.86rem;">{{ e[0] }}</div><div style="font-size:.74rem;color:var(--tm);margin-top:1px;"><i class="fas fa-calendar me-1"></i>{{ e[1] }}</div></div>
+            <span class="bx bx-{% if e[3]=='r' %}r{% elif e[3]=='y' %}y{% elif e[3]=='g' %}g{% else %}p{% endif %}" style="font-size:.7rem;">{{ e[2] }}</span>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+    <!-- Deadlines Timeline -->
+    <div class="chart-card mt-3">
+      <div class="c-title" style="color:var(--red);"><i class="fas fa-hourglass-half"></i>Important Deadlines</div>
+      <div style="position:relative;padding-left:28px;">
+        <div class="tl-line"></div>
+        {% set dls=[('Attendance Report Submission','12 Apr 2026','All Departments',true),('Workload Allocation Final','16 Apr 2026','HOD Office',false),('NBA Self-Assessment Report','28 Apr 2026','Principal Office',true),('Exam Timetable Approval','02 May 2026','Exam Cell',false),('Annual Report Submission','30 May 2026','All HODs',false)] %}
+        {% for d in dls %}
+        <div style="position:relative;margin-bottom:16px;padding-left:14px;">
+          <div style="position:absolute;left:-21px;top:4px;width:12px;height:12px;border-radius:50%;background:{% if d[3] %}var(--red){% else %}var(--cyan){% endif %};border:2px solid var(--bg);"></div>
+          <div style="background:rgba(255,255,255,.03);border:1px solid var(--bdim);border-radius:8px;padding:10px 14px;">
+            <div style="display:flex;justify-content:space-between;align-items:center;">
+              <span style="font-weight:700;font-size:.86rem;">{{ d[0] }}</span>
+              {% if d[3] %}<span class="bx bx-r" style="font-size:.7rem;">Urgent</span>{% endif %}
+            </div>
+            <div style="font-size:.76rem;color:var(--tm);margin-top:3px;"><i class="fas fa-calendar me-1"></i>{{ d[1] }} &nbsp;·&nbsp; <i class="fas fa-building me-1"></i>{{ d[2] }}</div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════ STAFF WORKLOAD ══════════ -->
+  <div id="workload" class="section">
+    <div class="chart-card">
+      <div class="c-title"><i class="fas fa-briefcase"></i>HOD Assigned Staff Workload</div>
+      <div style="overflow-x:auto;">
+        <table class="dtable">
+          <thead><tr><th>#</th><th>Faculty Name</th><th>Subject</th><th>Assigned By (HOD)</th><th>Hours/Week</th><th>Date</th></tr></thead>
+          <tbody>
+            {% for wl in all_workloads %}
+            <tr>
+              <td style="color:var(--tm);">{{ loop.index }}</td>
+              <td style="font-weight:600;">{{ wl.faculty.full_name or wl.faculty.username }}</td>
+              <td><span class="bx bx-c">{{ wl.subject or 'N/A' }}</span></td>
+              <td>{{ wl.hod.full_name or wl.hod.username if wl.hod else 'N/A' }}</td>
+              <td><span class="bx bx-y">{{ wl.hours }} hrs</span></td>
+              <td style="color:var(--tm);">{{ wl.timestamp.strftime('%d %b %Y') }}</td>
+            </tr>
+            {% else %}
+            <tr><td colspan="6" style="text-align:center;padding:24px;color:var(--tm);">No workload assigned yet.</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════ LEAVE APPROVALS ══════════ -->
+  <div id="leaves" class="section">
+    <div class="chart-card">
+      <div class="c-title" style="color:var(--green);"><i class="fas fa-calendar-check"></i>HOD-Approved Staff Leaves</div>
+      <div style="overflow-x:auto;">
+        <table class="dtable">
+          <thead><tr><th>#</th><th>Staff Member</th><th>Leave Type</th><th>From</th><th>To</th><th>Reason</th><th>Approved By</th><th>Applied On</th></tr></thead>
+          <tbody>
+            {% for lv in approved_faculty_leaves %}
+            <tr>
+              <td style="color:var(--tm);">{{ loop.index }}</td>
+              <td style="font-weight:600;color:var(--cyan);">{{ lv.user.full_name or lv.user.username }}</td>
+              <td><span class="bx bx-g">{{ lv.leave_type|capitalize }}</span></td>
+              <td>{{ lv.start_date.strftime('%d %b %Y') }}</td>
+              <td>{{ lv.end_date.strftime('%d %b %Y') }}</td>
+              <td style="max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--tm);" title="{{ lv.reason }}">{{ lv.reason }}</td>
+              <td>{{ lv.approver.full_name or lv.approver.username if lv.approver else 'HOD' }}</td>
+              <td style="color:var(--tm);">{{ lv.timestamp.strftime('%d %b %Y') }}</td>
+            </tr>
+            {% else %}
+            <tr><td colspan="8" style="text-align:center;padding:24px;color:var(--tm);">No approved staff leaves found.</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════ STUDENT FEEDBACK ══════════ -->
+  <div id="feedback" class="section">
+    <div class="chart-card">
+      <div class="c-title" style="color:var(--purple);"><i class="fas fa-comments"></i>Student Feedback (Confidential)</div>
+      <div style="overflow-x:auto;">
+        <table class="dtable">
+          <thead><tr><th>#</th><th>Student</th><th>Faculty</th><th>Subject</th><th>Rating</th><th>Comments</th><th>Date</th></tr></thead>
+          <tbody>
+            {% for fb in all_feedback %}
+            <tr>
+              <td style="color:var(--tm);">{{ loop.index }}</td>
+              <td>{{ fb.student.full_name or fb.student.username }}</td>
+              <td style="color:var(--cyan);font-weight:600;">{{ fb.faculty.full_name or fb.faculty.username }}</td>
+              <td>{{ fb.subject.name }}</td>
+              <td style="color:var(--yellow);">{% for i in range(fb.overall_satisfaction) %}★{% endfor %}{% for i in range(5-fb.overall_satisfaction) %}☆{% endfor %}</td>
+              <td style="color:var(--tm);font-size:.82rem;">{{ fb.additional_comments or '—' }}</td>
+              <td style="color:var(--tm);">{{ fb.timestamp.strftime('%d %b %Y') }}</td>
+            </tr>
+            {% else %}
+            <tr><td colspan="7" style="text-align:center;padding:24px;color:var(--tm);">No feedback available.</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════ HOD NOTIFICATIONS ══════════ -->
+  <div id="notifications" class="section">
+    <div class="chart-card">
+      <div class="c-title" style="color:var(--yellow);"><i class="fas fa-bell"></i>HOD Notifications & Announcements</div>
+      {% for n in hod_notifications %}
+      <div style="background:rgba(139,92,246,.05);border:1px solid rgba(139,92,246,.2);border-radius:10px;padding:16px 18px;margin-bottom:12px;">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px;">
+          <h4 style="color:var(--purple);font-size:.92rem;font-weight:700;">{{ n.title }}</h4>
+          <span style="color:var(--tm);font-size:.76rem;white-space:nowrap;margin-left:10px;">{{ n.timestamp.strftime('%d %b %Y, %H:%M') }}</span>
+        </div>
+        <p style="color:var(--tp);font-size:.86rem;margin-bottom:6px;">{{ n.content }}</p>
+        <div style="font-size:.78rem;color:var(--tm);"><i class="fas fa-user me-1"></i>{{ n.creator.full_name or n.creator.username }} (HOD)</div>
+      </div>
+      {% else %}
+      <div style="text-align:center;padding:30px;color:var(--tm);">No HOD notifications found.</div>
+      {% endfor %}
+    </div>
+  </div>
+
+  </div><!-- /content -->
+</div><!-- /main -->
+</div><!-- /layout -->
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+  // Live clock
+  function tick(){
+    const n=new Date();
+    document.getElementById('liveTime').textContent=n.toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'});
+    document.getElementById('liveDate').textContent=n.toLocaleDateString('en-IN',{weekday:'short',day:'2-digit',month:'short'});
+  }
+  tick(); setInterval(tick,1000);
+
+  // Tab switching
+  function switchTab(id,el){
+    document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+    document.querySelectorAll('.nav-link').forEach(s=>s.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    if(el) el.classList.add('active');
+  }
+
+  // Animated counters
+  document.querySelectorAll('.s-num[data-target]').forEach(el=>{
+    const t=parseFloat(el.dataset.target),isF=t%1!==0;
+    let c=0,step=t/50;
+    const tm=setInterval(()=>{c+=step;if(c>=t){c=t;clearInterval(tm);}el.textContent=isF?c.toFixed(1):Math.floor(c);},30);
+  });
+
+  const co={responsive:true,plugins:{legend:{labels:{color:'#9ca3af'}}},scales:{y:{beginAtZero:true,grid:{color:'rgba(255,255,255,.05)'},ticks:{color:'#6b7280'}},x:{grid:{display:false},ticks:{color:'#6b7280',maxRotation:35,font:{size:10}}}}};
+
+  // Overview workload chart
+  const wlL={{workload_labels|safe}},wlD={{workload_data|safe}};
+  if(wlL.length) new Chart(document.getElementById('wlChart'),{type:'bar',data:{labels:wlL,datasets:[{label:'Hours/Week',data:wlD,backgroundColor:'rgba(0,245,255,.2)',borderColor:'#00f5ff',borderWidth:2,borderRadius:6}]},options:co});
+
+  // Overview dept pie
+  const dpL={{dept_labels|safe}},dpD={{dept_data|safe}};
+  if(dpL.length) new Chart(document.getElementById('deptPie'),{type:'doughnut',data:{labels:dpL,datasets:[{data:dpD,backgroundColor:['rgba(0,245,255,.7)','rgba(139,92,246,.7)','rgba(0,255,157,.7)','rgba(255,215,0,.7)','rgba(255,56,100,.7)'],borderWidth:0}]},options:{responsive:true,plugins:{legend:{labels:{color:'#9ca3af',font:{size:10}}}}}});
+
+  // Analytics dept chart
+  if(document.getElementById('deptChart')&&dpL.length) new Chart(document.getElementById('deptChart'),{type:'doughnut',data:{labels:dpL,datasets:[{data:dpD,backgroundColor:['rgba(0,245,255,.7)','rgba(139,92,246,.7)','rgba(0,255,157,.7)','rgba(255,215,0,.7)','rgba(255,56,100,.7)'],borderWidth:0}]},options:{responsive:true,plugins:{legend:{labels:{color:'#9ca3af'}}}}});
+
+  // Analytics faculty chart
+  const fL={{fac_wl_labels|safe}},fD={{fac_wl_data|safe}};
+  if(document.getElementById('facChart')&&fL.length) new Chart(document.getElementById('facChart'),{type:'bar',data:{labels:fL,datasets:[{label:'Hours',data:fD,backgroundColor:'rgba(139,92,246,.3)',borderColor:'#8b5cf6',borderWidth:2,borderRadius:6}]},options:co});
+
+  // Monthly trend
+  const mL={{monthly_labels|safe}},mD={{monthly_data|safe}};
+  if(document.getElementById('monthlyChart')&&mL.length) new Chart(document.getElementById('monthlyChart'),{type:'line',data:{labels:mL,datasets:[{label:'Total Hours',data:mD,borderColor:'#00ff9d',backgroundColor:'rgba(0,255,157,.1)',fill:true,tension:.4,pointBackgroundColor:'#00ff9d',pointRadius:5}]},options:co});
+</script>
+</body>
+</html>

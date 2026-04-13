@@ -1,0 +1,248 @@
+{% extends "faculty_base.html" %}
+
+{% block title %}Study Materials - Faculty Dashboard{% endblock %}
+
+{% block extra_styles %}
+<style>
+    /* High contrast text visibility for study materials page */
+    .card-header h5, .card-header i {
+        color: var(--neon-cyan) !important;
+        text-shadow: 0 0 10px rgba(0, 245, 255, 0.3) !important;
+    }
+    
+    .form-label {
+        color: #ffffff !important;
+        font-weight: 600 !important;
+        text-transform: uppercase !important;
+        font-size: 0.9rem !important;
+        letter-spacing: 0.5px !important;
+    }
+    
+    .form-text {
+        color: #9ca3af !important;
+        font-size: 0.8rem !important;
+    }
+    
+    .text-danger {
+        color: #ff3864 !important;
+        font-weight: 500 !important;
+    }
+    
+    .table th {
+        color: var(--neon-cyan) !important;
+        font-weight: 700 !important;
+        text-transform: uppercase !important;
+        font-size: 0.8rem !important;
+        letter-spacing: 1px !important;
+    }
+    
+    .table td {
+        color: #e5e7eb !important;
+        font-weight: 400 !important;
+    }
+    
+    .fw-bold {
+        color: #ffffff !important;
+        font-weight: 700 !important;
+    }
+    
+    .text-primary {
+        color: var(--neon-cyan) !important;
+    }
+    
+    .text-muted, small.text-muted {
+        color: #9ca3af !important;
+        opacity: 0.9 !important;
+    }
+    
+    .badge {
+        color: #000000 !important;
+        font-weight: 600 !important;
+        background-color: var(--neon-cyan) !important;
+    }
+    
+    .btn-group .btn {
+        color: #ffffff !important;
+        font-weight: 600 !important;
+    }
+    
+    .btn-secondary {
+        color: #9ca3af !important;
+        border-color: #9ca3af !important;
+    }
+    
+    .btn-danger {
+        color: #ff3864 !important;
+        border-color: #ff3864 !important;
+    }
+    
+    .text-center p {
+        color: #9ca3af !important;
+        font-size: 1.1rem !important;
+    }
+    
+    .text-center small {
+        color: #6b7280 !important;
+        font-size: 0.9rem !important;
+    }
+    
+    .fa-3x {
+        color: #6b7280 !important;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-5">
+        <div class="card">
+            <div class="card-header d-flex align-items-center">
+                <i class="fas fa-upload me-2"></i>
+                <h5 class="mb-0">Upload Study Material</h5>
+            </div>
+            <div class="card-body">
+                <div class="icon-container">
+                    <i class="fas fa-cloud-upload-alt"></i>
+                </div>
+                
+                <form method="POST" enctype="multipart/form-data">
+                    {{ form.hidden_tag() }}
+                    
+                    <div class="mb-3">
+                        {{ form.title.label(class="form-label") }}
+                        {{ form.title(class="form-control", placeholder="Enter material title") }}
+                        {% if form.title.errors %}
+                            <div class="text-danger small mt-1">
+                                {% for error in form.title.errors %}
+                                    <span style="color: #ff3864 !important;">{{ error }}</span>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="mb-3">
+                        {{ form.description.label(class="form-label") }}
+                        {{ form.description(class="form-control", rows="3", placeholder="Brief description of the material") }}
+                    </div>
+
+                    <div class="mb-3">
+                        {{ form.subject.label(class="form-label") }}
+                        {{ form.subject(class="form-select") }}
+                        {% if form.subject.errors %}
+                            <div class="text-danger small mt-1">
+                                {% for error in form.subject.errors %}
+                                    <span style="color: #ff3864 !important;">{{ error }}</span>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="mb-3">
+                        {{ form.file.label(class="form-label") }}
+                        {{ form.file(class="form-control") }}
+                        <div class="form-text" style="color: #9ca3af !important;">
+                            Supported formats: PDF, DOC, DOCX, PPT, PPTX (Max: 10MB)
+                        </div>
+                        {% if form.file.errors %}
+                            <div class="text-danger small mt-1">
+                                {% for error in form.file.errors %}
+                                    <span style="color: #ff3864 !important;">{{ error }}</span>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="fas fa-upload me-2"></i>Upload Material
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-7">
+        <div class="card">
+            <div class="card-header d-flex align-items-center">
+                <i class="fas fa-folder-open me-2"></i>
+                <h5 class="mb-0">My Study Materials</h5>
+            </div>
+            <div class="card-body">
+                {% if materials %}
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th style="color: var(--neon-cyan) !important;">Title</th>
+                                    <th style="color: var(--neon-cyan) !important;">Subject</th>
+                                    <th style="color: var(--neon-cyan) !important;">File</th>
+                                    <th style="color: var(--neon-cyan) !important;">Size</th>
+                                    <th style="color: var(--neon-cyan) !important;">Uploaded</th>
+                                    <th style="color: var(--neon-cyan) !important;">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for material in materials %}
+                                <tr>
+                                    <td style="color: #e5e7eb !important;">
+                                        <div class="fw-bold" style="color: #ffffff !important;">{{ material.title }}</div>
+                                        {% if material.description %}
+                                            <small style="color: #9ca3af !important;">{{ material.description[:50] }}{% if material.description|length > 50 %}...{% endif %}</small>
+                                        {% endif %}
+                                    </td>
+                                    <td style="color: #e5e7eb !important;">
+                                        <span class="badge" style="background-color: var(--neon-cyan) !important; color: #000000 !important;">{{ material.subject.code }}</span>
+                                    </td>
+                                    <td style="color: #e5e7eb !important;">
+                                        <i class="fas fa-file-{{ 'pdf' if material.file_type == 'pdf' else 'alt' }} me-1" style="color: var(--neon-cyan) !important;"></i>
+                                        <span style="color: #e5e7eb !important;">{{ material.file_name }}</span>
+                                    </td>
+                                    <td style="color: #e5e7eb !important;">
+                                        <small style="color: #9ca3af !important;">
+                                            {% if material.file_size %}
+                                                {{ "%.1f"|format(material.file_size / 1024 / 1024) }} MB
+                                            {% else %}
+                                                N/A
+                                            {% endif %}
+                                        </small>
+                                    </td>
+                                    <td style="color: #e5e7eb !important;">
+                                        <small style="color: #9ca3af !important;">
+                                            {{ material.timestamp.strftime('%d %b %Y') }}
+                                        </small>
+                                    </td>
+                                    <td style="color: #e5e7eb !important;">
+                                        <div class="btn-group btn-group-sm">
+                                            <a href="{{ url_for('static', filename=material.file_path) }}" 
+                                               class="btn btn-secondary" target="_blank" title="Download" 
+                                               style="color: #9ca3af !important; border-color: #9ca3af !important;">
+                                                <i class="fas fa-download"></i>
+                                            </a>
+                                            <button class="btn btn-danger" title="Delete" 
+                                                    style="color: #ff3864 !important; border-color: #ff3864 !important;">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <div class="text-center py-4">
+                        <i class="fas fa-folder-open fa-3x mb-3" style="color: #6b7280 !important;"></i>
+                        <p style="color: #9ca3af !important; font-size: 1.1rem !important; margin-bottom: 0.5rem !important;">No study materials uploaded yet</p>
+                        <small style="color: #6b7280 !important; font-size: 0.9rem !important;">Upload your first study material using the form.</small>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="d-flex justify-content-end mt-4">
+    <a href="{{ url_for('faculty_dashboard') }}" class="btn btn-secondary" style="color: #9ca3af !important; border-color: #9ca3af !important;">
+        <i class="fas fa-arrow-left me-2"></i> Back to Dashboard
+    </a>
+</div>
+{% endblock %}

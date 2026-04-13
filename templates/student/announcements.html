@@ -1,0 +1,74 @@
+{% extends "student_base.html" %}
+
+{% block title %}Announcements - Student Dashboard{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="card" style="background: rgba(18, 18, 24, 0.9) !important; border: 2px solid var(--neon-yellow) !important;">
+            <div class="card-header d-flex align-items-center" style="background: rgba(255, 215, 0, 0.1) !important; border-bottom: 2px solid var(--neon-yellow) !important;">
+                <i class="fas fa-bullhorn me-2" style="color: var(--neon-yellow) !important;"></i>
+                <h5 class="mb-0" style="color: var(--neon-yellow) !important; font-weight: 700 !important;">Latest Announcements</h5>
+            </div>
+            <div class="card-body" style="padding: 2rem !important;">
+                <div class="icon-container" style="margin-bottom: 2rem !important; background: linear-gradient(45deg, var(--neon-yellow), #ff8c00);">
+                    <i class="fas fa-megaphone"></i>
+                </div>
+                
+                {% if announcements %}
+                    <div class="row">
+                        {% for announcement in announcements %}
+                        <div class="col-lg-6 mb-4">
+                            <div class="card" style="border: 1px solid rgba(255, 215, 0, 0.3) !important; background: rgba(255, 215, 0, 0.05) !important; border-radius: 8px !important;">
+                                <div class="card-header" style="background: rgba(255, 215, 0, 0.1) !important; border-bottom: 1px solid rgba(255, 215, 0, 0.3) !important;">
+                                    <div class="d-flex justify-content-between align-items-start">
+                                        <h6 class="mb-0 fw-bold" style="color: var(--text-primary) !important;">{{ announcement.title }}</h6>
+                                        <small style="color: var(--text-muted) !important;">
+                                            <i class="fas fa-calendar me-1"></i>
+                                            {{ announcement.timestamp.strftime('%d/%m/%Y %H:%M') }}
+                                        </small>
+                                    </div>
+                                </div>
+                                <div class="card-body" style="padding: 1.5rem !important;">
+                                    <p style="color: var(--text-secondary) !important; margin-bottom: 1rem;">{{ announcement.content }}</p>
+                                    <div class="d-flex gap-2">
+                                        {% if announcement.target_role %}
+                                            <span class="badge" style="background-color: var(--info) !important; color: var(--cyber-dark) !important; padding: 0.25rem 0.5rem;">{{ announcement.target_role.title() }}</span>
+                                        {% endif %}
+                                        {% if announcement.priority %}
+                                            {% if announcement.priority == 'high' %}
+                                                <span class="badge" style="background-color: var(--error) !important; color: white !important; padding: 0.25rem 0.5rem;">High Priority</span>
+                                            {% elif announcement.priority == 'medium' %}
+                                                <span class="badge" style="background-color: var(--warning) !important; color: var(--cyber-dark) !important; padding: 0.25rem 0.5rem;">Medium Priority</span>
+                                            {% else %}
+                                                <span class="badge" style="background-color: var(--text-secondary) !important; color: var(--cyber-dark) !important; padding: 0.25rem 0.5rem;">Normal Priority</span>
+                                            {% endif %}
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="text-center py-5">
+                        <i class="fas fa-bullhorn fa-4x mb-4" style="color: var(--text-muted) !important;"></i>
+                        <h4 style="color: var(--text-muted) !important; margin-bottom: 1rem;">No Announcements Available</h4>
+                        <p style="color: var(--text-muted) !important; margin-bottom: 2rem;">Check back later for new announcements from faculty and administration.</p>
+                        <div class="alert" style="background: rgba(59, 130, 246, 0.1) !important; border: 1px solid rgba(59, 130, 246, 0.3) !important; color: #3b82f6 !important; max-width: 500px; margin: 0 auto;">
+                            <i class="fas fa-info-circle me-2"></i>
+                            <strong>Tip:</strong> Announcements will appear here when posted by your faculty or HOD.
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="d-flex justify-content-end mt-4">
+    <a href="{{ url_for('student_dashboard') }}" class="btn btn-secondary" style="background: rgba(0, 0, 0, 0.5) !important; border: 1px solid var(--text-secondary) !important; color: var(--text-secondary) !important; font-weight: 600 !important;">
+        <i class="fas fa-arrow-left me-2"></i> Back to Dashboard
+    </a>
+</div>
+{% endblock %}

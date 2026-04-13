@@ -1,0 +1,4 @@
+id,title,description,category,priority,submitted_by,status,comments,resolved_by,timestamp,resolved_at
+1,About Projector,"the proector from tyif is currently not working
+",infrastructure,medium,109,Resolved,,93.0,2026-03-23 09:18:55.885544,2026-03-23 09:21:50.342725
+2,About Projector,The PRojector in The TYIF Cass is not working,infrastructure,high,114,Pending,,,2026-04-08 04:28:45.943364,

@@ -1,0 +1,275 @@
+{% extends "student_base.html" %}
+
+{% block title %}Study Materials - Student Dashboard{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="card" style="background: rgba(18, 18, 24, 0.9) !important; border: 2px solid var(--neon-purple) !important;">
+            <div class="card-header d-flex align-items-center justify-content-between" style="background: rgba(139, 92, 246, 0.1) !important; border-bottom: 2px solid var(--neon-purple) !important;">
+                <div class="d-flex align-items-center">
+                    <i class="fas fa-book me-2" style="color: var(--neon-purple) !important;"></i>
+                    <h5 class="mb-0" style="color: var(--neon-purple) !important; font-weight: 700 !important;">Study Materials</h5>
+                </div>
+                <a href="{{ url_for('student_dashboard') }}" 
+                   class="btn btn-secondary" style="background: rgba(0, 0, 0, 0.5) !important; border: 1px solid var(--text-secondary) !important; color: var(--text-secondary) !important; font-weight: 600 !important;">
+                    <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
+                </a>
+            </div>
+            <div class="card-body" style="padding: 2rem !important;">
+                <div class="icon-container" style="margin-bottom: 2rem !important; background: linear-gradient(45deg, var(--neon-purple), var(--neon-pink)); width: 80px; height: 80px; display: flex; align-items: center; justify-content: center; border-radius: 50%;">
+                    <i class="fas fa-download" style="color: #000; font-size: 2rem;"></i>
+                </div>
+                
+                <p style="color: var(--text-secondary) !important; margin-bottom: 2rem;">Access and download study materials, notes, and resources uploaded by your faculty members.</p>
+                
+                {% if materials %}
+                    <!-- Materials Grid -->
+                    <div class="row">
+                        {% for material in materials %}
+                        <div class="col-lg-4 col-md-6 mb-4">
+                            <div class="card h-100" style="background: linear-gradient(135deg, rgba(139, 92, 246, 0.05), rgba(255, 0, 255, 0.05)) !important; border: 1px solid rgba(139, 92, 246, 0.3) !important; transition: all 0.3s ease;">
+                                <div class="card-header" style="background: rgba(139, 92, 246, 0.1) !important; border-bottom: 1px solid rgba(139, 92, 246, 0.3) !important;">
+                                    <div class="d-flex align-items-start justify-content-between">
+                                        <div class="flex-grow-1">
+                                            <h6 class="mb-1 fw-bold" style="color: var(--text-primary) !important;">{{ material.title }}</h6>
+                                            <div class="d-flex align-items-center gap-2">
+                                                <span class="badge" style="background-color: var(--neon-cyan) !important; color: var(--cyber-dark) !important; font-size: 0.7rem;">{{ material.subject.code if material.subject else 'General' }}</span>
+                                                <small style="color: var(--text-muted) !important;">
+                                                    {% if material.file_type == 'pdf' %}
+                                                        <i class="fas fa-file-pdf" style="color: #dc3545;"></i> PDF
+                                                    {% elif material.file_type in ['doc', 'docx'] %}
+                                                        <i class="fas fa-file-word" style="color: #0d6efd;"></i> DOC
+                                                    {% elif material.file_type in ['ppt', 'pptx'] %}
+                                                        <i class="fas fa-file-powerpoint" style="color: #fd7e14;"></i> PPT
+                                                    {% elif material.file_type in ['xls', 'xlsx'] %}
+                                                        <i class="fas fa-file-excel" style="color: #198754;"></i> XLS
+                                                    {% else %}
+                                                        <i class="fas fa-file-alt"></i> {{ material.file_type.upper() if material.file_type else 'FILE' }}
+                                                    {% endif %}
+                                                </small>
+                                            </div>
+                                        </div>
+                                        <div class="text-end">
+                                            <small style="color: var(--text-muted) !important; font-size: 0.7rem;">
+                                                <i class="fas fa-calendar me-1"></i>
+                                                {{ material.timestamp.strftime('%d/%m/%Y') if material.timestamp else 'N/A' }}
+                                            </small>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="card-body d-flex flex-column" style="padding: 1.5rem !important;">
+                                    <!-- Subject Info -->
+                                    {% if material.subject %}
+                                    <div class="mb-2">
+                                        <small style="color: var(--text-secondary) !important; font-weight: 600;">Subject:</small>
+                                        <p style="color: var(--text-primary) !important; margin: 0; font-size: 0.9rem;">{{ material.subject.name }}</p>
+                                    </div>
+                                    {% endif %}
+                                    
+                                    <!-- Description -->
+                                    {% if material.description %}
+                                    <div class="mb-3">
+                                        <small style="color: var(--text-secondary) !important; font-weight: 600;">Description:</small>
+                                        <p style="color: var(--text-secondary) !important; margin: 0; font-size: 0.85rem;">
+                                            {{ material.description[:80] }}{% if material.description|length > 80 %}...{% endif %}
+                                        </p>
+                                    </div>
+                                    {% endif %}
+                                    
+                                    <!-- File Info -->
+                                    <div class="mb-3">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <div>
+                                                <small style="color: var(--text-secondary) !important; font-weight: 600;">File:</small>
+                                                <p style="color: var(--text-primary) !important; margin: 0; font-size: 0.8rem;">{{ material.file_name }}</p>
+                                            </div>
+                                            {% if material.file_size %}
+                                            <div class="text-end">
+                                                <small style="color: var(--text-muted) !important;">
+                                                    {{ "%.1f"|format(material.file_size / 1024 / 1024) }} MB
+                                                </small>
+                                            </div>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Uploader Info -->
+                                    <div class="mb-3">
+                                        <small style="color: var(--text-secondary) !important; font-weight: 600;">Uploaded by:</small>
+                                        <p style="color: var(--text-primary) !important; margin: 0; font-size: 0.85rem;">
+                                            <i class="fas fa-user-tie me-1" style="color: var(--neon-teal);"></i>
+                                            {{ material.uploader.full_name or material.uploader.username if material.uploader else 'Unknown' }}
+                                        </p>
+                                    </div>
+                                    
+                                    <!-- Download Button -->
+                                    <div class="mt-auto">
+                                        {% if material.file_path %}
+                                        <a href="{{ url_for('static', filename=material.file_path) }}" 
+                                           class="btn btn-primary w-100" 
+                                           style="background: rgba(139, 92, 246, 0.2) !important; border-color: var(--neon-purple) !important; color: var(--neon-purple) !important; font-weight: 600 !important;"
+                                           target="_blank">
+                                            <i class="fas fa-download me-2"></i>Download Material
+                                        </a>
+                                        {% else %}
+                                        <button class="btn btn-secondary w-100" disabled style="background: rgba(156, 163, 175, 0.2) !important; border-color: var(--text-muted) !important; color: var(--text-muted) !important;">
+                                            <i class="fas fa-exclamation-triangle me-2"></i>File Not Available
+                                        </button>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    
+                    <!-- Summary Stats -->
+                    <div class="row mt-4">
+                        <div class="col-12">
+                            <div class="card" style="background: linear-gradient(135deg, rgba(0, 245, 255, 0.05), rgba(0, 212, 170, 0.05)) !important; border: 1px solid rgba(0, 245, 255, 0.2) !important;">
+                                <div class="card-body text-center" style="padding: 1.5rem !important;">
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <div class="icon-container d-inline-flex mb-2" style="background: linear-gradient(45deg, var(--neon-cyan), var(--neon-teal)); width: 50px; height: 50px; border-radius: 50%; align-items: center; justify-content: center;">
+                                                <i class="fas fa-file-alt" style="color: #000; font-size: 1.2rem;"></i>
+                                            </div>
+                                            <h5 style="color: var(--neon-cyan) !important; font-weight: 700;">{{ materials|length }}</h5>
+                                            <p style="color: var(--text-secondary) !important; margin: 0; font-size: 0.9rem;">Total Materials</p>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="icon-container d-inline-flex mb-2" style="background: linear-gradient(45deg, var(--neon-purple), var(--neon-pink)); width: 50px; height: 50px; border-radius: 50%; align-items: center; justify-content: center;">
+                                                <i class="fas fa-book" style="color: #000; font-size: 1.2rem;"></i>
+                                            </div>
+                                            <h5 style="color: var(--neon-purple) !important; font-weight: 700;">{{ materials|map(attribute='subject')|unique|list|length }}</h5>
+                                            <p style="color: var(--text-secondary) !important; margin: 0; font-size: 0.9rem;">Subjects Covered</p>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="icon-container d-inline-flex mb-2" style="background: linear-gradient(45deg, var(--neon-green), var(--neon-teal)); width: 50px; height: 50px; border-radius: 50%; align-items: center; justify-content: center;">
+                                                <i class="fas fa-download" style="color: #000; font-size: 1.2rem;"></i>
+                                            </div>
+                                            <h5 style="color: var(--neon-green) !important; font-weight: 700;">Available</h5>
+                                            <p style="color: var(--text-secondary) !important; margin: 0; font-size: 0.9rem;">Ready to Download</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                {% else %}
+                    <!-- Empty State -->
+                    <div class="text-center py-5">
+                        <div class="icon-container mx-auto mb-4" style="background: linear-gradient(45deg, var(--neon-purple), var(--neon-pink)); width: 120px; height: 120px; display: flex; align-items: center; justify-content: center; border-radius: 50%; opacity: 0.7;">
+                            <i class="fas fa-folder-open" style="color: #000; font-size: 3rem;"></i>
+                        </div>
+                        <h4 style="color: var(--text-primary) !important; margin-bottom: 1rem;">No Study Materials Available</h4>
+                        <p style="color: var(--text-secondary) !important; margin-bottom: 2rem; max-width: 500px; mx-auto;">
+                            Study materials uploaded by your faculty members will appear here. Check back later or contact your faculty for more resources.
+                        </p>
+                        
+                        <!-- Helpful Tips -->
+                        <div class="row justify-content-center">
+                            <div class="col-lg-8">
+                                <div class="card" style="background: rgba(59, 130, 246, 0.1) !important; border: 1px solid rgba(59, 130, 246, 0.3) !important;">
+                                    <div class="card-body" style="padding: 1.5rem !important;">
+                                        <h6 style="color: #3b82f6 !important; margin-bottom: 1rem;">
+                                            <i class="fas fa-lightbulb me-2"></i>What to expect here:
+                                        </h6>
+                                        <div class="row text-start">
+                                            <div class="col-md-6">
+                                                <ul style="color: var(--text-secondary) !important; font-size: 0.9rem; margin: 0;">
+                                                    <li>Lecture notes and presentations</li>
+                                                    <li>Reference materials and books</li>
+                                                    <li>Assignment guidelines</li>
+                                                </ul>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <ul style="color: var(--text-secondary) !important; font-size: 0.9rem; margin: 0;">
+                                                    <li>Lab manuals and guides</li>
+                                                    <li>Previous year question papers</li>
+                                                    <li>Additional study resources</li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_styles %}
+<style>
+/* Study Materials specific styles */
+.card:hover {
+    transform: translateY(-5px) !important;
+    box-shadow: 0 15px 35px rgba(139, 92, 246, 0.2) !important;
+}
+
+.icon-container:hover {
+    transform: scale(1.1) !important;
+    box-shadow: 0 0 40px rgba(139, 92, 246, 0.6) !important;
+}
+
+.btn:hover {
+    transform: translateY(-2px) !important;
+}
+
+/* File type icons */
+.fas.fa-file-pdf { color: #dc3545 !important; }
+.fas.fa-file-word { color: #0d6efd !important; }
+.fas.fa-file-powerpoint { color: #fd7e14 !important; }
+.fas.fa-file-excel { color: #198754 !important; }
+
+/* Badge animations */
+.badge {
+    transition: all 0.3s ease !important;
+}
+
+.badge:hover {
+    transform: scale(1.05) !important;
+}
+</style>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+// Add download tracking
+document.addEventListener('DOMContentLoaded', function() {
+    const downloadButtons = document.querySelectorAll('a[href*="static"]');
+    
+    downloadButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            // Add visual feedback
+            const icon = this.querySelector('i');
+            const originalClass = icon.className;
+            
+            icon.className = 'fas fa-spinner fa-spin me-2';
+            
+            setTimeout(() => {
+                icon.className = originalClass;
+            }, 1000);
+        });
+    });
+    
+    // Add hover effects to material cards
+    const materialCards = document.querySelectorAll('.card');
+    
+    materialCards.forEach(card => {
+        card.addEventListener('mouseenter', function() {
+            this.style.transform = 'translateY(-8px) scale(1.02)';
+        });
+        
+        card.addEventListener('mouseleave', function() {
+            this.style.transform = 'translateY(0) scale(1)';
+        });
+    });
+});
+</script>
+{% endblock %}

@@ -1,0 +1,1065 @@
+{% extends "faculty_base.html" %}
+
+{% block title %}Faculty Dashboard - Faculty Workload System{% endblock %}
+
+{% block extra_styles %}
+<style>
+    /* Override base styles to match HOD dashboard exactly */
+    .main-content {
+        padding: 2rem !important;
+    }
+    
+    /* Welcome Header - matching HOD dashboard */
+    .welcome-header {
+        background: linear-gradient(135deg, var(--neon-purple), var(--neon-magenta));
+        color: white;
+        padding: 2rem;
+        margin: -2rem -2rem 2rem -2rem;
+        border-radius: 0 0 var(--border-radius) var(--border-radius);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .welcome-header::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+        animation: shimmer 3s infinite;
+    }
+
+    @keyframes shimmer {
+        0% { transform: translateX(-100%); }
+        100% { transform: translateX(100%); }
+    }
+
+    .welcome-icon {
+        width: 80px;
+        height: 80px;
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2rem;
+    }
+
+    .welcome-title {
+        font-size: 2rem;
+        font-weight: 700;
+        margin: 0;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    }
+
+    .welcome-subtitle {
+        margin: 0;
+        opacity: 0.9;
+        font-size: 1.1rem;
+    }
+
+    /* Mini Stat Cards - matching HOD dashboard */
+    .stat-mini-card {
+        background: rgba(18, 18, 24, 0.8);
+        backdrop-filter: blur(15px);
+        border: 1px solid rgba(0, 240, 255, 0.3);
+        border-radius: var(--border-radius);
+        padding: 1.5rem;
+        display: flex;
+        align-items: center;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+        height: 100%;
+    }
+
+    .stat-mini-card::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: 50px;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(0, 240, 255, 0.1));
+        transform: translateX(100%);
+        transition: transform 0.6s ease;
+    }
+
+    .stat-mini-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 0 20px rgba(0, 240, 255, 0.3);
+        border-color: var(--neon-cyan);
+    }
+
+    .stat-mini-card:hover::after {
+        transform: translateX(-100%);
+    }
+
+    .stat-icon {
+        width: 50px;
+        height: 50px;
+        background: linear-gradient(45deg, var(--neon-cyan), rgba(0, 240, 255, 0.7));
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 1rem;
+        box-shadow: 0 0 15px rgba(0, 240, 255, 0.4);
+    }
+
+    .stat-icon.success {
+        background: linear-gradient(45deg, var(--success), rgba(0, 255, 157, 0.7));
+        box-shadow: 0 0 15px rgba(0, 255, 157, 0.4);
+    }
+
+    .stat-icon.warning {
+        background: linear-gradient(45deg, var(--warning), rgba(255, 215, 0, 0.7));
+        box-shadow: 0 0 15px rgba(255, 215, 0, 0.4);
+    }
+
+    .stat-icon.info {
+        background: linear-gradient(45deg, var(--neon-purple), rgba(176, 38, 255, 0.7));
+        box-shadow: 0 0 15px rgba(176, 38, 255, 0.4);
+    }
+
+    .stat-icon i {
+        color: #000000;
+        font-size: 1.5rem;
+    }
+
+    .stat-info .stat-number {
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: var(--neon-cyan);
+        text-shadow: 0 0 10px rgba(0, 240, 255, 0.5);
+        margin-bottom: 0.25rem;
+    }
+
+    .stat-info .stat-label {
+        color: var(--text-secondary);
+        font-size: 1rem;
+        font-weight: 500;
+    }
+
+    /* Feature Cards - matching HOD dashboard */
+    .feature-card {
+        background: rgba(18, 18, 24, 0.8);
+        backdrop-filter: blur(15px);
+        border-radius: var(--border-radius);
+        padding: 2rem;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .feature-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(90deg, var(--neon-cyan), var(--neon-magenta));
+    }
+
+    .feature-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+    }
+
+    /* Different colored cards */
+    .workload-management {
+        border: 1px solid rgba(0, 240, 255, 0.3);
+    }
+
+    .workload-management::before {
+        background: linear-gradient(90deg, var(--neon-cyan), var(--primary));
+    }
+
+    .marks-management {
+        border: 1px solid rgba(0, 255, 157, 0.3);
+    }
+
+    .marks-management::before {
+        background: linear-gradient(90deg, var(--success), #10B981);
+    }
+
+    .study-materials {
+        border: 1px solid rgba(176, 38, 255, 0.3);
+    }
+
+    .study-materials::before {
+        background: linear-gradient(90deg, var(--neon-purple), #8B5CF6);
+    }
+
+    .lab-performance {
+        border: 1px solid rgba(0, 212, 170, 0.3);
+    }
+
+    .lab-performance::before {
+        background: linear-gradient(90deg, var(--neon-teal), var(--neon-cyan));
+    }
+
+    .leave-management {
+        border: 1px solid rgba(255, 215, 0, 0.3);
+    }
+
+    .leave-management::before {
+        background: linear-gradient(90deg, var(--warning), #F59E0B);
+    }
+
+    .communications {
+        border: 1px solid rgba(255, 0, 255, 0.3);
+    }
+
+    .communications::before {
+        background: linear-gradient(90deg, var(--neon-magenta), var(--neon-purple));
+    }
+
+    .feedback-section {
+        border: 1px solid rgba(255, 215, 0, 0.3);
+    }
+
+    .feedback-section::before {
+        background: linear-gradient(90deg, var(--neon-yellow), #F59E0B);
+    }
+
+    .feature-header {
+        display: flex;
+        align-items: center;
+        margin-bottom: 1.5rem;
+    }
+
+    .feature-header i {
+        font-size: 2.5rem;
+        margin-right: 1rem;
+        color: var(--neon-cyan);
+        text-shadow: 0 0 10px rgba(0, 240, 255, 0.5);
+    }
+
+    .feature-header h3 {
+        color: var(--neon-cyan);
+        font-weight: 700;
+        font-size: 1.4rem;
+        margin: 0;
+        text-shadow: 0 0 5px rgba(0, 240, 255, 0.3);
+    }
+
+    .feature-content {
+        flex: 1;
+        margin-bottom: 1.5rem;
+    }
+
+    .feature-content p:first-child {
+        font-weight: 600;
+        color: var(--text-primary);
+        margin-bottom: 0.5rem;
+        font-size: 1.1rem;
+    }
+
+    .feature-description {
+        color: var(--text-secondary);
+        font-size: 1rem;
+        margin: 0;
+    }
+
+    .feature-actions {
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+
+    .btn-feature {
+        background: rgba(0, 0, 0, 0.5);
+        border: 1px solid var(--neon-cyan);
+        color: var(--neon-cyan);
+        padding: 0.75rem 1.5rem;
+        border-radius: 6px;
+        text-decoration: none;
+        font-weight: 600;
+        text-align: center;
+        transition: all 0.3s ease;
+        box-shadow: 0 0 10px rgba(0, 240, 255, 0.2);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .btn-feature::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(0, 240, 255, 0.2), transparent);
+        transition: 0.5s;
+    }
+
+    .btn-feature:hover::before {
+        left: 100%;
+    }
+
+    .btn-feature:hover {
+        background: rgba(0, 240, 255, 0.1);
+        box-shadow: 0 0 20px rgba(0, 240, 255, 0.4);
+        color: var(--neon-cyan);
+        text-decoration: none;
+        transform: translateY(-2px);
+    }
+
+    .btn-feature-outline {
+        background: transparent;
+        border: 1px solid rgba(0, 240, 255, 0.3);
+        color: var(--text-secondary);
+        padding: 0.75rem 1.5rem;
+        border-radius: 6px;
+        text-decoration: none;
+        font-weight: 500;
+        text-align: center;
+        transition: all 0.3s ease;
+    }
+
+    .btn-feature-outline:hover {
+        border-color: var(--neon-cyan);
+        color: var(--neon-cyan);
+        text-decoration: none;
+        box-shadow: 0 0 15px rgba(0, 240, 255, 0.2);
+    }
+
+    /* Animation for page load */
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .feature-card,
+    .stat-mini-card {
+        animation: fadeInUp 0.6s ease-out;
+    }
+
+    .feature-card:nth-child(1) { animation-delay: 0.1s; }
+    .feature-card:nth-child(2) { animation-delay: 0.2s; }
+    .feature-card:nth-child(3) { animation-delay: 0.3s; }
+    .feature-card:nth-child(4) { animation-delay: 0.4s; }
+    .feature-card:nth-child(5) { animation-delay: 0.5s; }
+    .feature-card:nth-child(6) { animation-delay: 0.6s; }
+
+    /* Account section styling */
+    .account-section {
+        border: 1px solid rgba(99, 102, 241, 0.3);
+    }
+
+    .account-section::before {
+        background: linear-gradient(90deg, #6366f1, #3b82f6);
+    }
+
+    /* Trend toggle buttons */
+    .trend-btn-f {
+        background: rgba(0,0,0,0.4);
+        border: 1px solid rgba(255,215,0,0.3);
+        color: var(--text-muted);
+        padding: 0.2rem 0.65rem;
+        border-radius: 20px;
+        font-size: 0.72rem;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+    .trend-btn-f:hover { border-color: var(--neon-yellow); color: var(--neon-yellow); }
+    .active-trend-f {
+        background: rgba(255,215,0,0.15);
+        border-color: var(--neon-yellow);
+        color: var(--neon-yellow);
+        font-weight: 700;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Welcome Header -->
+<div class="welcome-header">
+    <div class="container-fluid">
+        <div class="d-flex align-items-center justify-content-center">
+            <div class="welcome-icon me-3">
+                <i class="fas fa-chalkboard-teacher"></i>
+            </div>
+            <div class="text-center">
+                <h1 class="welcome-title">Welcome, {{ current_user.full_name or current_user.username }}</h1>
+                <p class="welcome-subtitle">Faculty Dashboard - Manage your academic responsibilities efficiently</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Stats Cards Row -->
+<div class="row mb-4">
+    <div class="col-lg-3 col-md-6 mb-3">
+        <div class="stat-mini-card">
+            <div class="stat-icon">
+                <i class="fas fa-tasks"></i>
+            </div>
+            <div class="stat-info">
+                <div class="stat-number">{{ workload_count or 5 }}</div>
+                <div class="stat-label">My Workloads</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-3 col-md-6 mb-3">
+        <div class="stat-mini-card">
+            <div class="stat-icon success">
+                <i class="fas fa-edit"></i>
+            </div>
+            <div class="stat-info">
+                <div class="stat-number">{{ marks_entered or 12 }}</div>
+                <div class="stat-label">Marks Entered</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-3 col-md-6 mb-3">
+        <div class="stat-mini-card">
+            <div class="stat-icon warning">
+                <i class="fas fa-calendar-alt"></i>
+            </div>
+            <div class="stat-info">
+                <div class="stat-number">{{ leave_requests or 2 }}</div>
+                <div class="stat-label">Leave Requests</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-3 col-md-6 mb-3">
+        <div class="stat-mini-card">
+            <div class="stat-icon info">
+                <i class="fas fa-bell"></i>
+            </div>
+            <div class="stat-info">
+                <div class="stat-number">{{ notifications or 3 }}</div>
+                <div class="stat-label">Notifications</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Workload Charts Row -->
+<div class="row mb-4">
+    <!-- Stats Cards: Total Lectures, Practicals, Subjects -->
+    <div class="col-lg-4 col-md-12 mb-4">
+        <div class="stat-mini-card" style="flex-direction:column;align-items:flex-start;gap:1rem;">
+            <div style="color:var(--neon-cyan);font-weight:700;font-size:1rem;margin-bottom:0.5rem;"><i class="fas fa-chart-line me-2"></i>Workload Summary</div>
+            <div style="display:flex;gap:1rem;width:100%;">
+                <div style="flex:1;background:rgba(0,240,255,0.07);border:1px solid rgba(0,240,255,0.2);border-radius:10px;padding:0.75rem;text-align:center;">
+                    <div style="font-size:1.6rem;font-weight:700;color:var(--neon-cyan);">{{ total_lectures or 18 }}</div>
+                    <div style="font-size:0.72rem;color:#9ca3af;text-transform:uppercase;letter-spacing:0.5px;"><i class="fas fa-chalkboard me-1"></i>Lectures</div>
+                </div>
+                <div style="flex:1;background:rgba(0,255,157,0.07);border:1px solid rgba(0,255,157,0.2);border-radius:10px;padding:0.75rem;text-align:center;">
+                    <div style="font-size:1.6rem;font-weight:700;color:var(--neon-green);">{{ total_practicals or 6 }}</div>
+                    <div style="font-size:0.72rem;color:#9ca3af;text-transform:uppercase;letter-spacing:0.5px;"><i class="fas fa-flask me-1"></i>Practicals</div>
+                </div>
+                <div style="flex:1;background:rgba(176,38,255,0.07);border:1px solid rgba(176,38,255,0.2);border-radius:10px;padding:0.75rem;text-align:center;">
+                    <div style="font-size:1.6rem;font-weight:700;color:var(--neon-purple);">{{ workload_count or 5 }}</div>
+                    <div style="font-size:0.72rem;color:#9ca3af;text-transform:uppercase;letter-spacing:0.5px;"><i class="fas fa-book me-1"></i>Subjects</div>
+                </div>
+            </div>
+            <!-- Progress Bars -->
+            <div style="width:100%;margin-top:0.5rem;">
+                <div style="display:flex;justify-content:space-between;margin-bottom:0.25rem;">
+                    <small style="color:#9ca3af;">Lecture Load</small><small style="color:var(--neon-cyan);">75%</small>
+                </div>
+                <div style="background:rgba(255,255,255,0.08);border-radius:20px;height:7px;overflow:hidden;margin-bottom:0.6rem;">
+                    <div style="width:75%;height:100%;background:linear-gradient(90deg,var(--neon-cyan),var(--neon-purple));border-radius:20px;"></div>
+                </div>
+                <div style="display:flex;justify-content:space-between;margin-bottom:0.25rem;">
+                    <small style="color:#9ca3af;">Practical Load</small><small style="color:var(--neon-green);">50%</small>
+                </div>
+                <div style="background:rgba(255,255,255,0.08);border-radius:20px;height:7px;overflow:hidden;">
+                    <div style="width:50%;height:100%;background:linear-gradient(90deg,var(--neon-green),var(--neon-cyan));border-radius:20px;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Workload Bar Chart -->
+    <div class="col-lg-4 col-md-6 mb-4">
+        <div class="stat-mini-card" style="flex-direction:column;align-items:flex-start;">
+            <div style="color:var(--neon-cyan);font-weight:700;font-size:1rem;margin-bottom:0.75rem;"><i class="fas fa-chart-bar me-2"></i>Hours per Subject</div>
+            <canvas id="facultyWorkloadChart" height="160" style="width:100%;"></canvas>
+        </div>
+    </div>
+    <!-- Workload Pie Chart -->
+    <div class="col-lg-4 col-md-6 mb-4">
+        <div class="stat-mini-card" style="flex-direction:column;align-items:flex-start;">
+            <div style="color:var(--neon-yellow);font-weight:700;font-size:1rem;margin-bottom:0.75rem;"><i class="fas fa-chart-pie me-2"></i>Lecture vs Practical</div>
+            <canvas id="facultyPieChart" height="160" style="width:100%;"></canvas>
+        </div>
+    </div>
+</div>
+
+<!-- Main Feature Cards -->
+<div class="row">
+    <!-- Workload Management -->
+    <div class="col-lg-4 col-md-6 mb-4">
+        <div class="feature-card workload-management">
+            <div class="feature-header">
+                <i class="fas fa-tasks"></i>
+                <h3>My Workload</h3>
+            </div>
+            <div class="feature-content">
+                <p>View Assigned Tasks</p>
+                <p class="feature-description">Check your assigned subjects, hours, and workload distribution across different courses.</p>
+            </div>
+            <div class="feature-actions">
+                <a href="{{ url_for('view_workload') }}" class="btn-feature">
+                    <i class="fas fa-eye"></i> View Workload
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Test Marks Management -->
+    <div class="col-lg-4 col-md-6 mb-4">
+        <div class="feature-card marks-management">
+            <div class="feature-header">
+                <i class="fas fa-chart-line" style="color: var(--neon-green);"></i>
+                <h3 style="color: var(--neon-green);">Test Marks</h3>
+            </div>
+            <div class="feature-content">
+                <p>Student Assessment</p>
+                <p class="feature-description">Enter and manage student test marks, assignments, and various assessments efficiently.</p>
+            </div>
+            <div class="feature-actions">
+                <a href="{{ url_for('faculty_manage_test_marks') }}" class="btn-feature" style="border-color: var(--neon-green); color: var(--neon-green); box-shadow: 0 0 10px rgba(0, 255, 157, 0.2);">
+                    <i class="fas fa-plus"></i> Enter Marks
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Study Materials -->
+    <div class="col-lg-4 col-md-6 mb-4">
+        <div class="feature-card study-materials">
+            <div class="feature-header">
+                <i class="fas fa-book" style="color: var(--neon-purple);"></i>
+                <h3 style="color: var(--neon-purple);">Study Materials</h3>
+            </div>
+            <div class="feature-content">
+                <p>Upload Resources</p>
+                <p class="feature-description">Upload and manage study materials, notes, and resources for your students.</p>
+            </div>
+            <div class="feature-actions">
+                <a href="{{ url_for('faculty_study_materials') }}" class="btn-feature" style="border-color: var(--neon-purple); color: var(--neon-purple); box-shadow: 0 0 10px rgba(176, 38, 255, 0.2);">
+                    <i class="fas fa-upload"></i> Manage Materials
+                </a>
+            </div>
+        </div>
+    </div>
+
+          
+
+    <!-- Leave Management -->
+    <div class="col-lg-4 col-md-6 mb-4">
+        <div class="feature-card leave-management">
+            <div class="feature-header">
+                <i class="fas fa-calendar-plus" style="color: var(--warning);"></i>
+                <h3 style="color: var(--warning);">Leave Requests</h3>
+            </div>
+            <div class="feature-content">
+                <p>Manage Leave</p>
+                <p class="feature-description">Submit new leave requests and track existing ones with approval status.</p>
+            </div>
+            <div class="feature-actions">
+                <a href="{{ url_for('faculty_submit_leave') }}" class="btn-feature" style="border-color: var(--warning); color: var(--warning); box-shadow: 0 0 10px rgba(255, 215, 0, 0.2);">
+                    <i class="fas fa-plus"></i> Submit Leave
+                </a>
+                <a href="{{ url_for('my_leave_requests') }}" class="btn-feature-outline">
+                    <i class="fas fa-list"></i> My Requests
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Announcements -->
+    <div class="col-lg-4 col-md-6 mb-4">
+        <div class="feature-card announcements">
+            <div class="feature-header">
+                <i class="fas fa-bullhorn" style="color: var(--neon-cyan);"></i>
+                <h3 style="color: var(--neon-cyan);">Announcements</h3>
+            </div>
+            <div class="feature-content">
+                <p>Latest Updates</p>
+                <p class="feature-description">View important announcements from HOD and administration.</p>
+            </div>
+            <div class="feature-actions">
+                <a href="{{ url_for('faculty_announcements') }}" class="btn-feature" style="border-color: var(--neon-cyan); color: var(--neon-cyan); box-shadow: 0 0 10px rgba(0, 240, 255, 0.2);">
+                    <i class="fas fa-bullhorn"></i> View All
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Communications -->
+    <div class="col-lg-4 col-md-6 mb-4">
+        <div class="feature-card communications">
+            <div class="feature-header">
+                <i class="fas fa-bell" style="color: var(--neon-magenta);"></i>
+                <h3 style="color: var(--neon-magenta);">Communications</h3>
+            </div>
+            <div class="feature-content">
+                <p>Stay Connected</p>
+                <p class="feature-description">View notifications, student feedback, and communicate with administration.</p>
+            </div>
+            <div class="feature-actions">
+                <a href="{{ url_for('faculty_notifications') }}" class="btn-feature" style="border-color: var(--neon-magenta); color: var(--neon-magenta); box-shadow: 0 0 10px rgba(255, 0, 255, 0.2);">
+                    <i class="fas fa-bell"></i> Notifications
+                </a>
+                <a href="{{ url_for('faculty_view_feedback') }}" class="btn-feature-outline">
+                    <i class="fas fa-comments"></i> View Feedback
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Feedback Section -->
+    <div class="col-lg-4 col-md-6 mb-4">
+        <div class="feature-card feedback-section">
+            <div class="feature-header">
+                <i class="fas fa-comments" style="color: var(--neon-yellow);"></i>
+                <h3 style="color: var(--neon-yellow);">Feedback</h3>
+            </div>
+            <div class="feature-content">
+                <p>Provide & View Feedback</p>
+                <p class="feature-description">Submit feedback to administration and view feedback from students.</p>
+            </div>
+            <div class="feature-actions">
+                <a href="{{ url_for('faculty_submit_feedback') }}" class="btn-feature" style="border-color: var(--neon-yellow); color: var(--neon-yellow); box-shadow: 0 0 10px rgba(255, 255, 0, 0.2);">
+                    <i class="fas fa-comment-dots"></i> Submit Feedback
+                </a>
+                <a href="{{ url_for('faculty_view_feedback') }}" class="btn-feature-outline">
+                    <i class="fas fa-eye"></i> View Feedback
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Account & Support Section -->
+    <div class="col-lg-12 mb-4">
+        <div class="feature-card account-section">
+            <div class="feature-header">
+                <i class="fas fa-user-cog" style="color: #6366f1;"></i>
+                <h3 style="color: #6366f1;">Account & Support</h3>
+            </div>
+            <div class="feature-content">
+                <p>Profile & Issues</p>
+                <p class="feature-description">Manage your profile settings and report issues to the administration team.</p>
+            </div>
+            <div class="feature-actions" style="flex-direction: row; justify-content: center; gap: 1rem;">
+                <a href="{{ url_for('faculty_send_issue') }}" class="btn-feature" style="border-color: var(--error); color: var(--error); box-shadow: 0 0 10px rgba(255, 56, 100, 0.2); flex: 0 0 auto; min-width: 200px;">
+                    <i class="fas fa-exclamation-circle"></i> Send Issue
+                </a>
+                <a href="{{ url_for('profile') }}" class="btn-feature-outline" style="flex: 0 0 auto; min-width: 200px;">
+                    <i class="fas fa-user"></i> Update Profile
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ===== ADVANCED FEATURES SECTION ===== -->
+
+<!-- ROW 1: Daily Schedule + Free Slot Finder -->
+<div class="row mb-4">
+    <!-- Daily Schedule View -->
+    <div class="col-lg-7 mb-4">
+        <div class="stat-mini-card" style="flex-direction:column;align-items:flex-start;">
+            <div style="color:var(--neon-cyan);font-weight:700;font-size:1rem;margin-bottom:1rem;display:flex;align-items:center;justify-content:space-between;width:100%;">
+                <span><i class="fas fa-calendar-day me-2"></i>Today's Schedule</span>
+                <span id="todayDate" style="font-size:0.75rem;color:var(--text-muted);background:rgba(0,245,255,0.08);border:1px solid rgba(0,245,255,0.2);border-radius:20px;padding:0.2rem 0.75rem;"></span>
+            </div>
+            <div style="width:100%;display:flex;flex-direction:column;gap:0.5rem;">
+                {% set schedule = [
+                    ('08:00','09:00','OOP Lecture','Room 201','lecture'),
+                    ('09:00','10:00','DSU Lecture','Room 201','lecture'),
+                    ('10:00','11:00','Free Slot','—','free'),
+                    ('11:00','13:00','DSU Lab','Lab 3','lab'),
+                    ('13:00','14:00','Lunch Break','—','break'),
+                    ('14:00','15:00','DTM Lecture','Room 105','lecture'),
+                    ('15:00','16:00','Free Slot','—','free'),
+                ] %}
+                {% for start, end, subject, room, stype in schedule %}
+                <div style="display:flex;align-items:center;gap:0.75rem;padding:0.6rem 0.85rem;border-radius:8px;
+                    {% if stype=='free' %}background:rgba(0,255,157,0.06);border:1px solid rgba(0,255,157,0.2);
+                    {% elif stype=='break' %}background:rgba(255,215,0,0.06);border:1px solid rgba(255,215,0,0.15);
+                    {% elif stype=='lab' %}background:rgba(139,92,246,0.08);border:1px solid rgba(139,92,246,0.2);
+                    {% else %}background:rgba(0,245,255,0.06);border:1px solid rgba(0,245,255,0.15);{% endif %}
+                    {% if loop.index == 2 %}box-shadow:0 0 12px rgba(0,245,255,0.2);{% endif %}">
+                    <div style="font-size:0.72rem;color:var(--text-muted);min-width:90px;font-family:'Orbitron',monospace;">{{ start }}–{{ end }}</div>
+                    <div style="width:8px;height:8px;border-radius:50%;flex-shrink:0;
+                        {% if stype=='free' %}background:var(--neon-green);box-shadow:0 0 6px var(--neon-green);
+                        {% elif stype=='break' %}background:var(--neon-yellow);
+                        {% elif stype=='lab' %}background:var(--neon-purple);box-shadow:0 0 6px var(--neon-purple);
+                        {% else %}background:var(--neon-cyan);box-shadow:0 0 6px var(--neon-cyan);{% endif %}"></div>
+                    <div style="flex:1;">
+                        <div style="font-size:0.85rem;font-weight:600;
+                            {% if stype=='free' %}color:var(--neon-green);
+                            {% elif stype=='break' %}color:var(--neon-yellow);
+                            {% elif stype=='lab' %}color:var(--neon-purple);
+                            {% else %}color:var(--text-primary);{% endif %}">{{ subject }}
+                            {% if loop.index == 2 %}<span style="font-size:0.65rem;background:rgba(0,245,255,0.2);color:var(--neon-cyan);border-radius:20px;padding:0.1rem 0.5rem;margin-left:0.4rem;">▶ Next</span>{% endif %}
+                        </div>
+                        <div style="font-size:0.72rem;color:var(--text-muted);">{{ room }}</div>
+                    </div>
+                    <div style="font-size:0.7rem;padding:0.15rem 0.5rem;border-radius:20px;
+                        {% if stype=='free' %}background:rgba(0,255,157,0.15);color:var(--neon-green);
+                        {% elif stype=='break' %}background:rgba(255,215,0,0.15);color:var(--neon-yellow);
+                        {% elif stype=='lab' %}background:rgba(139,92,246,0.15);color:var(--neon-purple);
+                        {% else %}background:rgba(0,245,255,0.1);color:var(--neon-cyan);{% endif %}">
+                        {{ stype|title }}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Free Slot Finder + Smart Reminders -->
+    <div class="col-lg-5 mb-4" style="display:flex;flex-direction:column;gap:1rem;">
+        <!-- Free Slot Finder -->
+        <div class="stat-mini-card" style="flex-direction:column;align-items:flex-start;">
+            <div style="color:var(--neon-green);font-weight:700;font-size:1rem;margin-bottom:0.75rem;"><i class="fas fa-search-plus me-2"></i>Free Slot Finder</div>
+            <div style="width:100%;display:flex;flex-direction:column;gap:0.4rem;">
+                <div style="background:rgba(0,255,157,0.08);border:1px solid rgba(0,255,157,0.25);border-radius:8px;padding:0.6rem 0.85rem;display:flex;justify-content:space-between;align-items:center;">
+                    <span style="color:var(--neon-green);font-size:0.82rem;font-weight:600;"><i class="fas fa-clock me-2"></i>10:00 – 11:00</span>
+                    <span style="font-size:0.72rem;color:var(--text-muted);">Today</span>
+                </div>
+                <div style="background:rgba(0,255,157,0.08);border:1px solid rgba(0,255,157,0.25);border-radius:8px;padding:0.6rem 0.85rem;display:flex;justify-content:space-between;align-items:center;">
+                    <span style="color:var(--neon-green);font-size:0.82rem;font-weight:600;"><i class="fas fa-clock me-2"></i>15:00 – 16:00</span>
+                    <span style="font-size:0.72rem;color:var(--text-muted);">Today</span>
+                </div>
+                <div style="background:rgba(0,255,157,0.05);border:1px dashed rgba(0,255,157,0.2);border-radius:8px;padding:0.5rem 0.85rem;text-align:center;">
+                    <span style="font-size:0.75rem;color:var(--text-muted);">2 free slots available today</span>
+                </div>
+            </div>
+        </div>
+        <!-- Smart Reminders -->
+        <div class="stat-mini-card" style="flex-direction:column;align-items:flex-start;flex:1;">
+            <div style="color:var(--neon-red);font-weight:700;font-size:1rem;margin-bottom:0.75rem;"><i class="fas fa-bell me-2"></i>Smart Reminders</div>
+            <div style="width:100%;display:flex;flex-direction:column;gap:0.4rem;">
+                <div style="background:rgba(255,56,100,0.07);border-left:3px solid var(--neon-red);border-radius:0 8px 8px 0;padding:0.5rem 0.75rem;">
+                    <div style="color:var(--neon-red);font-size:0.78rem;font-weight:700;">OOP Lecture in 30 min</div>
+                    <div style="color:var(--text-muted);font-size:0.72rem;">Room 201 — 09:00 AM</div>
+                </div>
+                <div style="background:rgba(255,215,0,0.07);border-left:3px solid var(--neon-yellow);border-radius:0 8px 8px 0;padding:0.5rem 0.75rem;">
+                    <div style="color:var(--neon-yellow);font-size:0.78rem;font-weight:700;">Marks submission due</div>
+                    <div style="color:var(--text-muted);font-size:0.72rem;">DSU Test 2 — Today 5 PM</div>
+                </div>
+                <div style="background:rgba(0,245,255,0.07);border-left:3px solid var(--neon-cyan);border-radius:0 8px 8px 0;padding:0.5rem 0.75rem;">
+                    <div style="color:var(--neon-cyan);font-size:0.78rem;font-weight:700;">Leave request pending</div>
+                    <div style="color:var(--text-muted);font-size:0.72rem;">Awaiting HOD approval</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ROW 2: Workload Comparison + Performance Analytics -->
+<div class="row mb-4">
+    <!-- Workload Comparison -->
+    <div class="col-lg-6 mb-4">
+        <div class="stat-mini-card" style="flex-direction:column;align-items:flex-start;">
+            <div style="color:var(--neon-purple);font-weight:700;font-size:1rem;margin-bottom:0.75rem;"><i class="fas fa-balance-scale me-2"></i>Workload Comparison</div>
+            <canvas id="workloadCompareChart" height="160" style="width:100%;"></canvas>
+            <div style="display:flex;gap:1rem;margin-top:0.75rem;width:100%;justify-content:center;">
+                <div style="display:flex;align-items:center;gap:0.4rem;font-size:0.75rem;color:var(--text-muted);">
+                    <div style="width:12px;height:12px;border-radius:3px;background:rgba(0,245,255,0.6);"></div>You
+                </div>
+                <div style="display:flex;align-items:center;gap:0.4rem;font-size:0.75rem;color:var(--text-muted);">
+                    <div style="width:12px;height:12px;border-radius:3px;background:rgba(139,92,246,0.6);"></div>Dept Avg
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Performance Analytics + Trend -->
+    <div class="col-lg-6 mb-4">
+        <div class="stat-mini-card" style="flex-direction:column;align-items:flex-start;">
+            <div style="color:var(--neon-yellow);font-weight:700;font-size:1rem;margin-bottom:0.75rem;display:flex;align-items:center;justify-content:space-between;width:100%;">
+                <span><i class="fas fa-chart-line me-2"></i>Performance Analytics</span>
+                <div style="display:flex;gap:0.4rem;">
+                    <button onclick="switchPerf('lectures')" id="pbtn-lec" class="trend-btn-f active-trend-f">Lectures</button>
+                    <button onclick="switchPerf('feedback')" id="pbtn-fb" class="trend-btn-f">Feedback</button>
+                </div>
+            </div>
+            <canvas id="perfTrendChart" height="130" style="width:100%;"></canvas>
+            <!-- Rating -->
+            <div style="display:flex;align-items:center;gap:0.75rem;margin-top:0.75rem;width:100%;background:rgba(255,215,0,0.06);border:1px solid rgba(255,215,0,0.2);border-radius:8px;padding:0.6rem 0.85rem;">
+                <i class="fas fa-star" style="color:var(--neon-yellow);font-size:1.2rem;"></i>
+                <div>
+                    <div style="color:var(--neon-yellow);font-weight:700;font-size:1rem;">4.3 / 5.0</div>
+                    <div style="color:var(--text-muted);font-size:0.72rem;">Student Feedback Rating — Based on 28 responses</div>
+                </div>
+                <div style="margin-left:auto;display:flex;gap:0.2rem;">
+                    {% for i in range(5) %}
+                    <i class="fas fa-star" style="color:{% if i < 4 %}var(--neon-yellow){% else %}rgba(255,215,0,0.3){% endif %};font-size:0.85rem;"></i>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ROW 3: To-Do List + Swap Lecture + Achievement Badges -->
+<div class="row mb-4">
+    <!-- Task / To-Do List -->
+    <div class="col-lg-4 mb-4">
+        <div class="stat-mini-card" style="flex-direction:column;align-items:flex-start;">
+            <div style="color:var(--neon-cyan);font-weight:700;font-size:1rem;margin-bottom:0.75rem;"><i class="fas fa-check-square me-2"></i>Task / To-Do List</div>
+            <div style="width:100%;display:flex;flex-direction:column;gap:0.4rem;" id="todoList">
+                {% set tasks = [
+                    ('Enter DSU Test 2 marks', False),
+                    ('Upload OOP notes Unit 3', False),
+                    ('Submit lab performance report', True),
+                    ('Review student feedback', False),
+                    ('Prepare DTM question paper', False),
+                ] %}
+                {% for task, done in tasks %}
+                <label style="display:flex;align-items:center;gap:0.6rem;padding:0.5rem 0.75rem;background:rgba(0,0,0,0.3);border:1px solid rgba(0,245,255,0.1);border-radius:8px;cursor:pointer;transition:all 0.2s;">
+                    <input type="checkbox" {% if done %}checked{% endif %} style="accent-color:var(--neon-cyan);width:16px;height:16px;cursor:pointer;" onchange="this.parentElement.querySelector('span').style.textDecoration=this.checked?'line-through':'none';this.parentElement.querySelector('span').style.opacity=this.checked?'0.4':'1';">
+                    <span style="font-size:0.82rem;color:var(--text-primary);{% if done %}text-decoration:line-through;opacity:0.4;{% endif %}">{{ task }}</span>
+                </label>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Swap Lecture System -->
+    <div class="col-lg-4 mb-4">
+        <div class="stat-mini-card" style="flex-direction:column;align-items:flex-start;">
+            <div style="color:var(--neon-orange);font-weight:700;font-size:1rem;margin-bottom:0.75rem;"><i class="fas fa-exchange-alt me-2"></i>Swap Lecture Request</div>
+            <div style="width:100%;display:flex;flex-direction:column;gap:0.6rem;">
+                <div style="background:rgba(255,140,0,0.07);border:1px solid rgba(255,140,0,0.2);border-radius:8px;padding:0.75rem;">
+                    <div style="font-size:0.78rem;color:var(--text-muted);margin-bottom:0.4rem;">Your Lecture</div>
+                    <select class="form-select form-select-sm" style="background:rgba(0,0,0,0.5);border:1px solid rgba(255,140,0,0.3);color:var(--text-primary);border-radius:6px;font-size:0.82rem;">
+                        <option>OOP — Mon 09:00</option>
+                        <option>DSU — Tue 10:00</option>
+                        <option>DTM — Wed 14:00</option>
+                    </select>
+                </div>
+                <div style="background:rgba(255,140,0,0.07);border:1px solid rgba(255,140,0,0.2);border-radius:8px;padding:0.75rem;">
+                    <div style="font-size:0.78rem;color:var(--text-muted);margin-bottom:0.4rem;">Swap With Faculty</div>
+                    <select class="form-select form-select-sm" style="background:rgba(0,0,0,0.5);border:1px solid rgba(255,140,0,0.3);color:var(--text-primary);border-radius:6px;font-size:0.82rem;">
+                        {% for f in faculty_workload_data if faculty_workload_data is defined %}
+                        <option>{{ f.name }}</option>
+                        {% else %}
+                        <option>Select Faculty</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <button class="btn w-100" style="background:rgba(255,140,0,0.15);border:1px solid rgba(255,140,0,0.4);color:var(--neon-orange);font-weight:600;font-size:0.85rem;" onclick="alert('Swap request sent for approval!')">
+                    <i class="fas fa-paper-plane me-2"></i>Send Swap Request
+                </button>
+                <div style="background:rgba(0,245,255,0.05);border:1px solid rgba(0,245,255,0.1);border-radius:8px;padding:0.5rem 0.75rem;">
+                    <div style="font-size:0.72rem;color:var(--text-muted);"><i class="fas fa-info-circle me-1" style="color:var(--neon-cyan);"></i>Swap requests require HOD approval before confirmation.</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Achievement Badges + Online/Offline Mode -->
+    <div class="col-lg-4 mb-4" style="display:flex;flex-direction:column;gap:1rem;">
+        <!-- Badges -->
+        <div class="stat-mini-card" style="flex-direction:column;align-items:flex-start;">
+            <div style="color:var(--neon-yellow);font-weight:700;font-size:1rem;margin-bottom:0.75rem;"><i class="fas fa-medal me-2"></i>Achievement Badges</div>
+            <div style="display:flex;flex-wrap:wrap;gap:0.5rem;width:100%;">
+                <div style="background:linear-gradient(135deg,rgba(255,215,0,0.15),rgba(255,140,0,0.1));border:1px solid rgba(255,215,0,0.4);border-radius:20px;padding:0.3rem 0.75rem;display:flex;align-items:center;gap:0.4rem;">
+                    <i class="fas fa-trophy" style="color:var(--neon-yellow);font-size:0.85rem;"></i>
+                    <span style="font-size:0.75rem;color:var(--neon-yellow);font-weight:600;">Best Performer</span>
+                </div>
+                <div style="background:linear-gradient(135deg,rgba(0,245,255,0.1),rgba(0,255,157,0.1));border:1px solid rgba(0,245,255,0.3);border-radius:20px;padding:0.3rem 0.75rem;display:flex;align-items:center;gap:0.4rem;">
+                    <i class="fas fa-clock" style="color:var(--neon-cyan);font-size:0.85rem;"></i>
+                    <span style="font-size:0.75rem;color:var(--neon-cyan);font-weight:600;">On-Time Faculty</span>
+                </div>
+                <div style="background:linear-gradient(135deg,rgba(0,255,157,0.1),rgba(0,245,255,0.1));border:1px solid rgba(0,255,157,0.3);border-radius:20px;padding:0.3rem 0.75rem;display:flex;align-items:center;gap:0.4rem;">
+                    <i class="fas fa-star" style="color:var(--neon-green);font-size:0.85rem;"></i>
+                    <span style="font-size:0.75rem;color:var(--neon-green);font-weight:600;">Top Rated</span>
+                </div>
+                <div style="background:linear-gradient(135deg,rgba(139,92,246,0.1),rgba(255,0,255,0.1));border:1px solid rgba(139,92,246,0.3);border-radius:20px;padding:0.3rem 0.75rem;display:flex;align-items:center;gap:0.4rem;">
+                    <i class="fas fa-upload" style="color:var(--neon-purple);font-size:0.85rem;"></i>
+                    <span style="font-size:0.75rem;color:var(--neon-purple);font-weight:600;">Material Uploader</span>
+                </div>
+            </div>
+        </div>
+        <!-- Online/Offline Mode -->
+        <div class="stat-mini-card" style="flex-direction:column;align-items:flex-start;flex:1;">
+            <div style="color:var(--neon-cyan);font-weight:700;font-size:1rem;margin-bottom:0.75rem;"><i class="fas fa-wifi me-2"></i>Lecture Mode</div>
+            <div style="width:100%;display:flex;flex-direction:column;gap:0.4rem;">
+                <div style="display:flex;align-items:center;justify-content:space-between;padding:0.5rem 0.75rem;background:rgba(0,255,157,0.08);border:1px solid rgba(0,255,157,0.25);border-radius:8px;">
+                    <span style="font-size:0.82rem;color:var(--text-primary);">OOP Lecture</span>
+                    <span style="font-size:0.72rem;background:rgba(0,255,157,0.2);color:var(--neon-green);border-radius:20px;padding:0.15rem 0.6rem;font-weight:700;">● Online</span>
+                </div>
+                <div style="display:flex;align-items:center;justify-content:space-between;padding:0.5rem 0.75rem;background:rgba(255,56,100,0.06);border:1px solid rgba(255,56,100,0.2);border-radius:8px;">
+                    <span style="font-size:0.82rem;color:var(--text-primary);">DSU Lab</span>
+                    <span style="font-size:0.72rem;background:rgba(255,56,100,0.2);color:var(--neon-red);border-radius:20px;padding:0.15rem 0.6rem;font-weight:700;">● Offline</span>
+                </div>
+                <div style="display:flex;align-items:center;justify-content:space-between;padding:0.5rem 0.75rem;background:rgba(0,245,255,0.06);border:1px solid rgba(0,245,255,0.15);border-radius:8px;">
+                    <span style="font-size:0.82rem;color:var(--text-primary);">DTM Lecture</span>
+                    <span style="font-size:0.72rem;background:rgba(0,245,255,0.15);color:var(--neon-cyan);border-radius:20px;padding:0.15rem 0.6rem;font-weight:700;">● Hybrid</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script>
+    // Faculty Workload Bar Chart
+    const fwCtx = document.getElementById('facultyWorkloadChart').getContext('2d');
+    new Chart(fwCtx, {
+        type: 'bar',
+        data: {
+            labels: ['CS Fund.', 'Prog Lab', 'Data Str.', 'Networks', 'OS'],
+            datasets: [{
+                label: 'Hours/Week',
+                data: [4, 3, 5, 3, 3],
+                backgroundColor: ['rgba(0,240,255,0.5)','rgba(0,255,157,0.5)','rgba(176,38,255,0.5)','rgba(255,215,0,0.5)','rgba(255,20,147,0.5)'],
+                borderColor: ['#00F0FF','#00FF9D','#B026FF','#FFD700','#FF1493'],
+                borderWidth: 1, borderRadius: 6
+            }]
+        },
+        options: {
+            responsive: true, maintainAspectRatio: true,
+            plugins: { legend: { display: false } },
+            scales: {
+                x: { ticks: { color: '#9ca3af', font: { size: 9 } }, grid: { color: 'rgba(255,255,255,0.05)' } },
+                y: { ticks: { color: '#9ca3af', font: { size: 9 } }, grid: { color: 'rgba(255,255,255,0.05)' }, min: 0 }
+            }
+        }
+    });
+    // Faculty Pie Chart
+    const fpCtx = document.getElementById('facultyPieChart').getContext('2d');
+    new Chart(fpCtx, {
+        type: 'doughnut',
+        data: {
+            labels: ['Lectures', 'Practicals'],
+            datasets: [{ data: [18, 6], backgroundColor: ['rgba(0,240,255,0.6)','rgba(0,255,157,0.6)'], borderColor: ['#00F0FF','#00FF9D'], borderWidth: 2 }]
+        },
+        options: {
+            responsive: true, maintainAspectRatio: true, cutout: '65%',
+            plugins: { legend: { labels: { color: '#9ca3af', font: { size: 10 } } } }
+        }
+    });
+
+    // Workload Comparison Chart
+    const wcCtx = document.getElementById('workloadCompareChart').getContext('2d');
+    new Chart(wcCtx, {
+        type: 'bar',
+        data: {
+            labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'],
+            datasets: [
+                { label: 'You', data: [4, 5, 3, 6, 4], backgroundColor: 'rgba(0,245,255,0.5)', borderColor: '#00F5FF', borderWidth: 1, borderRadius: 5 },
+                { label: 'Dept Avg', data: [3, 4, 4, 4, 3], backgroundColor: 'rgba(139,92,246,0.5)', borderColor: '#8B5CF6', borderWidth: 1, borderRadius: 5 }
+            ]
+        },
+        options: {
+            responsive: true, maintainAspectRatio: true,
+            plugins: { legend: { display: false } },
+            scales: {
+                x: { ticks: { color: '#9ca3af', font: { size: 9 } }, grid: { color: 'rgba(255,255,255,0.05)' } },
+                y: { ticks: { color: '#9ca3af', font: { size: 9 } }, grid: { color: 'rgba(255,255,255,0.05)' }, min: 0 }
+            }
+        }
+    });
+
+    // Performance Trend Chart
+    const perfData = {
+        lectures: { labels: ['Jan','Feb','Mar','Apr','May','Jun'], data: [14,16,15,18,17,20] },
+        feedback: { labels: ['Jan','Feb','Mar','Apr','May','Jun'], data: [3.8,4.0,3.9,4.2,4.1,4.3] }
+    };
+    const ptCtx = document.getElementById('perfTrendChart').getContext('2d');
+    const perfChart = new Chart(ptCtx, {
+        type: 'line',
+        data: {
+            labels: perfData.lectures.labels,
+            datasets: [{
+                label: 'Lectures Taken',
+                data: perfData.lectures.data,
+                borderColor: '#FFD700', backgroundColor: 'rgba(255,215,0,0.1)',
+                borderWidth: 2, pointBackgroundColor: '#FFD700', tension: 0.4, fill: true
+            }]
+        },
+        options: {
+            responsive: true, maintainAspectRatio: true,
+            plugins: { legend: { display: false } },
+            scales: {
+                x: { ticks: { color: '#9ca3af', font: { size: 9 } }, grid: { color: 'rgba(255,255,255,0.05)' } },
+                y: { ticks: { color: '#9ca3af', font: { size: 9 } }, grid: { color: 'rgba(255,255,255,0.05)' } }
+            }
+        }
+    });
+
+    function switchPerf(type) {
+        const d = perfData[type];
+        perfChart.data.labels = d.labels;
+        perfChart.data.datasets[0].data = d.data;
+        perfChart.data.datasets[0].label = type === 'lectures' ? 'Lectures Taken' : 'Feedback Rating';
+        perfChart.update();
+        document.getElementById('pbtn-lec').classList.toggle('active-trend-f', type === 'lectures');
+        document.getElementById('pbtn-fb').classList.toggle('active-trend-f', type === 'feedback');
+    }
+
+    // Today's date
+    document.getElementById('todayDate').textContent = new Date().toLocaleDateString('en-IN', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' });
+</script>
+<script>
+    // Add hover effects to feature cards
+    document.addEventListener('DOMContentLoaded', function() {
+        const featureCards = document.querySelectorAll('.feature-card');
+        
+        featureCards.forEach(card => {
+            card.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-8px) scale(1.02)';
+            });
+            
+            card.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateY(0) scale(1)';
+            });
+        });
+
+        // Add loading animation to stat cards
+        const statCards = document.querySelectorAll('.stat-mini-card');
+        statCards.forEach((card, index) => {
+            card.style.animationDelay = `${index * 0.1}s`;
+            card.classList.add('animate-fade-in');
+        });
+    });
+
+    // Add CSS animation class
+    const style = document.createElement('style');
+    style.textContent = `
+        .animate-fade-in {
+            animation: fadeInUp 0.6s ease-out forwards;
+            opacity: 0;
+        }
+        
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    `;
+    document.head.appendChild(style);
+</script>
+{% endblock %}

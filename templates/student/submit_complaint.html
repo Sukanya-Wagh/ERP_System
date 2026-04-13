@@ -1,0 +1,217 @@
+{% extends "student_base.html" %}
+
+{% block title %}Submit Complaint - Student Dashboard{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card" style="background: rgba(18, 18, 24, 0.9) !important; border: 2px solid #ef4444 !important;">
+            <div class="card-header d-flex align-items-center justify-content-between" style="background: rgba(239, 68, 68, 0.1) !important; border-bottom: 2px solid #ef4444 !important;">
+                <div class="d-flex align-items-center">
+                    <i class="fas fa-exclamation-triangle me-2" style="color: #ef4444 !important;"></i>
+                    <h5 class="mb-0" style="color: #ef4444 !important; font-weight: 700 !important;">Submit Complaint</h5>
+                </div>
+                <a href="{{ url_for('student_dashboard') }}" 
+                   class="btn btn-secondary" style="background: rgba(0, 0, 0, 0.5) !important; border: 1px solid var(--text-secondary) !important; color: var(--text-secondary) !important; font-weight: 600 !important;">
+                    <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
+                </a>
+            </div>
+            
+            <div class="card-body" style="padding: 2rem !important;">
+                <div class="icon-container" style="margin-bottom: 2rem !important; background: linear-gradient(45deg, #ef4444, #dc267f); width: 80px; height: 80px; display: flex; align-items: center; justify-content: center; border-radius: 50%;">
+                    <i class="fas fa-paper-plane" style="color: #000; font-size: 2rem;"></i>
+                </div>
+                
+                <p style="color: var(--text-secondary) !important; margin-bottom: 2rem;">Report issues, concerns, or complaints to the administration. Your complaint will be reviewed and addressed promptly.</p>
+                
+                <!-- Guidelines -->
+                <div class="alert" style="background: rgba(239, 68, 68, 0.1) !important; border: 1px solid rgba(239, 68, 68, 0.3) !important; color: #ef4444 !important; margin-bottom: 2rem;">
+                    <div class="d-flex align-items-start">
+                        <i class="fas fa-info-circle me-3 mt-1" style="color: #ef4444 !important;"></i>
+                        <div>
+                            <p style="color: #ef4444 !important; font-weight: 600; margin-bottom: 0.5rem;">Complaint Guidelines</p>
+                            <ul style="color: var(--text-secondary) !important; font-size: 0.875rem; margin: 0; padding-left: 1rem;">
+                                <li>Be specific and provide clear details about the issue</li>
+                                <li>Include relevant dates, times, and people involved</li>
+                                <li>Maintain a respectful and professional tone</li>
+                                <li>Your complaint will be handled confidentially</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <form method="POST">
+                    {{ form.hidden_tag() }}
+                    
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                {{ form.title.label(class="form-label", style="color: var(--text-primary) !important; font-weight: 600 !important;") }}
+                                <span style="color: #ef4444 !important;">*</span>
+                                {{ form.title(class="form-control", style="background: rgba(18, 18, 24, 0.8) !important; border: 1px solid rgba(239, 68, 68, 0.3) !important; color: var(--text-primary) !important; border-radius: 8px !important;", placeholder="Brief title of your complaint") }}
+                                {% if form.title.errors %}
+                                    <div class="text-danger mt-1">
+                                        {% for error in form.title.errors %}
+                                            <small><i class="fas fa-exclamation-circle me-1"></i>{{ error }}</small>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="mb-3">
+                                {{ form.category.label(class="form-label", style="color: var(--text-primary) !important; font-weight: 600 !important;") }}
+                                <span style="color: #ef4444 !important;">*</span>
+                                {{ form.category(class="form-select", style="background: rgba(18, 18, 24, 0.8) !important; border: 1px solid rgba(239, 68, 68, 0.3) !important; color: var(--text-primary) !important; border-radius: 8px !important;") }}
+                                {% if form.category.errors %}
+                                    <div class="text-danger mt-1">
+                                        {% for error in form.category.errors %}
+                                            <small><i class="fas fa-exclamation-circle me-1"></i>{{ error }}</small>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="mb-3">
+                                {{ form.priority.label(class="form-label", style="color: var(--text-primary) !important; font-weight: 600 !important;") }}
+                                <span style="color: #ef4444 !important;">*</span>
+                                {{ form.priority(class="form-select", style="background: rgba(18, 18, 24, 0.8) !important; border: 1px solid rgba(239, 68, 68, 0.3) !important; color: var(--text-primary) !important; border-radius: 8px !important;") }}
+                                {% if form.priority.errors %}
+                                    <div class="text-danger mt-1">
+                                        {% for error in form.priority.errors %}
+                                            <small><i class="fas fa-exclamation-circle me-1"></i>{{ error }}</small>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-4">
+                        {{ form.description.label(class="form-label", style="color: var(--text-primary) !important; font-weight: 600 !important;") }}
+                        <span style="color: #ef4444 !important;">*</span>
+                        {{ form.description(class="form-control", style="background: rgba(18, 18, 24, 0.8) !important; border: 1px solid rgba(239, 68, 68, 0.3) !important; color: var(--text-primary) !important; border-radius: 8px !important; min-height: 120px;", rows="6", placeholder="Describe your complaint in detail. Include relevant dates, times, and people involved...") }}
+                        {% if form.description.errors %}
+                            <div class="text-danger mt-1">
+                                {% for error in form.description.errors %}
+                                    <small><i class="fas fa-exclamation-circle me-1"></i>{{ error }}</small>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                        <small style="color: var(--text-muted) !important;">Minimum 10 characters required</small>
+                    </div>
+                    
+                    <!-- Action Buttons -->
+                    <div class="d-flex gap-3 justify-content-end">
+                        <a href="{{ url_for('student_dashboard') }}" 
+                           class="btn btn-secondary" style="background: rgba(156, 163, 175, 0.2) !important; border-color: var(--text-secondary) !important; color: var(--text-secondary) !important; font-weight: 600 !important; padding: 0.75rem 2rem;">
+                            <i class="fas fa-times me-2"></i>Cancel
+                        </a>
+                        {{ form.submit(class="btn btn-danger", style="background: rgba(239, 68, 68, 0.2) !important; border-color: #ef4444 !important; color: #ef4444 !important; font-weight: 600 !important; padding: 0.75rem 2rem;") }}
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Recent Complaints (if any) -->
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card" style="background: rgba(18, 18, 24, 0.7) !important; border: 1px solid rgba(239, 68, 68, 0.2) !important;">
+            <div class="card-header" style="background: rgba(239, 68, 68, 0.05) !important; border-bottom: 1px solid rgba(239, 68, 68, 0.2) !important;">
+                <h6 class="mb-0" style="color: #ef4444 !important;">
+                    <i class="fas fa-history me-2"></i>Complaint Status Information
+                </h6>
+            </div>
+            <div class="card-body" style="padding: 1.5rem !important;">
+                <div class="row">
+                    <div class="col-md-4 text-center">
+                        <div class="icon-container d-inline-flex mb-2" style="background: linear-gradient(45deg, #ef4444, #dc267f); width: 50px; height: 50px; border-radius: 50%; align-items: center; justify-content: center;">
+                            <i class="fas fa-clock" style="color: #000; font-size: 1.2rem;"></i>
+                        </div>
+                        <h6 style="color: var(--text-primary) !important;">Pending Review</h6>
+                        <p style="color: var(--text-secondary) !important; font-size: 0.85rem; margin: 0;">Your complaint will be reviewed within 24-48 hours</p>
+                    </div>
+                    <div class="col-md-4 text-center">
+                        <div class="icon-container d-inline-flex mb-2" style="background: linear-gradient(45deg, var(--neon-yellow), #ff8c00); width: 50px; height: 50px; border-radius: 50%; align-items: center; justify-content: center;">
+                            <i class="fas fa-search" style="color: #000; font-size: 1.2rem;"></i>
+                        </div>
+                        <h6 style="color: var(--text-primary) !important;">Under Investigation</h6>
+                        <p style="color: var(--text-secondary) !important; font-size: 0.85rem; margin: 0;">Administration will investigate the matter thoroughly</p>
+                    </div>
+                    <div class="col-md-4 text-center">
+                        <div class="icon-container d-inline-flex mb-2" style="background: linear-gradient(45deg, var(--neon-green), var(--neon-teal)); width: 50px; height: 50px; border-radius: 50%; align-items: center; justify-content: center;">
+                            <i class="fas fa-check" style="color: #000; font-size: 1.2rem;"></i>
+                        </div>
+                        <h6 style="color: var(--text-primary) !important;">Resolution</h6>
+                        <p style="color: var(--text-secondary) !important; font-size: 0.85rem; margin: 0;">You will be notified of the resolution and actions taken</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_styles %}
+<style>
+/* Complaint form specific styles */
+.form-control:focus, .form-select:focus {
+    border-color: #ef4444 !important;
+    box-shadow: 0 0 0 0.2rem rgba(239, 68, 68, 0.25) !important;
+}
+
+.btn:hover {
+    transform: translateY(-2px) !important;
+}
+
+.card:hover {
+    transform: translateY(-3px) !important;
+    box-shadow: 0 10px 25px rgba(239, 68, 68, 0.15) !important;
+}
+
+.icon-container:hover {
+    transform: scale(1.1) !important;
+    box-shadow: 0 0 30px rgba(239, 68, 68, 0.5) !important;
+}
+</style>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Character counter for description
+    const descriptionField = document.querySelector('textarea[name="description"]');
+    if (descriptionField) {
+        const counter = document.createElement('small');
+        counter.style.color = 'var(--text-muted)';
+        counter.style.float = 'right';
+        descriptionField.parentNode.appendChild(counter);
+        
+        function updateCounter() {
+            const length = descriptionField.value.length;
+            counter.textContent = `${length} characters`;
+            
+            if (length < 10) {
+                counter.style.color = '#ef4444';
+            } else {
+                counter.style.color = 'var(--text-muted)';
+            }
+        }
+        
+        descriptionField.addEventListener('input', updateCounter);
+        updateCounter();
+    }
+    
+    // Form validation feedback
+    const form = document.querySelector('form');
+    form.addEventListener('submit', function(e) {
+        const submitBtn = form.querySelector('input[type="submit"]');
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Submitting...';
+        submitBtn.disabled = true;
+    });
+});
+</script>
+{% endblock %}

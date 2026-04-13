@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block content %}
+<h3>Pending Complaints</h3>
+
+{% if complaints %}
+  <ul class="list-group">
+    {% for c in complaints %}
+    <li class="list-group-item d-flex justify-content-between align-items-center">
+      <div>
+        <strong>From:</strong> {{ c.submitter.username }} <br>
+        <strong>Title:</strong> {{ c.title }} <br>
+        <strong>Category:</strong> {{ c.category }} | <strong>Priority:</strong> {{ c.priority }} <br>
+        <strong>Description:</strong> {{ c.description[:100] }}{% if c.description|length > 100 %}...{% endif %} <br>
+        <small class="text-muted">Submitted on {{ c.timestamp.strftime('%d-%m-%Y %H:%M') }}</small>
+      </div>
+      <a href="{{ url_for('resolve_complaint', complaint_id=c.id) }}" class="btn btn-success btn-sm">Resolve</a>
+    </li>
+    {% endfor %}
+  </ul>
+{% else %}
+  <p>No pending complaints.</p>
+{% endif %}
+
+{% endblock %}

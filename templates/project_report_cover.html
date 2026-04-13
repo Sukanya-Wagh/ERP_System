@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Project Report - Departmental ERP System</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    @page { size: A4; margin: 0; }
+
+    body {
+      width: 210mm;
+      min-height: 297mm;
+      margin: 0 auto;
+      font-family: 'Inter', sans-serif;
+      background: #ffffff;
+      color: #1a1a2e;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ── TOP ACCENT BAR ── */
+    .top-bar {
+      height: 8px;
+      background: linear-gradient(90deg, #1a237e, #1565c0, #0288d1, #1565c0, #1a237e);
+    }
+
+    /* ── HEADER ── */
+    .header {
+      background: linear-gradient(160deg, #0d1b4b 0%, #1a3a7c 60%, #1565c0 100%);
+      padding: 28px 40px 24px;
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .header::after {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+    }
+
+    .header-logo {
+      width: 90px;
+      height: 90px;
+      object-fit: contain;
+      flex-shrink: 0;
+      filter: drop-shadow(0 2px 8px rgba(0,0,0,0.3));
+      mix-blend-mode: lighten;
+    }
+
+    .header-text { flex: 1; text-align: center; }
+
+    .institute-name {
+      font-family: 'Playfair Display', serif;
+      font-size: 15.5px;
+      font-weight: 700;
+      color: #ffffff;
+      letter-spacing: 0.5px;
+      line-height: 1.4;
+      text-transform: uppercase;
+    }
+
+    .institute-sub {
+      font-size: 11px;
+      color: rgba(255,255,255,0.78);
+      margin-top: 5px;
+      line-height: 1.6;
+      font-weight: 300;
+    }
+
+    .affiliation-row {
+      display: flex;
+      justify-content: center;
+      gap: 18px;
+      margin-top: 8px;
+      flex-wrap: wrap;
+    }
+
+    .affiliation-badge {
+      font-size: 9.5px;
+      color: rgba(255,255,255,0.65);
+      border: 1px solid rgba(255,255,255,0.25);
+      padding: 3px 10px;
+      border-radius: 20px;
+      letter-spacing: 0.3px;
+    }
+
+    /* ── DIVIDER ── */
+    .divider {
+      height: 1px;
+      background: linear-gradient(90deg, transparent, #1565c0, transparent);
+      margin: 0 40px;
+    }
+
+    .divider-thick {
+      height: 2px;
+      background: linear-gradient(90deg, #1a237e, #0288d1, #1a237e);
+      margin: 0;
+    }
+
+    /* ── BODY ── */
+    .body {
+      flex: 1;
+      padding: 0 50px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    /* ── PROJECT TITLE SECTION ── */
+    .title-section {
+      text-align: center;
+      padding: 36px 0 28px;
+      width: 100%;
+    }
+
+    .report-label {
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 3px;
+      color: #1565c0;
+      text-transform: uppercase;
+      margin-bottom: 14px;
+    }
+
+    .project-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 26px;
+      font-weight: 700;
+      color: #0d1b4b;
+      line-height: 1.35;
+      margin-bottom: 10px;
+    }
+
+    .project-subtitle {
+      font-size: 12px;
+      color: #546e7a;
+      font-weight: 400;
+      letter-spacing: 0.3px;
+    }
+
+    .title-underline {
+      width: 80px;
+      height: 3px;
+      background: linear-gradient(90deg, #1565c0, #0288d1);
+      border-radius: 2px;
+      margin: 14px auto 0;
+    }
+
+    /* ── INFO GRID ── */
+    .info-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      width: 100%;
+      margin: 10px 0 24px;
+    }
+
+    .info-card {
+      background: #f4f7fb;
+      border: 1px solid #dce6f5;
+      border-left: 4px solid #1565c0;
+      border-radius: 6px;
+      padding: 14px 18px;
+    }
+
+    .info-card-label {
+      font-size: 9px;
+      font-weight: 600;
+      letter-spacing: 1.5px;
+      color: #1565c0;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+
+    .info-card-value {
+      font-size: 12px;
+      font-weight: 500;
+      color: #1a1a2e;
+      line-height: 1.5;
+    }
+
+    /* ── TEAM SECTION ── */
+    .section-heading {
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 2.5px;
+      color: #1565c0;
+      text-transform: uppercase;
+      text-align: center;
+      margin-bottom: 14px;
+      position: relative;
+    }
+
+    .section-heading::before,
+    .section-heading::after {
+      content: '';
+      display: inline-block;
+      width: 40px;
+      height: 1px;
+      background: #1565c0;
+      vertical-align: middle;
+      margin: 0 10px;
+      opacity: 0.5;
+    }
+
+    .team-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 11.5px;
+      margin-bottom: 20px;
+    }
+
+    .team-table thead tr {
+      background: linear-gradient(90deg, #1a237e, #1565c0);
+      color: white;
+    }
+
+    .team-table thead th {
+      padding: 9px 14px;
+      font-weight: 600;
+      font-size: 10px;
+      letter-spacing: 0.5px;
+      text-align: left;
+    }
+
+    .team-table tbody tr:nth-child(even) { background: #f4f7fb; }
+    .team-table tbody tr:nth-child(odd)  { background: #ffffff; }
+
+    .team-table tbody td {
+      padding: 8px 14px;
+      color: #2c3e50;
+      border-bottom: 1px solid #e8eef6;
+    }
+
+    .roll-badge {
+      display: inline-block;
+      background: #e3edf9;
+      color: #1565c0;
+      font-weight: 600;
+      font-size: 10px;
+      padding: 2px 8px;
+      border-radius: 4px;
+    }
+
+    /* ── GUIDE SECTION ── */
+    .guide-section {
+      width: 100%;
+      background: linear-gradient(135deg, #f0f4ff, #e8f0fe);
+      border: 1px solid #c5d5f0;
+      border-radius: 8px;
+      padding: 16px 24px;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .guide-icon {
+      width: 44px;
+      height: 44px;
+      background: linear-gradient(135deg, #1565c0, #0288d1);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      font-size: 18px;
+      color: white;
+    }
+
+    .guide-label {
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      color: #1565c0;
+      text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+
+    .guide-name {
+      font-size: 13px;
+      font-weight: 600;
+      color: #0d1b4b;
+    }
+
+    .guide-designation {
+      font-size: 10.5px;
+      color: #546e7a;
+      margin-top: 2px;
+    }
+
+    /* ── ACADEMIC INFO ── */
+    .academic-row {
+      display: flex;
+      justify-content: center;
+      gap: 30px;
+      width: 100%;
+      margin-bottom: 10px;
+    }
+
+    .academic-item {
+      text-align: center;
+    }
+
+    .academic-item-label {
+      font-size: 9px;
+      font-weight: 600;
+      letter-spacing: 1px;
+      color: #90a4ae;
+      text-transform: uppercase;
+      margin-bottom: 3px;
+    }
+
+    .academic-item-value {
+      font-size: 12px;
+      font-weight: 600;
+      color: #1a1a2e;
+    }
+
+    /* ── FOOTER ── */
+    .footer {
+      background: linear-gradient(160deg, #0d1b4b, #1a3a7c);
+      padding: 14px 40px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .footer-text {
+      font-size: 9.5px;
+      color: rgba(255,255,255,0.6);
+      letter-spacing: 0.3px;
+    }
+
+    .footer-year {
+      font-size: 11px;
+      font-weight: 600;
+      color: rgba(255,255,255,0.85);
+      letter-spacing: 1px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="top-bar"></div>
+
+  <!-- HEADER -->
+  <div class="header">
+    <img src="{{ url_for('static', filename='sveri.jpg') }}"
+         alt="College Logo"
+         class="header-logo"/>
+    <div class="header-text">
+      <div class="institute-name">Shri Vithal Education &amp; Research Institute's</div>
+      <div class="institute-name" style="font-size:13px; margin-top:3px;">College of Engineering (Polytechnic), Pandharpur</div>
+      <div class="institute-sub">
+        P.B. No. 54, Gopalpur Ranjani Road, Pandharpur – 413304, Dist. Solapur, Maharashtra<br/>
+        Phone: +91 9970843858 &nbsp;|&nbsp; Email: cod@sveri.ac.in
+      </div>
+      <div class="affiliation-row">
+        <span class="affiliation-badge">Approved by AICTE, New Delhi</span>
+        <span class="affiliation-badge">Affiliated to MSBTE, Mumbai</span>
+        <span class="affiliation-badge">NBA Accredited</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="divider-thick"></div>
+
+  <!-- BODY -->
+  <div class="body">
+
+    <!-- PROJECT TITLE -->
+    <div class="title-section">
+      <div class="report-label">Project Report</div>
+      <div class="project-title">Departmental ERP System</div>
+      <div class="project-subtitle">A Web-Based Enterprise Resource Planning System for Academic Department Management</div>
+      <div class="title-underline"></div>
+    </div>
+
+    <div class="divider" style="width:100%; margin: 0 0 22px 0;"></div>
+
+    <!-- INFO GRID -->
+    <div class="info-grid">
+      <div class="info-card">
+        <div class="info-card-label">Department</div>
+        <div class="info-card-value">Computer Technology</div>
+      </div>
+      <div class="info-card">
+        <div class="info-card-label">Programme</div>
+        <div class="info-card-value">Diploma in Computer Technology</div>
+      </div>
+      <div class="info-card">
+        <div class="info-card-label">Course</div>
+        <div class="info-card-value">Project (22618)</div>
+      </div>
+      <div class="info-card">
+        <div class="info-card-label">Academic Year</div>
+        <div class="info-card-value">2025 – 2026</div>
+      </div>
+    </div>
+
+    <!-- TEAM -->
+    <div class="section-heading">Project Team</div>
+    <table class="team-table">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Student Name</th>
+          <th>Roll No.</th>
+          <th>Enrollment No.</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>1</td>
+          <td>[ Student Name 1 ]</td>
+          <td><span class="roll-badge">01</span></td>
+          <td>[ Enrollment No. ]</td>
+        </tr>
+        <tr>
+          <td>2</td>
+          <td>[ Student Name 2 ]</td>
+          <td><span class="roll-badge">02</span></td>
+          <td>[ Enrollment No. ]</td>
+        </tr>
+        <tr>
+          <td>3</td>
+          <td>[ Student Name 3 ]</td>
+          <td><span class="roll-badge">03</span></td>
+          <td>[ Enrollment No. ]</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- GUIDE -->
+    <div class="section-heading">Project Guide</div>
+    <div class="guide-section">
+      <div class="guide-icon">&#128100;</div>
+      <div>
+        <div class="guide-label">Under the Guidance of</div>
+        <div class="guide-name">[ Guide Name ]</div>
+        <div class="guide-designation">[ Designation ] &nbsp;|&nbsp; Department of Computer Technology</div>
+      </div>
+    </div>
+
+    <!-- ACADEMIC INFO -->
+    <div class="academic-row">
+      <div class="academic-item">
+        <div class="academic-item-label">Semester</div>
+        <div class="academic-item-value">VI (Sixth)</div>
+      </div>
+      <div class="academic-item">
+        <div class="academic-item-label">Submission Date</div>
+        <div class="academic-item-value">April 2026</div>
+      </div>
+      <div class="academic-item">
+        <div class="academic-item-label">Technology Stack</div>
+        <div class="academic-item-value">Python · Flask · SQLite</div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- FOOTER -->
+  <div class="footer">
+    <div class="footer-text">SVERI's College of Engineering (Polytechnic), Pandharpur</div>
+    <div class="footer-year">2025 – 2026</div>
+  </div>
+
+</body>
+</html>

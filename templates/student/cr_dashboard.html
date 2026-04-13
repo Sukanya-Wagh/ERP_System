@@ -1,0 +1,278 @@
+{% extends "student_base.html" %}
+
+{% block title %}CR Dashboard - Student Portal{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="card" style="background: rgba(18, 18, 24, 0.9) !important; border: 2px solid var(--neon-pink) !important;">
+            <div class="card-header d-flex align-items-center justify-content-between" style="background: rgba(255, 0, 255, 0.1) !important; border-bottom: 2px solid var(--neon-pink) !important;">
+                <div class="d-flex align-items-center">
+                    <i class="fas fa-crown me-2" style="color: var(--neon-pink) !important;"></i>
+                    <h5 class="mb-0" style="color: var(--neon-pink) !important; font-weight: 700 !important;">Class Representative Dashboard</h5>
+                </div>
+                <a href="{{ url_for('student_dashboard') }}" 
+                   class="btn btn-secondary" style="background: rgba(0, 0, 0, 0.5) !important; border: 1px solid var(--text-secondary) !important; color: var(--text-secondary) !important; font-weight: 600 !important;">
+                    <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
+                </a>
+            </div>
+            <div class="card-body" style="padding: 2rem !important;">
+                <div class="icon-container" style="margin-bottom: 2rem !important; background: linear-gradient(45deg, var(--neon-pink), var(--neon-purple)); width: 80px; height: 80px; display: flex; align-items: center; justify-content: center; border-radius: 50%;">
+                    <i class="fas fa-users-cog" style="color: #000; font-size: 2rem;"></i>
+                </div>
+                
+                <p style="color: var(--text-secondary) !important; margin-bottom: 2rem;">Welcome to the Class Representative portal. Manage class activities, coordinate with faculty, and represent your classmates effectively.</p>
+                
+                <!-- CR Stats -->
+                <div class="row mb-4">
+                    <div class="col-lg-3 col-md-6 mb-3">
+                        <div class="card" style="background: linear-gradient(135deg, rgba(255, 0, 255, 0.1), rgba(139, 92, 246, 0.1)); border: 1px solid rgba(255, 0, 255, 0.3);">
+                            <div class="card-body text-center">
+                                <div class="icon-container" style="background: linear-gradient(45deg, var(--neon-pink), var(--neon-purple)); width: 60px; height: 60px; margin: 0 auto 1rem; display: flex; align-items: center; justify-content: center; border-radius: 50%;">
+                                    <i class="fas fa-users" style="color: #000; font-size: 1.5rem;"></i>
+                                </div>
+                                <h3 style="color: var(--neon-pink) !important; font-size: 2rem; font-weight: 700;">72</h3>
+                                <p style="color: var(--text-secondary) !important; margin: 0;">Total Students</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-md-6 mb-3">
+                        <div class="card" style="background: linear-gradient(135deg, rgba(0, 255, 157, 0.1), rgba(0, 212, 170, 0.1)); border: 1px solid rgba(0, 255, 157, 0.3);">
+                            <div class="card-body text-center">
+                                <div class="icon-container" style="background: linear-gradient(45deg, var(--neon-green), var(--neon-teal)); width: 60px; height: 60px; margin: 0 auto 1rem; display: flex; align-items: center; justify-content: center; border-radius: 50%;">
+                                    <i class="fas fa-calendar-check" style="color: #000; font-size: 1.5rem;"></i>
+                                </div>
+                                <h3 style="color: var(--neon-green) !important; font-size: 2rem; font-weight: 700;">68</h3>
+                                <p style="color: var(--text-secondary) !important; margin: 0;">Present Today</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-md-6 mb-3">
+                        <div class="card" style="background: linear-gradient(135deg, rgba(255, 215, 0, 0.1), rgba(255, 165, 0, 0.1)); border: 1px solid rgba(255, 215, 0, 0.3);">
+                            <div class="card-body text-center">
+                                <div class="icon-container" style="background: linear-gradient(45deg, var(--neon-yellow), #ff8c00); width: 60px; height: 60px; margin: 0 auto 1rem; display: flex; align-items: center; justify-content: center; border-radius: 50%;">
+                                    <i class="fas fa-exclamation-triangle" style="color: #000; font-size: 1.5rem;"></i>
+                                </div>
+                                <h3 style="color: var(--neon-yellow) !important; font-size: 2rem; font-weight: 700;">5</h3>
+                                <p style="color: var(--text-secondary) !important; margin: 0;">Pending Issues</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-md-6 mb-3">
+                        <div class="card" style="background: linear-gradient(135deg, rgba(0, 245, 255, 0.1), rgba(59, 130, 246, 0.1)); border: 1px solid rgba(0, 245, 255, 0.3);">
+                            <div class="card-body text-center">
+                                <div class="icon-container" style="background: linear-gradient(45deg, var(--neon-cyan), #3b82f6); width: 60px; height: 60px; margin: 0 auto 1rem; display: flex; align-items: center; justify-content: center; border-radius: 50%;">
+                                    <i class="fas fa-tasks" style="color: #000; font-size: 1.5rem;"></i>
+                                </div>
+                                <h3 style="color: var(--neon-cyan) !important; font-size: 2rem; font-weight: 700;">12</h3>
+                                <p style="color: var(--text-secondary) !important; margin: 0;">Active Tasks</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- CR Functions -->
+                <div class="row">
+                    <!-- Class Attendance -->
+                    <div class="col-lg-4 col-md-6 mb-4">
+                        <div class="card h-100" style="background: linear-gradient(135deg, rgba(0, 255, 157, 0.05), rgba(0, 212, 170, 0.05)); border: 1px solid rgba(0, 255, 157, 0.2); transition: all 0.3s ease;">
+                            <div class="card-header" style="background: rgba(0, 255, 157, 0.1); border-bottom: 2px solid var(--neon-green);">
+                                <h5 class="mb-0" style="color: var(--neon-green) !important;">
+                                    <i class="fas fa-user-check me-2"></i>Class Attendance
+                                </h5>
+                            </div>
+                            <div class="card-body d-flex flex-column">
+                                <div class="icon-container mb-3" style="background: linear-gradient(45deg, var(--neon-green), var(--neon-teal)); width: 60px; height: 60px; display: flex; align-items: center; justify-content: center; border-radius: 50%;">
+                                    <i class="fas fa-clipboard-check" style="color: #000; font-size: 1.5rem;"></i>
+                                </div>
+                                <h6 style="color: var(--text-primary) !important;">Mark Attendance</h6>
+                                <p style="color: var(--text-secondary) !important; flex-grow: 1;">Record daily attendance for your class and submit to faculty.</p>
+                                <button class="btn btn-success w-100 mt-auto" style="background: rgba(0, 255, 157, 0.2) !important; border-color: var(--neon-green) !important; color: var(--neon-green) !important;">
+                                    <i class="fas fa-check me-2"></i>Mark Attendance
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Class Announcements -->
+                    <div class="col-lg-4 col-md-6 mb-4">
+                        <div class="card h-100" style="background: linear-gradient(135deg, rgba(255, 0, 255, 0.05), rgba(139, 92, 246, 0.05)); border: 1px solid rgba(255, 0, 255, 0.2); transition: all 0.3s ease;">
+                            <div class="card-header" style="background: rgba(255, 0, 255, 0.1); border-bottom: 2px solid var(--neon-pink);">
+                                <h5 class="mb-0" style="color: var(--neon-pink) !important;">
+                                    <i class="fas fa-bullhorn me-2"></i>Class Announcements
+                                </h5>
+                            </div>
+                            <div class="card-body d-flex flex-column">
+                                <div class="icon-container mb-3" style="background: linear-gradient(45deg, var(--neon-pink), var(--neon-purple)); width: 60px; height: 60px; display: flex; align-items: center; justify-content: center; border-radius: 50%;">
+                                    <i class="fas fa-megaphone" style="color: #000; font-size: 1.5rem;"></i>
+                                </div>
+                                <h6 style="color: var(--text-primary) !important;">Broadcast Messages</h6>
+                                <p style="color: var(--text-secondary) !important; flex-grow: 1;">Send important announcements and updates to all classmates.</p>
+                                <button class="btn btn-primary w-100 mt-auto" style="background: rgba(255, 0, 255, 0.2) !important; border-color: var(--neon-pink) !important; color: var(--neon-pink) !important;">
+                                    <i class="fas fa-plus me-2"></i>Create Announcement
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Faculty Coordination -->
+                    <div class="col-lg-4 col-md-6 mb-4">
+                        <div class="card h-100" style="background: linear-gradient(135deg, rgba(0, 245, 255, 0.05), rgba(59, 130, 246, 0.05)); border: 1px solid rgba(0, 245, 255, 0.2); transition: all 0.3s ease;">
+                            <div class="card-header" style="background: rgba(0, 245, 255, 0.1); border-bottom: 2px solid var(--neon-cyan);">
+                                <h5 class="mb-0" style="color: var(--neon-cyan) !important;">
+                                    <i class="fas fa-handshake me-2"></i>Faculty Coordination
+                                </h5>
+                            </div>
+                            <div class="card-body d-flex flex-column">
+                                <div class="icon-container mb-3" style="background: linear-gradient(45deg, var(--neon-cyan), #3b82f6); width: 60px; height: 60px; display: flex; align-items: center; justify-content: center; border-radius: 50%;">
+                                    <i class="fas fa-user-tie" style="color: #000; font-size: 1.5rem;"></i>
+                                </div>
+                                <h6 style="color: var(--text-primary) !important;">Communicate with Faculty</h6>
+                                <p style="color: var(--text-secondary) !important; flex-grow: 1;">Coordinate with faculty members on behalf of the class.</p>
+                                <button class="btn btn-info w-100 mt-auto" style="background: rgba(0, 245, 255, 0.2) !important; border-color: var(--neon-cyan) !important; color: var(--neon-cyan) !important;">
+                                    <i class="fas fa-envelope me-2"></i>Send Message
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Class Issues -->
+                    <div class="col-lg-4 col-md-6 mb-4">
+                        <div class="card h-100" style="background: linear-gradient(135deg, rgba(255, 215, 0, 0.05), rgba(255, 165, 0, 0.05)); border: 1px solid rgba(255, 215, 0, 0.2); transition: all 0.3s ease;">
+                            <div class="card-header" style="background: rgba(255, 215, 0, 0.1); border-bottom: 2px solid var(--neon-yellow);">
+                                <h5 class="mb-0" style="color: var(--neon-yellow) !important;">
+                                    <i class="fas fa-tools me-2"></i>Class Issues
+                                </h5>
+                            </div>
+                            <div class="card-body d-flex flex-column">
+                                <div class="icon-container mb-3" style="background: linear-gradient(45deg, var(--neon-yellow), #ff8c00); width: 60px; height: 60px; display: flex; align-items: center; justify-content: center; border-radius: 50%;">
+                                    <i class="fas fa-wrench" style="color: #000; font-size: 1.5rem;"></i>
+                                </div>
+                                <h6 style="color: var(--text-primary) !important;">Report & Track Issues</h6>
+                                <p style="color: var(--text-secondary) !important; flex-grow: 1;">Report classroom issues and track their resolution status.</p>
+                                <button class="btn btn-warning w-100 mt-auto" style="background: rgba(255, 215, 0, 0.2) !important; border-color: var(--neon-yellow) !important; color: var(--neon-yellow) !important;">
+                                    <i class="fas fa-bug me-2"></i>Report Issue
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Event Management -->
+                    <div class="col-lg-4 col-md-6 mb-4">
+                        <div class="card h-100" style="background: linear-gradient(135deg, rgba(139, 92, 246, 0.05), rgba(255, 0, 255, 0.05)); border: 1px solid rgba(139, 92, 246, 0.2); transition: all 0.3s ease;">
+                            <div class="card-header" style="background: rgba(139, 92, 246, 0.1); border-bottom: 2px solid var(--neon-purple);">
+                                <h5 class="mb-0" style="color: var(--neon-purple) !important;">
+                                    <i class="fas fa-calendar-alt me-2"></i>Event Management
+                                </h5>
+                            </div>
+                            <div class="card-body d-flex flex-column">
+                                <div class="icon-container mb-3" style="background: linear-gradient(45deg, var(--neon-purple), var(--neon-pink)); width: 60px; height: 60px; display: flex; align-items: center; justify-content: center; border-radius: 50%;">
+                                    <i class="fas fa-star" style="color: #000; font-size: 1.5rem;"></i>
+                                </div>
+                                <h6 style="color: var(--text-primary) !important;">Organize Events</h6>
+                                <p style="color: var(--text-secondary) !important; flex-grow: 1;">Plan and coordinate class events, activities, and celebrations.</p>
+                                <button class="btn btn-primary w-100 mt-auto" style="background: rgba(139, 92, 246, 0.2) !important; border-color: var(--neon-purple) !important; color: var(--neon-purple) !important;">
+                                    <i class="fas fa-plus me-2"></i>Plan Event
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Class Performance -->
+                    <div class="col-lg-4 col-md-6 mb-4">
+                        <div class="card h-100" style="background: linear-gradient(135deg, rgba(0, 212, 170, 0.05), rgba(0, 245, 255, 0.05)); border: 1px solid rgba(0, 212, 170, 0.2); transition: all 0.3s ease;">
+                            <div class="card-header" style="background: rgba(0, 212, 170, 0.1); border-bottom: 2px solid var(--neon-teal);">
+                                <h5 class="mb-0" style="color: var(--neon-teal) !important;">
+                                    <i class="fas fa-chart-line me-2"></i>Class Performance
+                                </h5>
+                            </div>
+                            <div class="card-body d-flex flex-column">
+                                <div class="icon-container mb-3" style="background: linear-gradient(45deg, var(--neon-teal), var(--neon-cyan)); width: 60px; height: 60px; display: flex; align-items: center; justify-content: center; border-radius: 50%;">
+                                    <i class="fas fa-trophy" style="color: #000; font-size: 1.5rem;"></i>
+                                </div>
+                                <h6 style="color: var(--text-primary) !important;">Monitor Progress</h6>
+                                <p style="color: var(--text-secondary) !important; flex-grow: 1;">Track overall class performance and academic progress.</p>
+                                <button class="btn btn-info w-100 mt-auto" style="background: rgba(0, 212, 170, 0.2) !important; border-color: var(--neon-teal) !important; color: var(--neon-teal) !important;">
+                                    <i class="fas fa-chart-bar me-2"></i>View Analytics
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Recent Activities -->
+                <div class="row mt-4">
+                    <div class="col-12">
+                        <div class="card" style="background: rgba(255, 0, 255, 0.05) !important; border: 1px solid rgba(255, 0, 255, 0.2) !important;">
+                            <div class="card-header" style="background: rgba(255, 0, 255, 0.1) !important; border-bottom: 1px solid rgba(255, 0, 255, 0.3) !important;">
+                                <h6 class="mb-0" style="color: var(--neon-pink) !important;">
+                                    <i class="fas fa-history me-2"></i>Recent CR Activities
+                                </h6>
+                            </div>
+                            <div class="card-body" style="padding: 1.5rem !important;">
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <div class="activity-item d-flex align-items-center mb-3">
+                                            <div class="icon-container me-3" style="background: linear-gradient(45deg, var(--neon-green), var(--neon-teal)); width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; border-radius: 50%;">
+                                                <i class="fas fa-check" style="color: #000; font-size: 0.9rem;"></i>
+                                            </div>
+                                            <div>
+                                                <p style="color: var(--text-primary) !important; margin: 0; font-size: 0.9rem; font-weight: 600;">Attendance Marked</p>
+                                                <small style="color: var(--text-muted) !important;">Today, 9:00 AM</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="activity-item d-flex align-items-center mb-3">
+                                            <div class="icon-container me-3" style="background: linear-gradient(45deg, var(--neon-yellow), #ff8c00); width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; border-radius: 50%;">
+                                                <i class="fas fa-bullhorn" style="color: #000; font-size: 0.9rem;"></i>
+                                            </div>
+                                            <div>
+                                                <p style="color: var(--text-primary) !important; margin: 0; font-size: 0.9rem; font-weight: 600;">Announcement Sent</p>
+                                                <small style="color: var(--text-muted) !important;">Yesterday, 2:30 PM</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="activity-item d-flex align-items-center mb-3">
+                                            <div class="icon-container me-3" style="background: linear-gradient(45deg, var(--neon-cyan), #3b82f6); width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; border-radius: 50%;">
+                                                <i class="fas fa-envelope" style="color: #000; font-size: 0.9rem;"></i>
+                                            </div>
+                                            <div>
+                                                <p style="color: var(--text-primary) !important; margin: 0; font-size: 0.9rem; font-weight: 600;">Faculty Contacted</p>
+                                                <small style="color: var(--text-muted) !important;">2 days ago</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_styles %}
+<style>
+.card:hover {
+    transform: translateY(-5px) !important;
+    box-shadow: 0 15px 35px rgba(255, 0, 255, 0.2) !important;
+}
+
+.icon-container:hover {
+    transform: scale(1.1) !important;
+    box-shadow: 0 0 40px rgba(255, 0, 255, 0.6) !important;
+}
+
+.btn:hover {
+    transform: translateY(-2px) !important;
+}
+
+.activity-item:hover {
+    transform: translateX(5px) !important;
+}
+</style>
+{% endblock %}

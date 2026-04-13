@@ -1,0 +1,105 @@
+{% extends "base.html" %}
+
+{% block title %}Staff Records (2020-{{ current_year }}){% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">Staff Records (2020-{{ current_year }})</h1>
+        <a href="{{ url_for('hod_dashboard') }}" class="d-none d-sm-inline-block btn btn-sm btn-primary shadow-sm">
+            <i class="fas fa-arrow-left fa-sm text-white-50"></i> Back to Dashboard
+        </a>
+    </div>
+
+    <div class="card shadow mb-4">
+        <div class="card-header py-3 d-flex justify-content-between align-items-center">
+            <h6 class="m-0 font-weight-bold text-primary">Faculty Records</h6>
+            <div>
+                <span class="badge badge-info">Total: {{ staff_list|length }} Faculty Members</span>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Department</th>
+                            <th>Date Joined</th>
+                            <th>Status</th>
+                            <th>Subjects Taught</th>
+                            <th>Total Leaves (2020-{{ current_year }})</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for staff, subjects_taught, total_leaves in staff_list %}
+                        <tr>
+                            <td>{{ loop.index }}</td>
+                            <td>{{ staff.full_name or 'N/A' }}</td>
+                            <td>{{ staff.email or 'N/A' }}</td>
+                            <td>{{ staff.department or 'N/A' }}</td>
+                            <td>{{ staff.date_joined.strftime('%d-%m-%Y') if staff.date_joined else 'N/A' }}</td>
+                            <td>
+                                {% if staff.is_active %}
+                                    <span class="badge badge-success">Active</span>
+                                {% else %}
+                                    <span class="badge badge-secondary">Inactive</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if subjects_taught %}
+                                    {{ subjects_taught }}
+                                {% else %}
+                                    No subjects assigned
+                                {% endif %}
+                            </td>
+                            <td class="text-center">
+                                <span class="badge {% if total_leaves > 20 %}badge-danger{% elif total_leaves > 10 %}badge-warning{% else %}badge-success{% endif %}">
+                                    {{ total_leaves }} days
+                                </span>
+                            </td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="8" class="text-center">No staff records found</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<!-- Page level plugins -->
+<script src="{{ url_for('static', filename='vendor/datatables/jquery.dataTables.min.js') }}"></script>
+<script src="{{ url_for('static', filename='vendor/datatables/dataTables.bootstrap4.min.js') }}"></script>
+
+<!-- Page level custom scripts -->
+<script>
+    $(document).ready(function() {
+        $('#dataTable').DataTable({
+            "order": [[1, "asc"]],
+            "pageLength": 25,
+            "language": {
+                "search": "Search records:",
+                "lengthMenu": "Show _MENU_ records per page",
+                "zeroRecords": "No matching records found",
+                "info": "Showing _START_ to _END_ of _TOTAL_ records",
+                "infoEmpty": "No records available",
+                "infoFiltered": "(filtered from _MAX_ total records)",
+                "paginate": {
+                    "first": "First",
+                    "last": "Last",
+                    "next": "Next",
+                    "previous": "Previous"
+                }
+            }
+        });
+    });
+</script>
+{% endblock %}

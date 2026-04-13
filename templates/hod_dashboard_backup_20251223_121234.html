@@ -1,0 +1,1632 @@
+{% extends "base.html" %}
+
+{% block title %}HOD Dashboard - Faculty Workload Management{% endblock %}
+
+{% block styles %}
+<style>
+    :root {
+        /* Cyberpunk Theme Colors */
+        --neon-cyan: #00F0FF;
+        --neon-magenta: #FF00FF;
+        --neon-purple: #B026FF;
+        --jet-black: #000000;
+        --charcoal: #0A0A0F;
+        --dark-card: #121218;
+        --card-border: #1E1E2E;
+        
+        /* Theme Variables */
+        --primary: var(--neon-cyan);
+        --accent: var(--neon-magenta);
+        --secondary: var(--neon-purple);
+        --background: var(--jet-black);
+        --surface: var(--dark-card);
+        --text-primary: #E0E0E0;
+        --text-secondary: #8A8A9D;
+        --text-muted: #6B7280;
+        
+        /* Status Colors */
+        --success: #00FF9D;
+        --warning: #FFD700;
+        --error: #FF3864;
+        --info: var(--neon-cyan);
+        
+        /* Layout */
+        --border-radius: 12px;
+        --glass-blur: 20px;
+    }
+    
+    body {
+        background: var(--background);
+        color: var(--text-primary);
+        font-family: 'Poppins', sans-serif;
+        line-height: 1.6;
+    }
+
+    /* Add subtle grid overlay */
+    body::before {
+        content: '';
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-image: 
+            linear-gradient(rgba(0, 240, 255, 0.02) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(0, 240, 255, 0.02) 1px, transparent 1px);
+        background-size: 20px 20px;
+        z-index: -1;
+        pointer-events: none;
+    }
+
+    /* Page Header */
+    .page-header {
+        background: linear-gradient(135deg, var(--neon-purple), var(--neon-magenta));
+        color: white;
+        padding: 2rem;
+        margin: -1.5rem -1.5rem 2rem -1.5rem;
+        border-radius: 0 0 var(--border-radius) var(--border-radius);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .page-header::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+        animation: shimmer 3s infinite;
+    }
+
+    @keyframes shimmer {
+        0% { transform: translateX(-100%); }
+        100% { transform: translateX(100%); }
+    }
+
+    .page-header h1 {
+        font-size: 2rem;
+        font-weight: 700;
+        margin: 0;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        text-align: center;
+    }
+
+    /* Cards */
+    .card {
+        background: rgba(18, 18, 24, 0.8);
+        backdrop-filter: blur(15px);
+        border: 1px solid rgba(0, 240, 255, 0.3);
+        border-radius: var(--border-radius);
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+        margin-bottom: 1.5rem;
+    }
+
+    .card::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: 100px;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(0, 240, 255, 0.1));
+        transform: translateX(100%);
+        transition: transform 0.6s ease;
+    }
+
+    .card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 0 25px rgba(0, 240, 255, 0.2);
+        border-color: var(--neon-cyan);
+    }
+
+    .card:hover::after {
+        transform: translateX(-100%);
+    }
+
+    .card-header {
+        background: rgba(10, 10, 15, 0.9) !important;
+        color: var(--neon-cyan) !important;
+        font-weight: 700 !important;
+        text-transform: uppercase !important;
+        font-size: 0.9rem !important;
+        letter-spacing: 1px !important;
+        padding: 1rem 1.25rem !important;
+        border-bottom: 2px solid var(--neon-cyan) !important;
+        position: relative;
+    }
+
+    .card-header::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        height: 2px;
+        background: linear-gradient(90deg, var(--neon-cyan), rgba(0, 240, 255, 0.7));
+        box-shadow: 0 0 10px var(--neon-cyan);
+    }
+
+    /* Stat Cards */
+    .stat-card {
+        background: rgba(18, 18, 24, 0.8);
+        backdrop-filter: blur(15px);
+        border: 1px solid rgba(0, 240, 255, 0.3);
+        border-radius: var(--border-radius);
+        padding: 1.5rem;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+        height: 100%;
+    }
+
+    .stat-card::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: 50px;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(0, 240, 255, 0.1));
+        transform: translateX(100%);
+        transition: transform 0.6s ease;
+    }
+
+    .stat-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 0 20px rgba(0, 240, 255, 0.3);
+        border-color: var(--neon-cyan);
+    }
+
+    .stat-card:hover::after {
+        transform: translateX(-100%);
+    }
+
+    .stat-number {
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: var(--neon-cyan);
+        text-shadow: 0 0 10px rgba(0, 240, 255, 0.5);
+        margin-bottom: 0.5rem;
+    }
+
+    .stat-label {
+        color: var(--text-secondary);
+        font-weight: 500;
+        text-transform: uppercase;
+        font-size: 0.8rem;
+        letter-spacing: 0.5px;
+        margin-bottom: 1rem;
+    }
+
+    /* Icon containers */
+    .icon-shape {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        box-shadow: 0 0 20px rgba(0, 240, 255, 0.4);
+        transition: all 0.3s ease;
+    }
+
+    .bg-soft-teal {
+        background: linear-gradient(45deg, var(--neon-cyan), rgba(0, 240, 255, 0.7)) !important;
+        color: #000000 !important;
+    }
+
+    .bg-soft-emerald {
+        background: linear-gradient(45deg, var(--success), rgba(0, 255, 157, 0.7)) !important;
+        color: #000000 !important;
+    }
+
+    .bg-soft-warning {
+        background: linear-gradient(45deg, var(--warning), rgba(255, 215, 0, 0.7)) !important;
+        color: #000000 !important;
+    }
+
+    .bg-soft-info {
+        background: linear-gradient(45deg, var(--neon-purple), rgba(176, 38, 255, 0.7)) !important;
+        color: #000000 !important;
+    }
+
+    /* Buttons */
+    .btn-primary {
+        background: rgba(0, 0, 0, 0.5) !important;
+        border: 1px solid var(--neon-cyan) !important;
+        color: var(--neon-cyan) !important;
+        font-weight: 600 !important;
+        transition: all 0.3s ease !important;
+        box-shadow: 0 0 10px rgba(0, 240, 255, 0.2) !important;
+        position: relative !important;
+        overflow: hidden !important;
+    }
+
+    .btn-primary::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(0, 240, 255, 0.2), transparent);
+        transition: 0.5s;
+    }
+
+    .btn-primary:hover::before {
+        left: 100%;
+    }
+
+    .btn-primary:hover {
+        background: rgba(0, 240, 255, 0.1) !important;
+        box-shadow: 0 0 20px rgba(0, 240, 255, 0.4) !important;
+        color: var(--neon-cyan) !important;
+        transform: translateY(-2px) !important;
+    }
+
+    .btn-outline-primary {
+        background: transparent !important;
+        border: 1px solid rgba(0, 240, 255, 0.3) !important;
+        color: var(--text-secondary) !important;
+        transition: all 0.3s ease !important;
+    }
+
+    .btn-outline-primary:hover {
+        border-color: var(--neon-cyan) !important;
+        color: var(--neon-cyan) !important;
+        box-shadow: 0 0 15px rgba(0, 240, 255, 0.2) !important;
+    }
+
+    /* Success buttons */
+    .btn-success {
+        background: rgba(0, 0, 0, 0.5) !important;
+        border: 1px solid var(--success) !important;
+        color: var(--success) !important;
+        font-weight: 600 !important;
+        transition: all 0.3s ease !important;
+        box-shadow: 0 0 10px rgba(0, 255, 157, 0.2) !important;
+    }
+
+    .btn-success:hover {
+        background: rgba(0, 255, 157, 0.1) !important;
+        box-shadow: 0 0 20px rgba(0, 255, 157, 0.4) !important;
+        color: var(--success) !important;
+        transform: translateY(-2px) !important;
+    }
+
+    /* Info buttons */
+    .btn-info {
+        background: rgba(0, 0, 0, 0.5) !important;
+        border: 1px solid var(--neon-purple) !important;
+        color: var(--neon-purple) !important;
+        font-weight: 600 !important;
+        transition: all 0.3s ease !important;
+        box-shadow: 0 0 10px rgba(176, 38, 255, 0.2) !important;
+    }
+
+    .btn-info:hover {
+        background: rgba(176, 38, 255, 0.1) !important;
+        box-shadow: 0 0 20px rgba(176, 38, 255, 0.4) !important;
+        color: var(--neon-purple) !important;
+        transform: translateY(-2px) !important;
+    }
+
+    /* Secondary buttons */
+    .btn-secondary {
+        background: rgba(0, 0, 0, 0.5) !important;
+        border: 1px solid #6B7280 !important;
+        color: #6B7280 !important;
+        font-weight: 600 !important;
+        transition: all 0.3s ease !important;
+        box-shadow: 0 0 10px rgba(107, 114, 128, 0.2) !important;
+    }
+
+    .btn-secondary:hover {
+        background: rgba(107, 114, 128, 0.1) !important;
+        box-shadow: 0 0 20px rgba(107, 114, 128, 0.4) !important;
+        color: #9CA3AF !important;
+        transform: translateY(-2px) !important;
+    }
+
+    /* Tables */
+    .table {
+        background: transparent !important;
+        color: var(--text-primary) !important;
+    }
+
+    .table th {
+        background: rgba(10, 10, 15, 0.9) !important;
+        color: var(--neon-cyan) !important;
+        font-weight: 700 !important;
+        text-transform: uppercase !important;
+        font-size: 0.8rem !important;
+        letter-spacing: 1px !important;
+        border-bottom: 2px solid var(--neon-cyan) !important;
+    }
+
+    .table td {
+        border-color: rgba(0, 240, 255, 0.1) !important;
+        color: var(--text-primary) !important;
+    }
+
+    .table tbody tr:hover {
+        background: rgba(0, 240, 255, 0.08) !important;
+    }
+
+    /* List groups */
+    .list-group-item {
+        background: rgba(18, 18, 24, 0.6) !important;
+        border: 1px solid rgba(0, 240, 255, 0.2) !important;
+        color: var(--text-primary) !important;
+        transition: all 0.3s ease !important;
+    }
+
+    .list-group-item:hover {
+        background: rgba(0, 240, 255, 0.08) !important;
+        border-color: var(--neon-cyan) !important;
+    }
+
+    /* Text colors */
+    .text-muted {
+        color: var(--text-muted) !important;
+    }
+
+    .text-gray-800 {
+        color: var(--text-primary) !important;
+    }
+
+    /* Special card headers */
+    .bg-primary {
+        background: linear-gradient(90deg, var(--neon-cyan), rgba(0, 240, 255, 0.8)) !important;
+    }
+
+    .bg-success {
+        background: linear-gradient(90deg, var(--success), #10B981) !important;
+    }
+
+    .bg-info {
+        background: linear-gradient(90deg, var(--neon-purple), rgba(176, 38, 255, 0.8)) !important;
+    }
+
+    .bg-secondary {
+        background: linear-gradient(90deg, #6B7280, #4B5563) !important;
+    }
+
+    .bg-danger {
+        background: linear-gradient(90deg, var(--error), #EF4444) !important;
+    }
+
+    /* Purple card header */
+    .bg-purple {
+        background: linear-gradient(90deg, var(--neon-purple), rgba(176, 38, 255, 0.8)) !important;
+    }
+
+    /* Animation for page load */
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .card {
+        animation: fadeInUp 0.6s ease-out;
+    }
+
+    .card:nth-child(1) { animation-delay: 0.1s; }
+    .card:nth-child(2) { animation-delay: 0.2s; }
+    .card:nth-child(3) { animation-delay: 0.3s; }
+    .card:nth-child(4) { animation-delay: 0.4s; }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+        .page-header {
+            margin: -1rem -1rem 1rem -1rem;
+            padding: 1.5rem;
+        }
+        
+        .page-header h1 {
+            font-size: 1.5rem;
+        }
+        
+        .stat-number {
+            font-size: 2rem;
+        }
+        
+        .card {
+            margin-bottom: 1rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <!-- Page Header -->
+    <div class="page-header">
+        <div class="d-flex align-items-center justify-content-center">
+            <div class="text-center">
+                <h1><i class="fas fa-crown me-3"></i>HOD Dashboard</h1>
+                <p class="mb-0 opacity-75">Head of Department - Faculty Workload Management</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Stats -->
+    <div class="row mb-4">
+        <div class="col-md-3 mb-3">
+            <div class="stat-card">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <div class="stat-number">{{ faculty_count or 0 }}</div>
+                        <div class="stat-label">Faculty Members</div>
+                    </div>
+                    <div class="icon-shape bg-soft-teal">
+                        <i class="fas fa-users"></i>
+                    </div>
+                </div>
+                <div class="mt-3">
+                    <a href="{{ url_for('manage_faculty') }}" class="btn btn-sm btn-outline-primary">
+                        <i class="fas fa-eye me-1"></i>View All
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3 mb-3">
+            <div class="stat-card">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <div class="stat-number">{{ subject_count or 0 }}</div>
+                        <div class="stat-label">Total Subjects</div>
+                    </div>
+                    <div class="icon-shape bg-soft-emerald">
+                        <i class="fas fa-book"></i>
+                    </div>
+                </div>
+                <div class="mt-3">
+                    <a href="{{ url_for('manage_subjects') }}" class="btn btn-sm btn-outline-primary">
+                        <i class="fas fa-eye me-1"></i>View All
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3 mb-3">
+            <div class="stat-card">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <div class="stat-number">{{ complaint_count or 0 }}</div>
+                        <div class="stat-label">Pending Complaints</div>
+                    </div>
+                    <div class="icon-shape bg-soft-warning">
+                        <i class="fas fa-exclamation-triangle"></i>
+                    </div>
+                </div>
+                <div class="mt-3">
+                    <a href="{{ url_for('hod_view_complaints') }}" class="btn btn-sm btn-outline-primary">
+                        <i class="fas fa-eye me-1"></i>View All
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3 mb-3">
+            <div class="stat-card">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <div class="stat-number">{{ announcement_count or 0 }}</div>
+                        <div class="stat-label">Active Announcements</div>
+                    </div>
+                    <div class="icon-shape bg-soft-info">
+                        <i class="fas fa-bullhorn"></i>
+                    </div>
+                </div>
+                <div class="mt-3">
+                    <a href="#" class="btn btn-sm btn-outline-primary">
+                        <i class="fas fa-eye me-1"></i>View All
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="row">
+        <!-- Left Column -->
+        <div class="col-lg-6">
+            <!-- Staff Management -->
+            <div class="card mb-4">
+                <div class="card-header bg-primary text-white">
+                    <i class="fas fa-users me-2"></i>Staff Management
+                </div>
+                <div class="card-body">
+                    <div class="d-flex justify-content-between mb-3">
+                        <h5 class="card-title">Faculty Members</h5>
+                        <a href="{{ url_for('manage_faculty') }}" class="btn btn-sm btn-primary">
+                            <i class="fas fa-plus me-1"></i> Add New
+                        </a>
+                    </div>
+                    <div class="list-group">
+                        {% for faculty in recent_faculty %}
+                        <div class="list-group-item d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="mb-0">{{ faculty.full_name or faculty.username }}</h6>
+                                <small class="text-muted">{{ faculty.department or 'No department' }}</small>
+                            </div>
+                            <div class="btn-group">
+                                <a href="{{ url_for('edit_faculty', id=faculty.id) }}" class="btn btn-sm btn-outline-primary">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Announcements -->
+            <div class="card">
+                <div class="card-header bg-info text-white">
+                    <i class="fas fa-bullhorn me-2"></i>Recent Announcements
+                </div>
+                <div class="card-body">
+                    {% if announcements %}
+                        <ul class="list-group list-group-flush">
+                            {% for announcement in announcements %}
+                            <li class="list-group-item">
+                                <h6>{{ announcement.title }}</h6>
+                                <p class="mb-1 small">{{ announcement.content|truncate(100) }}</p>
+                                <small class="text-muted">Posted on {{ announcement.created_at.strftime('%b %d, %Y') }}</small>
+                            </li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <p class="text-muted text-center my-3">No recent announcements</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Column -->
+        <div class="col-lg-6">
+            <!-- Workload Assignment -->
+            <div class="card mb-4">
+                <div class="card-header bg-success text-white">
+                    <i class="fas fa-tasks me-2"></i>Workload Assignment
+                </div>
+                <div class="card-body">
+                    <div class="d-flex justify-content-between mb-3">
+                        <h5 class="card-title">Current Workloads</h5>
+                        <a href="{{ url_for('assign_workload') }}" class="btn btn-sm btn-success">
+                            <i class="fas fa-plus me-1"></i> Assign Workload
+                        </a>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-sm table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Faculty</th>
+                                    <th>Subject</th>
+                                    <th>Hours</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for workload in recent_workloads %}
+                                <tr>
+                                    <td>{{ workload.faculty.username }}</td>
+                                    <td>{{ workload.subject }}</td>
+                                    <td>{{ workload.hours }}</td>
+                                </tr>
+                                {% else %}
+                                <tr>
+                                    <td colspan="3" class="text-center text-muted">No workload assignments yet</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="card">
+                <div class="card-header bg-secondary text-white">
+                    <i class="fas fa-bolt me-2"></i>Quick Actions
+                </div>
+                <div class="card-body">
+                    <div class="row text-center">
+                        <div class="col-4 mb-3">
+                            <a href="{{ url_for('view_workloads') }}" class="btn btn-outline-primary btn-block">
+                                <i class="fas fa-tasks fa-2x d-block mb-2"></i>
+                                View Workloads
+                            </a>
+                        </div>
+                        <div class="col-4 mb-3">
+                            <a href="{{ url_for('manage_subjects') }}" class="btn btn-outline-success btn-block">
+                                <i class="fas fa-book fa-2x d-block mb-2"></i>
+                                Manage Subjects
+                            </a>
+                        </div>
+                        <div class="col-4 mb-3">
+                            <a href="{{ url_for('reports') }}" class="btn btn-outline-info btn-block">
+                                <i class="fas fa-chart-bar fa-2x d-block mb-2"></i>
+                                View Reports
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Additional Features -->
+    <div class="row mt-4">
+        <!-- Model Answers -->
+        <div class="col-lg-4 col-md-6 mb-4">
+            <div class="card h-100">
+                <div class="card-header bg-purple text-white" style="background-color: #6f42c1 !important;">
+                    <i class="fas fa-file-pdf me-2"></i>Model Answers
+                </div>
+                <div class="card-body d-flex flex-column">
+                    <div class="text-center mb-3">
+                        <i class="fas fa-file-download fa-3x mb-3" style="color: #6f42c1;"></i>
+                        <h5>Manage Model Answers</h5>
+                        <p class="text-muted">Upload and manage model answers for all subjects.</p>
+                    </div>
+                    <div class="mt-auto">
+                        <a href="{{ url_for('manage_model_answers') }}" class="btn w-100" style="background-color: #6f42c1; color: white;">
+                            <i class="fas fa-upload me-2"></i>Manage Model Answers
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Complaints & Reports -->
+        <div class="col-lg-4 col-md-6 mb-4">
+            <div class="card h-100">
+                <div class="card-header bg-danger text-white">
+                    <i class="fas fa-exclamation-triangle me-2"></i>Complaints & Reports
+                </div>
+                <div class="card-body d-flex flex-column">
+                    <div class="text-center mb-3">
+                        <i class="fas fa-file-alt fa-3x text-danger mb-3"></i>
+                        <h5>View & Generate</h5>
+                        <p class="text-muted">Handle complaints and generate department reports.</p>
+                    </div>
+                    <div class="mt-auto">
+                        <a href="{{ url_for('hod_view_complaints') }}" class="btn btn-danger w-100 mb-2">
+                            <i class="fas fa-exclamation-triangle me-2"></i>View Complaints
+                        </a>
+                        <a href="{{ url_for('generate_reports') }}" class="btn btn-outline-danger w-100">
+                            <i class="fas fa-file-alt me-2"></i>Generate Reports
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Activity -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="fas fa-clock me-2"></i>Recent Activity</h5>
+                </div>
+                <div class="card-body">
+                    {% if recent_activities %}
+                        <div class="list-group list-group-flush">
+                            {% for activity in recent_activities %}
+                            <div class="list-group-item d-flex justify-content-between align-items-center">
+                                <div>
+                                    <i class="fas fa-{{ activity.icon }} me-2 text-{{ activity.color }}"></i>
+                                    {{ activity.message }}
+                                </div>
+                                <small class="text-muted">{{ activity.timestamp.strftime('%d %b, %Y at %I:%M %p') }}</small>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="text-center text-muted py-4">
+                            <i class="fas fa-inbox fa-3x mb-3"></i>
+                            <p>No recent activity to display.</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+                                    <option>2021-2022</option>
+                                </select>
+                            </div>
+                            <button class="btn btn-primary btn-sm btn-block">
+                                Generate Report
+                            </button>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-chart-line fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Student Performance Report Card -->
+        <div class="col-xl-4 col-md-6 mb-4">
+            <div class="card border-left-success shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                Student Performance Report</div>
+                            <div class="dropdown mb-2">
+                                <select class="form-control form-control-sm">
+                                    <option selected>Select Class</option>
+                                    <option>B.Tech CSE</option>
+                                    <option>B.Tech IT</option>
+                                    <option>M.Tech CSE</option>
+                                </select>
+                            </div>
+                            <div class="dropdown mb-3">
+                                <select class="form-control form-control-sm">
+                                    <option selected>Select Subject</option>
+                                    <option>Data Structures</option>
+                                    <option>Algorithms</option>
+                                    <option>Database Systems</option>
+                                </select>
+                            </div>
+                            <button class="btn btn-success btn-sm btn-block">
+                                Generate Report
+                            </button>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-user-graduate fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Workload Analysis Report Card -->
+        <div class="col-xl-4 col-md-6 mb-4">
+            <div class="card border-left-info shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                                Workload Analysis Report</div>
+                            <div class="dropdown mb-2">
+                                <select class="form-control form-control-sm">
+                                    <option selected>Select Department</option>
+                                    <option>Computer Science</option>
+                                    <option>Information Technology</option>
+                                    <option>Electronics</option>
+                                </select>
+                            </div>
+                            <div class="dropdown mb-3">
+                                <select class="form-control form-control-sm">
+                                    <option selected>Select Semester</option>
+                                    <option>Semester 1</option>
+                                    <option>Semester 2</option>
+                                    <option>Semester 3</option>
+                                    <option>Semester 4</option>
+                                    <option>Semester 5</option>
+                                    <option>Semester 6</option>
+                                    <option>Semester 7</option>
+                                    <option>Semester 8</option>
+                                </select>
+                            </div>
+                            <button class="btn btn-info btn-sm btn-block">
+                                Generate Report
+                            </button>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-tasks fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Complaint Summary Report Card -->
+        <div class="col-xl-4 col-md-6 mb-4">
+            <div class="card border-left-warning shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                                Complaint Summary Report</div>
+                            <div class="dropdown mb-2">
+                                <select class="form-control form-control-sm">
+                                    <option selected>Select Complaint Type</option>
+                                    <option>All Complaints</option>
+                                    <option>Academic</option>
+                                    <option>Administrative</option>
+                                    <option>Infrastructure</option>
+                                </select>
+                            </div>
+                            <div class="dropdown mb-3">
+                                <select class="form-control form-control-sm">
+                                    <option selected>Select Time Period</option>
+                                    <option>Last 7 days</option>
+                                    <option>This Month</option>
+                                    <option>Last Month</option>
+                                    <option>This Year</option>
+                                </select>
+                            </div>
+                            <button class="btn btn-warning btn-sm btn-block">
+                                Generate Report
+                            </button>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-exclamation-triangle fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Attendance Report Card -->
+        <div class="col-xl-4 col-md-6 mb-4">
+            <div class="card border-left-danger shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-danger text-uppercase mb-1">
+                                Attendance Report</div>
+                            <div class="dropdown mb-2">
+                                <select class="form-control form-control-sm">
+                                    <option selected>Select Class</option>
+                                    <option>B.Tech CSE</option>
+                                    <option>B.Tech IT</option>
+                                    <option>M.Tech CSE</option>
+                                </select>
+                            </div>
+                            <div class="dropdown mb-3">
+                                <select class="form-control form-control-sm">
+                                    <option selected>Select Month</option>
+                                    <option>January 2024</option>
+                                    <option>February 2024</option>
+                                    <option>March 2024</option>
+                                    <option>April 2024</option>
+                                    <option>May 2024</option>
+                                    <option>June 2024</option>
+                                    <option>July 2024</option>
+                                    <option>August 2024</option>
+                                    <option>September 2024</option>
+                                    <option>October 2024</option>
+                                    <option>November 2024</option>
+                                    <option>December 2024</option>
+                                </select>
+                            </div>
+                            <button class="btn btn-danger btn-sm btn-block">
+                                Generate Report
+                            </button>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-calendar-check fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Custom Report Card -->
+        <div class="col-xl-4 col-md-6 mb-4">
+            <div class="card border-left-secondary shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-secondary text-uppercase mb-1">
+                                Custom Report</div>
+                            <div class="dropdown mb-2">
+                                <select class="form-control form-control-sm">
+                                    <option selected>Select Report Type</option>
+                                    <option>Faculty Workload</option>
+                                    <option>Student Performance</option>
+                                    <option>Attendance Summary</option>
+                                    <option>Examination Results</option>
+                                </select>
+                            </div>
+                            <div class="dropdown mb-3">
+                                <select class="form-control form-control-sm">
+                                    <option selected>Select Parameters</option>
+                                    <option>By Department</option>
+                                    <option>By Semester</option>
+                                    <option>By Subject</option>
+                                    <option>By Date Range</option>
+                                </select>
+                            </div>
+                            <button class="btn btn-secondary btn-sm btn-block">
+                                Generate Report
+                            </button>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-cogs fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Stats -->
+    <div class="row mb-4">
+        <div class="col-md-3 mb-3">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">{{ faculty_count or 0 }}</h5>
+                    <p class="card-text">Faculty Members</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">{{ subject_count or 0 }}</h5>
+                    <p class="card-text">Subjects</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">{{ complaint_count or 0 }}</h5>
+                    <p class="card-text">Pending Complaints</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">{{ announcement_count or 0 }}</h5>
+                    <p class="card-text">Active Announcements</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Dashboard Content -->
+    <div class="row">
+        <div class="col-lg-6">
+            <!-- Staff Management -->
+            <div class="card mb-4">
+                <div class="card-header bg-primary text-white">
+                    <i class="fas fa-users me-2"></i>Staff Management
+                </div>
+                <div class="card-body">
+                    <div class="d-flex justify-content-between mb-3">
+                        <h5 class="card-title">Faculty Members</h5>
+                        <a href="{{ url_for('manage_faculty') }}" class="btn btn-sm btn-primary">
+                            <i class="fas fa-plus me-1"></i> Add New
+                        </a>
+                    </div>
+                    <div class="list-group">
+                        {% for faculty in recent_faculty %}
+                        <div class="list-group-item d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="mb-0">{{ faculty.full_name or faculty.username }}</h6>
+                                <small class="text-muted">{{ faculty.department or 'No department' }}</small>
+                            </div>
+                            <div class="btn-group">
+                                <a href="{{ url_for('edit_faculty', id=faculty.id) }}" class="btn btn-sm btn-outline-primary">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Announcements -->
+            <div class="card">
+                <div class="card-header bg-info text-white">
+                    <i class="fas fa-bullhorn me-2"></i>Recent Announcements
+                </div>
+                <div class="card-body">
+                    {% if announcements %}
+                        <ul class="list-group list-group-flush">
+                            {% for announcement in announcements %}
+                            <li class="list-group-item">
+                                <h6>{{ announcement.title }}</h6>
+                                <p class="mb-1 small">{{ announcement.content|truncate(100) }}</p>
+                                <small class="text-muted">Posted on {{ announcement.created_at.strftime('%b %d, %Y') }}</small>
+                            </li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <p class="text-muted text-center my-3">No recent announcements</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-6">
+            <!-- Workload Assignment -->
+            <div class="card mb-4">
+                <div class="card-header bg-success text-white">
+                    <i class="fas fa-tasks me-2"></i>Workload Assignment
+                </div>
+                <div class="card-body">
+                    <div class="d-flex justify-content-between mb-3">
+                        <h5 class="card-title">Current Workloads</h5>
+                        <a href="{{ url_for('assign_workload') }}" class="btn btn-sm btn-success">
+                            <i class="fas fa-plus me-1"></i> Assign Workload
+                        </a>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-sm table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Faculty</th>
+                                    <th>Subject</th>
+                                    <th>Hours</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for workload in recent_workloads %}
+                                <tr>
+                                    <td>{{ workload.faculty.username }}</td>
+                                    <td>{{ workload.subject }}</td>
+                                    <td>{{ workload.hours }}</td>
+                                </tr>
+                                {% else %}
+                                <tr>
+                                    <td colspan="3" class="text-center text-muted">No workload assignments yet</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="card">
+                <div class="card-header bg-secondary text-white">
+                    <i class="fas fa-bolt me-2"></i>Quick Actions
+                </div>
+                <div class="card-body">
+                    <div class="row text-center">
+                        <div class="col-4 mb-3">
+                            <a href="{{ url_for('view_workloads') }}" class="btn btn-outline-primary btn-block">
+                                <i class="fas fa-tasks fa-2x d-block mb-2"></i>
+                                View Workloads
+                            </a>
+                        </div>
+                        <div class="col-4 mb-3">
+                            <a href="{{ url_for('manage_subjects') }}" class="btn btn-outline-success btn-block">
+                                <i class="fas fa-book fa-2x d-block mb-2"></i>
+                                Manage Subjects
+                            </a>
+                        </div>
+                        <div class="col-4 mb-3">
+                            <a href="{{ url_for('reports') }}" class="btn btn-outline-info btn-block">
+                                <i class="fas fa-chart-bar fa-2x d-block mb-2"></i>
+                                Reports
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+    <!-- Quick Stats Row -->
+    <div class="row mb-4">
+        <div class="col-md-3 mb-3">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">{{ faculty_count or 0 }}</h5>
+                    <p class="card-text">Faculty Members</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">{{ subject_count or 0 }}</h5>
+                    <p class="card-text">Subjects</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">{{ complaint_count or 0 }}</h5>
+                    <p class="card-text">Pending Complaints</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">{{ announcement_count or 0 }}</h5>
+                    <p class="card-text">Active Announcements</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content Row -->
+    <div class="row">
+        <div class="col-lg-6">
+            <!-- Staff Management -->
+            <div class="card mb-4">
+                <div class="card-header bg-primary text-white">
+                    <i class="fas fa-users me-2"></i>Staff Management
+                </div>
+                <div class="card-body">
+                    <div class="d-flex justify-content-between mb-3">
+                        <h5 class="card-title">Faculty Members</h5>
+                        <a href="{{ url_for('manage_faculty') }}" class="btn btn-sm btn-primary">
+                            <i class="fas fa-plus me-1"></i> Add New
+                        </a>
+                    </div>
+                    <div class="list-group">
+                        {% for faculty in recent_faculty %}
+                        <div class="list-group-item d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="mb-0">{{ faculty.full_name or faculty.username }}</h6>
+                                <small class="text-muted">{{ faculty.department or 'No department' }}</small>
+                            </div>
+                            <div class="btn-group">
+                                <a href="{{ url_for('edit_faculty', id=faculty.id) }}" class="btn btn-sm btn-outline-primary">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Announcements -->
+            <div class="card">
+                <div class="card-header bg-info text-white">
+                    <i class="fas fa-bullhorn me-2"></i>Recent Announcements
+                </div>
+                <div class="card-body">
+                    {% if announcements %}
+                        <ul class="list-group list-group-flush">
+                            {% for announcement in announcements %}
+                            <li class="list-group-item">
+                                <h6>{{ announcement.title }}</h6>
+                                <p class="mb-1 small">{{ announcement.content|truncate(100) }}</p>
+                                <small class="text-muted">Posted on {{ announcement.created_at.strftime('%b %d, %Y') }}</small>
+                            </li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <p class="text-muted text-center my-3">No recent announcements</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-6">
+            <!-- Workload Assignment -->
+            <div class="card mb-4">
+                <div class="card-header bg-success text-white">
+                    <i class="fas fa-tasks me-2"></i>Workload Assignment
+                </div>
+                <div class="card-body">
+                    <div class="d-flex justify-content-between mb-3">
+                        <h5 class="card-title">Current Workloads</h5>
+                        <a href="{{ url_for('assign_workload') }}" class="btn btn-sm btn-success">
+                            <i class="fas fa-plus me-1"></i> Assign Workload
+                        </a>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-sm table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Faculty</th>
+                                    <th>Subject</th>
+                                    <th>Hours</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for workload in recent_workloads %}
+                                <tr>
+                                    <td>{{ workload.faculty.username }}</td>
+                                    <td>{{ workload.subject }}</td>
+                                    <td>{{ workload.hours }}</td>
+                                </tr>
+                                {% else %}
+                                <tr>
+                                    <td colspan="3" class="text-center text-muted">No workload assignments yet</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="card">
+                <div class="card-header bg-secondary text-white">
+                    <i class="fas fa-bolt me-2"></i>Quick Actions
+                </div>
+                <div class="card-body">
+                    <div class="row text-center">
+                        <div class="col-4 mb-3">
+                            <a href="{{ url_for('view_workloads') }}" class="btn btn-outline-primary btn-block">
+                                <i class="fas fa-tasks fa-2x d-block mb-2"></i>
+                                View Workloads
+                            </a>
+                        </div>
+                        <div class="col-4 mb-3">
+                            <a href="{{ url_for('manage_subjects') }}" class="btn btn-outline-success btn-block">
+                                <i class="fas fa-book fa-2x d-block mb-2"></i>
+                                Manage Subjects
+                            </a>
+                        </div>
+                        <div class="col-4 mb-3">
+                            <a href="{{ url_for('reports') }}" class="btn btn-outline-info btn-block">
+                                <i class="fas fa-chart-bar fa-2x d-block mb-2"></i>
+                                View Reports
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Additional Features Row -->
+    <div class="row mt-4">
+        <!-- Model Answers -->
+        <div class="col-lg-4 col-md-6 mb-4">
+            <div class="card h-100">
+                <div class="card-header bg-purple text-white" style="background-color: #6f42c1 !important;">
+                    <i class="fas fa-file-pdf me-2"></i>Model Answers
+                </div>
+                <div class="card-body d-flex flex-column">
+                    <div class="text-center mb-3">
+                        <i class="fas fa-file-download fa-3x mb-3" style="color: #6f42c1;"></i>
+                        <h5>Manage Model Answers</h5>
+                        <p class="text-muted">Upload and manage model answers for all subjects.</p>
+                    </div>
+                    <div class="mt-auto">
+                        <a href="{{ url_for('manage_model_answers') }}" class="btn w-100" style="background-color: #6f42c1; color: white;">
+                            <i class="fas fa-upload me-2"></i>Manage Model Answers
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Complaints & Reports -->
+        <div class="col-lg-4 col-md-6 mb-4">
+            <div class="card h-100">
+                <div class="card-header bg-danger text-white">
+                    <i class="fas fa-exclamation-triangle me-2"></i>Complaints & Reports
+                </div>
+                <div class="card-body d-flex flex-column">
+                    <div class="text-center mb-3">
+                        <i class="fas fa-file-alt fa-3x text-danger mb-3"></i>
+                        <h5>View & Generate</h5>
+                        <p class="text-muted">Handle complaints and generate department reports.</p>
+                    </div>
+                    <div class="mt-auto">
+                        <a href="{{ url_for('hod_view_complaints') }}" class="btn btn-danger w-100 mb-2">
+                            <i class="fas fa-exclamation-triangle me-2"></i>View Complaints
+                        </a>
+                        <a href="{{ url_for('generate_reports') }}" class="btn btn-outline-danger w-100">
+                            <i class="fas fa-file-alt me-2"></i>Generate Reports
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Activity -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="fas fa-clock me-2"></i>Recent Activity</h5>
+                </div>
+                <div class="card-body">
+                    {% if recent_activities %}
+                        <div class="list-group list-group-flush">
+                            {% for activity in recent_activities %}
+                            <div class="list-group-item d-flex justify-content-between align-items-center">
+                                <div>
+                                    <i class="fas fa-{{ activity.icon }} me-2 text-{{ activity.color }}"></i>
+                                    {{ activity.message }}
+                                </div>
+                                <small class="text-muted">{{ activity.timestamp.strftime('%d %b, %Y at %I:%M %p') }}</small>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="text-center text-muted py-4">
+                            <i class="fas fa-inbox fa-3x mb-3"></i>
+                            <p>No recent activity to display.</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+                            <i class="fas fa-users"></i>
+                        </div>
+                    </div>
+                    <div class="mt-3">
+                        <a href="#" class="btn btn-sm btn-outline-primary">View All</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-lg-3">
+            <div class="card stats-card h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-uppercase text-muted mb-2">Subjects</h6>
+                            <h2 class="mb-0">{{ subject_count or 0 }}</h2>
+                        </div>
+                        <div class="icon-shape bg-soft-emerald text-emerald rounded-3">
+                            <i class="fas fa-book"></i>
+                        </div>
+                    </div>
+                    <div class="mt-3">
+                        <a href="#" class="btn btn-sm btn-outline-primary">View All</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-lg-3">
+            <div class="card stats-card h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-uppercase text-muted mb-2">Complaints</h6>
+                            <h2 class="mb-0">{{ complaint_count or 0 }}</h2>
+                        </div>
+                        <div class="icon-shape bg-soft-warning text-warning rounded-3">
+                            <i class="fas fa-exclamation-triangle"></i>
+                        </div>
+                    </div>
+                    <div class="mt-3">
+                        <a href="#" class="btn btn-sm btn-outline-primary">View All</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-lg-3">
+            <div class="card stats-card h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-uppercase text-muted mb-2">Announcements</h6>
+                            <h2 class="mb-0">{{ announcement_count or 0 }}</h2>
+                        </div>
+                        <div class="icon-shape bg-soft-info text-info rounded-3">
+                            <i class="fas fa-bullhorn"></i>
+                        </div>
+                    </div>
+                    <div class="mt-3">
+                        <a href="#" class="btn btn-sm btn-outline-primary">View All</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+<!-- Main Dashboard Cards -->
+<div class="row">
+    <!-- Staff Management -->
+    <div class="col-lg-4 col-md-6 mb-4">
+        <div class="card h-100">
+            <div class="card-header bg-primary text-white">
+                <i class="fas fa-users me-2"></i>Staff Management
+            </div>
+            <div class="card-body d-flex flex-column">
+                <div class="text-center mb-3">
+                    <i class="fas fa-user-tie fa-3x text-primary mb-3"></i>
+                    <h5>Manage Faculty</h5>
+                    <p class="text-muted">Add, view, or remove faculty members from your department.</p>
+                </div>
+                <div class="mt-auto">
+                    <a href="{{ url_for('add_staff') }}" class="btn btn-primary w-100 mb-2">
+                        <i class="fas fa-plus-circle me-2"></i>Add Staff
+                    </a>
+                    <a href="{{ url_for('hod_view_staff') }}" class="btn btn-outline-primary w-100 mb-2">
+                        <i class="fas fa-list me-2"></i>View All Staff
+                    </a>
+                    <a href="{{ url_for('hod_view_staff_records') }}" class="btn btn-outline-info w-100">
+                        <i class="fas fa-history me-2"></i>View Staff Records (2020-{{ current_year }})
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Announcements -->
+    <div class="col-lg-4 col-md-6 mb-4">
+        <div class="card h-100">
+            <div class="card-header bg-info text-white">
+                <i class="fas fa-bullhorn me-2"></i>Announcements
+            </div>
+            <div class="card-body d-flex flex-column">
+                <div class="text-center mb-3">
+                    <i class="fas fa-megaphone fa-3x text-info mb-3"></i>
+                    <h5>Faculty Announcements</h5>
+                    <p class="text-muted">Create and manage announcements for faculty members.</p>
+                </div>
+                <div class="mt-auto">
+                    <a href="{{ url_for('hod_announcements') }}" class="btn btn-info w-100">
+                        <i class="fas fa-bullhorn me-2"></i>Manage Announcements
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Subject Management -->
+    <div class="col-lg-4 col-md-6 mb-4">
+        <div class="card h-100">
+            <div class="card-header bg-success text-white">
+                <i class="fas fa-book me-2"></i>Subject Management
+            </div>
+            <div class="card-body d-flex flex-column">
+                <div class="text-center mb-3">
+                    <i class="fas fa-graduation-cap fa-3x text-success mb-3"></i>
+                    <h5>Subjects & Assignment</h5>
+                    <p class="text-muted">Manage subjects and assign them to faculty members.</p>
+                </div>
+                <div class="mt-auto">
+                    <a href="{{ url_for('manage_subjects') }}" class="btn btn-success w-100 mb-2">
+                        <i class="fas fa-book me-2"></i>Manage Subjects
+                    </a>
+                    <a href="{{ url_for('assign_subject') }}" class="btn btn-outline-success w-100">
+                        <i class="fas fa-tasks me-2"></i>Assign Subjects
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Test Marks -->
+    <div class="col-lg-4 col-md-6 mb-4">
+        <div class="card h-100">
+            <div class="card-header bg-warning text-dark">
+                <i class="fas fa-chart-line me-2"></i>Test Marks
+            </div>
+            <div class="card-body d-flex flex-column">
+                <div class="text-center mb-3">
+                    <i class="fas fa-chart-bar fa-3x text-warning mb-3"></i>
+                    <h5>Class Test Management</h5>
+                    <p class="text-muted">Manage and view class test marks for all subjects.</p>
+                </div>
+                <div class="mt-auto">
+                    <a href="{{ url_for('manage_test_marks') }}" class="btn btn-warning w-100">
+                        <i class="fas fa-chart-line me-2"></i>Manage Test Marks
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Workload Assignment -->
+    <div class="col-lg-4 col-md-6 mb-4">
+        <div class="card h-100">
+            <div class="card-header bg-secondary text-white">
+                <i class="fas fa-tasks me-2"></i>Workload Assignment
+            </div>
+            <div class="card-body d-flex flex-column">
+                <div class="text-center mb-3">
+                    <i class="fas fa-balance-scale fa-3x text-secondary mb-3"></i>
+                    <h5>Assign Workload</h5>
+                    <p class="text-muted">Distribute teaching responsibilities among faculty.</p>
+                </div>
+                <div class="mt-auto">
+                    <a href="{{ url_for('assign_workload') }}" class="btn btn-secondary w-100">
+                        <i class="fas fa-tasks me-2"></i>Assign Workload
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Model Answers -->
+    <div class="col-lg-4 col-md-6 mb-4">
+        <div class="card h-100">
+            <div class="card-header bg-purple text-white" style="background-color: #6f42c1 !important;">
+                <i class="fas fa-file-pdf me-2"></i>Model Answers
+            </div>
+            <div class="card-body d-flex flex-column">
+                <div class="text-center mb-3">
+                    <i class="fas fa-file-download fa-3x mb-3" style="color: #6f42c1;"></i>
+                    <h5>Manage Model Answers</h5>
+                    <p class="text-muted">Upload and manage model answers for all subjects.</p>
+                </div>
+                <div class="mt-auto">
+                    <a href="{{ url_for('manage_model_answers') }}" class="btn w-100" style="background-color: #6f42c1; color: white;">
+                        <i class="fas fa-upload me-2"></i>Manage Model Answers
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Complaints & Reports -->
+    <div class="col-lg-4 col-md-6 mb-4">
+        <div class="card h-100">
+            <div class="card-header bg-danger text-white">
+                <i class="fas fa-exclamation-triangle me-2"></i>Complaints & Reports
+            </div>
+            <div class="card-body d-flex flex-column">
+                <div class="text-center mb-3">
+                    <i class="fas fa-file-alt fa-3x text-danger mb-3"></i>
+                    <h5>View & Generate</h5>
+                    <p class="text-muted">Handle complaints and generate department reports.</p>
+                </div>
+                <div class="mt-auto">
+                    <a href="{{ url_for('hod_view_complaints') }}" class="btn btn-danger w-100 mb-2">
+                        <i class="fas fa-exclamation-triangle me-2"></i>View Complaints
+                    </a>
+                    <a href="{{ url_for('generate_reports') }}" class="btn btn-outline-danger w-100">
+                        <i class="fas fa-file-alt me-2"></i>Generate Reports
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Recent Activity -->
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="fas fa-clock me-2"></i>Recent Activity</h5>
+            </div>
+            <div class="card-body">
+                {% if recent_activities %}
+                    <div class="list-group list-group-flush">
+                        {% for activity in recent_activities %}
+                        <div class="list-group-item d-flex justify-content-between align-items-center">
+                            <div>
+                                <i class="fas fa-{{ activity.icon }} me-2 text-{{ activity.color }}"></i>
+                                {{ activity.message }}
+                            </div>
+                            <small class="text-muted">{{ activity.timestamp.strftime('%d %b, %Y at %I:%M %p') }}</small>
+                        </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="text-center text-muted py-4">
+                        <i class="fas fa-inbox fa-3x mb-3"></i>
+                        <p>No recent activity to display.</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

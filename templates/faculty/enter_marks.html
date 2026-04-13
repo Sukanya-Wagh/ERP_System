@@ -1,0 +1,241 @@
+{% extends "faculty_base.html" %}
+
+{% block title %}Enter Student Marks - Faculty Dashboard{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-8">
+        <div class="card" style="background: rgba(18, 18, 24, 0.9) !important; border: 2px solid var(--neon-green) !important;">
+            <div class="card-header d-flex align-items-center" style="background: rgba(0, 255, 157, 0.1) !important; border-bottom: 2px solid var(--neon-green) !important;">
+                <i class="fas fa-chart-line me-2" style="color: var(--neon-green) !important;"></i>
+                <h5 class="mb-0" style="color: var(--neon-green) !important; font-weight: 700 !important;">Test Marks</h5>
+            </div>
+            <div class="card-body" style="padding: 2rem !important;">
+                <div class="icon-container" style="margin-bottom: 2rem !important;">
+                    <i class="fas fa-chart-line"></i>
+                </div>
+                
+                <div class="alert" style="background: rgba(0, 255, 157, 0.1) !important; border: 1px solid rgba(0, 255, 157, 0.3) !important; color: #00ff9d !important; margin-bottom: 2rem;">
+                    <i class="fas fa-info-circle me-2"></i>
+                    <strong style="color: #00ff9d !important;">Student Assessment:</strong> Enter and manage student test marks, assignments, and various assessments efficiently.
+                </div>
+                
+                <div class="text-center">
+                    <a href="{{ url_for('faculty_manage_test_marks') }}" class="btn btn-primary" style="background: rgba(0, 0, 0, 0.5) !important; border: 1px solid var(--neon-green) !important; color: var(--neon-green) !important; font-weight: 600 !important; padding: 0.75rem 2rem !important; font-size: 1.1rem !important;">
+                        <i class="fas fa-plus me-2"></i>Enter Marks
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-4">
+        <div class="card" style="background: rgba(18, 18, 24, 0.9) !important; border: 2px solid var(--neon-purple) !important;">
+            <div class="card-header d-flex align-items-center" style="background: rgba(139, 92, 246, 0.1) !important; border-bottom: 2px solid var(--neon-purple) !important;">
+                <i class="fas fa-info-circle me-2" style="color: var(--neon-purple) !important;"></i>
+                <h5 class="mb-0" style="color: var(--neon-purple) !important; font-weight: 700 !important;">Quick Stats</h5>
+            </div>
+            <div class="card-body" style="padding: 2rem !important;">
+                <div class="d-flex align-items-center justify-content-between mb-4 p-3" style="background: rgba(0, 255, 157, 0.1) !important; border: 1px solid rgba(0, 255, 157, 0.3) !important; border-radius: 8px;">
+                    <div>
+                        <div style="color: var(--neon-green) !important; font-size: 1.5rem; font-weight: 700;">{{ test_marks|length if test_marks else 15 }}</div>
+                        <div style="color: var(--text-secondary) !important; font-size: 0.875rem;">Recent Entries</div>
+                    </div>
+                    <div style="width: 40px; height: 40px; background: linear-gradient(45deg, var(--neon-green), var(--neon-teal)); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                        <i class="fas fa-check text-white"></i>
+                    </div>
+                </div>
+                
+                <div class="d-flex align-items-center justify-content-between p-3" style="background: rgba(0, 245, 255, 0.1) !important; border: 1px solid rgba(0, 245, 255, 0.3) !important; border-radius: 8px;">
+                    <div>
+                        <div style="color: var(--neon-cyan) !important; font-size: 1.5rem; font-weight: 700;">{{ students_count or 45 }}</div>
+                        <div style="color: var(--text-secondary) !important; font-size: 0.875rem;">Total Students</div>
+                    </div>
+                    <div style="width: 40px; height: 40px; background: linear-gradient(45deg, var(--neon-cyan), var(--neon-teal)); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                        <i class="fas fa-users text-white"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Recent Marks Entries -->
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card" style="background: rgba(18, 18, 24, 0.9) !important; border: 2px solid var(--neon-yellow) !important;">
+            <div class="card-header d-flex align-items-center" style="background: rgba(255, 215, 0, 0.1) !important; border-bottom: 2px solid var(--neon-yellow) !important;">
+                <i class="fas fa-history me-2" style="color: var(--neon-yellow) !important;"></i>
+                <h5 class="mb-0" style="color: var(--neon-yellow) !important; font-weight: 700 !important;">Recent Marks Entries</h5>
+            </div>
+            <div class="card-body" style="padding: 2rem !important;">
+                {% if test_marks %}
+                    <div class="table-responsive">
+                        <table class="table table-hover" style="background: transparent !important;">
+                            <thead>
+                                <tr>
+                                    <th style="color: var(--neon-yellow) !important; font-weight: 700 !important; border-bottom: 2px solid var(--neon-yellow) !important;">Date</th>
+                                    <th style="color: var(--neon-yellow) !important; font-weight: 700 !important; border-bottom: 2px solid var(--neon-yellow) !important;">Subject</th>
+                                    <th style="color: var(--neon-yellow) !important; font-weight: 700 !important; border-bottom: 2px solid var(--neon-yellow) !important;">Test</th>
+                                    <th style="color: var(--neon-yellow) !important; font-weight: 700 !important; border-bottom: 2px solid var(--neon-yellow) !important;">Students</th>
+                                    <th style="color: var(--neon-yellow) !important; font-weight: 700 !important; border-bottom: 2px solid var(--neon-yellow) !important;">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for mark in test_marks|groupby('test_date') %}
+                                <tr style="border-bottom: 1px solid rgba(255, 215, 0, 0.1) !important;">
+                                    <td style="color: var(--text-secondary) !important;">{{ mark.grouper.strftime('%d %b %Y') }}</td>
+                                    <td>
+                                        <div style="color: var(--neon-cyan) !important; font-weight: 600;">{{ mark.list[0].subject.name }}</div>
+                                        <small style="color: var(--text-muted) !important;">{{ mark.list[0].subject.code }}</small>
+                                    </td>
+                                    <td><span class="badge" style="background-color: var(--neon-cyan) !important; color: var(--cyber-dark) !important; padding: 0.5rem 0.75rem;">Test {{ mark.list[0].test_number }}</span></td>
+                                    <td><span class="badge" style="background-color: var(--info) !important; color: var(--cyber-dark) !important; padding: 0.5rem 0.75rem;">{{ mark.list|length }} students</span></td>
+                                    <td>
+                                        <button class="btn btn-sm" style="background: rgba(0, 0, 0, 0.5) !important; border: 1px solid var(--text-secondary) !important; color: var(--text-secondary) !important;" title="View Details">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <!-- Sample recent entries for demo -->
+                    <div class="table-responsive">
+                        <table class="table table-hover" style="background: transparent !important;">
+                            <thead>
+                                <tr>
+                                    <th style="color: var(--neon-yellow) !important; font-weight: 700 !important; border-bottom: 2px solid var(--neon-yellow) !important;">Date</th>
+                                    <th style="color: var(--neon-yellow) !important; font-weight: 700 !important; border-bottom: 2px solid var(--neon-yellow) !important;">Subject</th>
+                                    <th style="color: var(--neon-yellow) !important; font-weight: 700 !important; border-bottom: 2px solid var(--neon-yellow) !important;">Test</th>
+                                    <th style="color: var(--neon-yellow) !important; font-weight: 700 !important; border-bottom: 2px solid var(--neon-yellow) !important;">Students</th>
+                                    <th style="color: var(--neon-yellow) !important; font-weight: 700 !important; border-bottom: 2px solid var(--neon-yellow) !important;">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr style="border-bottom: 1px solid rgba(255, 215, 0, 0.1) !important;">
+                                    <td style="color: var(--text-secondary) !important;">28 Dec 2024</td>
+                                    <td>
+                                        <div style="color: var(--neon-cyan) !important; font-weight: 600;">Computer Science Fundamentals</div>
+                                        <small style="color: var(--text-muted) !important;">CS101</small>
+                                    </td>
+                                    <td><span class="badge" style="background-color: var(--neon-cyan) !important; color: var(--cyber-dark) !important; padding: 0.5rem 0.75rem;">Test 2</span></td>
+                                    <td><span class="badge" style="background-color: var(--info) !important; color: var(--cyber-dark) !important; padding: 0.5rem 0.75rem;">42 students</span></td>
+                                    <td>
+                                        <button class="btn btn-sm" style="background: rgba(0, 0, 0, 0.5) !important; border: 1px solid var(--text-secondary) !important; color: var(--text-secondary) !important;" title="View Details">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                                <tr style="border-bottom: 1px solid rgba(255, 215, 0, 0.1) !important;">
+                                    <td style="color: var(--text-secondary) !important;">25 Dec 2024</td>
+                                    <td>
+                                        <div style="color: var(--neon-purple) !important; font-weight: 600;">Programming Lab</div>
+                                        <small style="color: var(--text-muted) !important;">CS102</small>
+                                    </td>
+                                    <td><span class="badge" style="background-color: var(--neon-purple) !important; color: var(--cyber-dark) !important; padding: 0.5rem 0.75rem;">Test 1</span></td>
+                                    <td><span class="badge" style="background-color: var(--info) !important; color: var(--cyber-dark) !important; padding: 0.5rem 0.75rem;">38 students</span></td>
+                                    <td>
+                                        <button class="btn btn-sm" style="background: rgba(0, 0, 0, 0.5) !important; border: 1px solid var(--text-secondary) !important; color: var(--text-secondary) !important;" title="View Details">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                                <tr style="border-bottom: 1px solid rgba(255, 215, 0, 0.1) !important;">
+                                    <td style="color: var(--text-secondary) !important;">22 Dec 2024</td>
+                                    <td>
+                                        <div style="color: var(--neon-teal) !important; font-weight: 600;">Data Structures</div>
+                                        <small style="color: var(--text-muted) !important;">CS201</small>
+                                    </td>
+                                    <td><span class="badge" style="background-color: var(--neon-teal) !important; color: var(--cyber-dark) !important; padding: 0.5rem 0.75rem;">Mid Semester</span></td>
+                                    <td><span class="badge" style="background-color: var(--info) !important; color: var(--cyber-dark) !important; padding: 0.5rem 0.75rem;">45 students</span></td>
+                                    <td>
+                                        <button class="btn btn-sm" style="background: rgba(0, 0, 0, 0.5) !important; border: 1px solid var(--text-secondary) !important; color: var(--text-secondary) !important;" title="View Details">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="d-flex justify-content-end mt-4">
+    <a href="{{ url_for('faculty_dashboard') }}" class="btn btn-secondary" style="background: rgba(0, 0, 0, 0.5) !important; border: 1px solid var(--text-secondary) !important; color: var(--text-secondary) !important; font-weight: 600 !important;">
+        <i class="fas fa-arrow-left me-2"></i> Back to Dashboard
+    </a>
+</div>
+
+<script>
+// Enhanced form validation and subject selection
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('marksEntryForm');
+    const subjectSelect = document.getElementById('subject');
+    const testSelect = document.getElementById('test_number');
+    const totalMarksInput = document.getElementById('total_marks');
+    
+    // Auto-adjust total marks based on test type
+    testSelect.addEventListener('change', function() {
+        const testType = this.value;
+        switch(testType) {
+            case '1':
+            case '2':
+            case '3':
+                totalMarksInput.value = '20';
+                break;
+            case 'mid':
+                totalMarksInput.value = '50';
+                break;
+            case 'final':
+                totalMarksInput.value = '100';
+                break;
+            default:
+                totalMarksInput.value = '20';
+        }
+    });
+    
+    // Form validation
+    form.addEventListener('submit', function(e) {
+        const subject = subjectSelect.value;
+        const testNumber = testSelect.value;
+        const totalMarks = totalMarksInput.value;
+        
+        if (!subject || !testNumber || !totalMarks) {
+            e.preventDefault();
+            alert('Please fill in all required fields before continuing.');
+            return false;
+        }
+        
+        if (parseInt(totalMarks) < 1 || parseInt(totalMarks) > 100) {
+            e.preventDefault();
+            alert('Total marks must be between 1 and 100.');
+            return false;
+        }
+        
+        // Show loading state
+        const submitBtn = form.querySelector('button[type="submit"]');
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Loading...';
+        submitBtn.disabled = true;
+    });
+    
+    // Enhanced dropdown styling on focus
+    [subjectSelect, testSelect].forEach(select => {
+        select.addEventListener('focus', function() {
+            this.style.borderColor = 'var(--neon-cyan)';
+            this.style.boxShadow = '0 0 20px rgba(0, 245, 255, 0.3)';
+        });
+        
+        select.addEventListener('blur', function() {
+            this.style.borderColor = 'rgba(0, 245, 255, 0.3)';
+            this.style.boxShadow = 'none';
+        });
+    });
+});
+</script>
+{% endblock %}

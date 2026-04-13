@@ -1,0 +1,5 @@
+id,subject_code,subject_name,title,description,file_path,file_type,uploaded_by,semester,academic_year,is_active,download_count,timestamp
+2,OSY,Operating Systems (OSY),Summer 2023,Summer 2023 model answer,uploads/model_answers/JOB_CARD_20250902_165606.pdf,pdf,93,5,2024-25,True,1,2025-09-02 11:26:06.664931
+3,OOP,Object Oriented Programming (OOP),Winter 2022,,uploads/model_answers/eti_certificate_20250902_171852.pdf,pdf,93,1,2024-25,True,4,2025-09-02 11:48:52.230859
+4,OSY,Operating Systems (OSY),Winter,2025,uploads/model_answers/Arundati_Anand_Patil_20260323_143226.pdf,pdf,93,5,2024-25,True,0,2026-03-23 09:02:26.609841
+5,AMT,Applied Mathematics (AMT),winter,2023,uploads/model_answers/Arundati_Anand_Patil_20260323_145553.pdf,pdf,93,2,2024-25,True,1,2026-03-23 09:25:53.347230

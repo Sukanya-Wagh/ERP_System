@@ -1,0 +1,6 @@
+id,title,report_type,generated_by,file_path,parameters,timestamp
+1,Faculty Performance - December 2025,Faculty Performance,93,static/exports/Faculty_Performance_20251229_123344.txt,"{""timestamp"": ""20251229_123344"", ""user"": ""A.S.Bhatlavande""}",2025-12-29 07:03:44.224780
+2,Faculty Performance - December 2025,Faculty Performance,93,static/exports/Faculty_Performance_20251229_123347.txt,"{""timestamp"": ""20251229_123347"", ""user"": ""A.S.Bhatlavande""}",2025-12-29 07:03:47.819120
+3,Faculty Performance - December 2025,Faculty Performance,93,static/exports/Faculty_Performance_20251229_123626.txt,"{""timestamp"": ""20251229_123626"", ""user"": ""A.S.Bhatlavande""}",2025-12-29 07:06:26.191744
+4,Faculty Performance - December 2025,Faculty Performance,93,static/exports/Faculty_Performance_20251229_123928.txt,"{""timestamp"": ""20251229_123928"", ""user"": ""A.S.Bhatlavande""}",2025-12-29 07:09:28.813247
+6,Student Performance - January 2026,Student Performance,93,static/exports/Student_Performance_20260122_133442.txt,"{""timestamp"": ""20260122_133442"", ""user"": ""A.S.Bhatlavande""}",2026-01-22 08:04:42.538821

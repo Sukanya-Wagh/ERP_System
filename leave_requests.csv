@@ -1,0 +1,16 @@
+id,user_id,approver_id,leave_type,start_date,end_date,reason,status,comments,timestamp
+1,81,99,emergency,2025-09-18,2025-09-21,In my home there is one emergany event so i want the leave ,Pending,,2025-09-02 03:44:56.032940
+2,80,99,emergency,2025-09-10,2025-09-12,Due to my family issue i want the leave,Pending,,2025-09-02 03:51:17.366868
+3,80,100,personal,2025-09-04,2025-09-08,Give me leave its myu personal issue,Approved,Leave Permited but cover the academic loss,2025-09-02 03:55:44.062120
+4,82,78,medical,2025-09-17,2025-09-21,My health is not good so i want the some days to leave,Approved,Manage your workload,2025-09-02 03:58:51.408398
+5,83,78,emergency,2025-09-21,2025-09-22,Deu to my family functio,Pending,,2025-09-02 04:02:01.343682
+6,82,78,emergency,2025-09-10,2025-09-14,For my family issue i want the leave,Pending,,2025-09-02 04:04:54.610490
+7,102,93,casual,2025-09-10,2025-09-14,For my family function i want the 3 days leave,Approved,"but,manage your workload",2025-09-02 04:09:48.346310
+9,80,101,sick,2025-09-02,2025-09-04,Due To health issue,Pending,,2025-09-02 12:04:07.081470
+11,109,93,emergency,2025-12-30,2025-12-31,Because the My Family Problems,Approved,"Come as soon as possible
+",2025-12-30 06:01:22.941994
+12,109,93,emergency,2026-04-04,2026-04-05,About Health Issue,Rejected,,2026-04-04 11:28:58.665861
+13,109,93,sick,2026-04-12,2026-04-14,because of  health issue,Approved,,2026-04-08 02:57:30.096560
+14,109,93,personal,2026-03-17,2026-04-18,due to persoal problem,Approved,,2026-04-08 03:00:16.192413
+15,189,196,emergency,2026-04-10,2026-04-12,Due To illness,Pending,,2026-04-10 08:27:54.456061
+16,114,93,emergency,2026-04-10,2026-04-12,Due to illness,Approved,Adjust Your Work,2026-04-10 08:28:54.986542

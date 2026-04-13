@@ -1,0 +1,86 @@
+{% extends "hod_base.html" %}
+
+{% block title %}Faculty Leave Requests - HOD Dashboard{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            {% if leave_requests %}
+                <div class="card-header d-flex align-items-center">
+                    <i class="fas fa-calendar-times me-2"></i>
+                    <h5 class="mb-0">Leave Requests Overview</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Faculty</th>
+                                    <th>Leave Type</th>
+                                    <th>Duration</th>
+                                    <th>Reason</th>
+                                    <th>Status</th>
+                                    <th>Submitted</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for request in leave_requests %}
+                                <tr>
+                                    <td>
+                                        <div class="fw-bold text-primary">{{ request.user.full_name or request.user.username }}</div>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-info">{{ request.leave_type.title() }}</span>
+                                    </td>
+                                    <td>
+                                        <span style="font-family: 'Courier New', monospace; font-size: 0.9rem;">{{ request.start_date.strftime('%d/%m/%Y') }} - {{ request.end_date.strftime('%d/%m/%Y') }}</span>
+                                    </td>
+                                    <td>
+                                        <span title="{{ request.reason }}" style="max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; display: inline-block;">{{ request.reason[:50] }}{% if request.reason|length > 50 %}...{% endif %}</span>
+                                    </td>
+                                    <td>
+                                        {% if request.status == 'Pending' %}
+                                            <span class="badge bg-warning">Pending</span>
+                                        {% elif request.status == 'Approved' %}
+                                            <span class="badge bg-success">Approved</span>
+                                        {% else %}
+                                            <span class="badge bg-danger">Rejected</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <span style="font-family: 'Courier New', monospace; font-size: 0.85rem;" class="text-muted">{{ request.timestamp.strftime('%d/%m/%Y %H:%M') }}</span>
+                                    </td>
+                                    <td>
+                                        {% if request.status == 'Pending' %}
+                                            <a href="{{ url_for('hod_approve_leave', request_id=request.id) }}" class="btn btn-sm btn-primary">
+                                                <i class="fas fa-eye me-1"></i>Review
+                                            </a>
+                                        {% else %}
+                                            <span class="text-muted">{{ request.status }}</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            {% else %}
+                <div class="card-body text-center py-5">
+                    <i class="fas fa-info-circle fa-3x mb-3 text-muted"></i>
+                    <h5 class="text-muted">No leave requests found</h5>
+                    <p class="text-muted">There are currently no faculty leave requests to review.</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<div class="d-flex justify-content-end mt-4">
+    <a href="{{ url_for('hod_dashboard') }}" class="btn btn-secondary">
+        <i class="fas fa-arrow-left me-2"></i> Back to Dashboard
+    </a>
+</div>
+{% endblock %}

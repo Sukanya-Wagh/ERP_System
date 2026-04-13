@@ -1,0 +1,778 @@
+﻿{% extends "base.html" %}
+
+{% block title %}HOD Dashboard - Faculty Workload Management{% endblock %}
+
+{% block styles %}
+<style>
+    :root {
+        /* Neon Theme Colors */
+        --neon-cyan: #00F0FF;
+        --neon-pink: #FF00FF;
+        --neon-purple: #B026FF;
+        --dark-bg: #0A0A0F;
+        --card-bg: #121218;
+        --card-border: #1E1E2E;
+        --text-primary: #E0E0E0;
+        --text-secondary: #8A8A9D;
+        --border: #2A2A3A;
+        --success: #00FF9D;
+        --error: #FF3864;
+        --warning: #FFD700;
+        --white: #FFFFFF;
+    }
+    
+    body {
+        background-color: var(--dark-bg);
+        color: var(--text-primary);
+        font-family: 'Poppins', sans-serif;
+    }
+    
+    /* Add subtle grid overlay */
+    body::before {
+        content: '';
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-image: 
+            linear-gradient(rgba(0, 240, 255, 0.02) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(0, 240, 255, 0.02) 1px, transparent 1px);
+        background-size: 20px 20px;
+        z-index: -1;
+        pointer-events: none;
+    }
+    
+    .card {
+        border: 1px solid var(--card-border);
+        border-radius: 8px;
+        transition: all 0.3s ease;
+        background-color: var(--card-bg);
+        margin-bottom: 1.5rem;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .card::before {
+        content: '';
+        position: absolute;
+        top: -2px;
+        left: -2px;
+        right: -2px;
+        bottom: -2px;
+        background: linear-gradient(45deg, var(--neon-cyan), var(--neon-pink), var(--neon-purple));
+        z-index: -1;
+        border-radius: 10px;
+        opacity: 0.2;
+        transition: 0.5s;
+    }
+    
+    .card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 0.5rem 1.5rem rgba(0, 0, 0, 0.2);
+    }
+    
+    .card-header {
+        background: linear-gradient(90deg, rgba(0,0,0,0.8) 0%, var(--card-bg) 100%) !important;
+        color: var(--neon-cyan) !important;
+        border-radius: 8px 8px 0 0 !important;
+        font-weight: 600;
+        font-size: 1rem;
+        padding: 1rem 1.25rem;
+        border-bottom: 1px solid var(--border) !important;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    
+    .stat-card {
+        border-left: 2px solid var(--neon-cyan);
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+        background: rgba(18, 18, 24, 0.7);
+        backdrop-filter: blur(10px);
+    }
+    
+    .stat-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 0.5rem 1.5rem rgba(0, 0, 0, 0.2);
+    }
+    
+    .stat-card::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: 100px;
+        height: 100%;
+        background: linear-gradient(90deg, 
+            rgba(0, 240, 255, 0) 0%, 
+            rgba(0, 240, 255, 0.1) 50%, 
+            rgba(0, 240, 255, 0) 100%);
+        transform: translateX(100%);
+        transition: transform 0.6s ease;
+    }
+    
+    .stat-card:hover::after {
+        transform: translateX(-100%);
+    }
+    
+    .icon-shape {
+        width: 3rem;
+        height: 3rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 12px;
+        transition: all 0.3s ease;
+    }
+    
+    .stat-card:hover .icon-shape {
+        transform: scale(1.1);
+    }
+    
+    
+    .activity-item {
+        position: relative;
+        padding: 1rem 1.5rem;
+        border-left: 3px solid var(--neon-cyan);
+        margin-bottom: 1rem;
+        background: var(--card-bg);
+        border-radius: 8px;
+        transition: all 0.2s ease;
+    }
+    
+    .activity-item:hover {
+        transform: translateX(5px);
+        box-shadow: 0 0 15px rgba(0, 240, 255, 0.1);
+        background: rgba(18, 18, 24, 0.8);
+    }
+    
+    .activity-item:last-child {
+        margin-bottom: 0;
+    }
+    
+    .activity-item::before {
+        content: '';
+        position: absolute;
+        left: -0.5rem;
+        top: 1.25rem;
+        width: 0.75rem;
+        height: 0.75rem;
+        border-radius: 50%;
+        background-color: var(--neon-cyan);
+        border: 2px solid var(--dark-bg);
+        box-shadow: 0 0 0 2px var(--neon-cyan), 0 0 10px var(--neon-cyan);
+        z-index: 1;
+    }
+    
+    .activity-item .activity-time {
+        font-size: 0.75rem;
+        color: var(--text-muted);
+        font-weight: 500;
+        background: var(--secondary);
+        padding: 0.25rem 0.5rem;
+        border-radius: 4px;
+        display: inline-block;
+    }
+    
+    /* Table styling */
+    .table {
+        margin-bottom: 0;
+    }
+    
+    .table th {
+        border-top: none;
+        font-weight: 600;
+        text-transform: uppercase;
+        font-size: 0.7rem;
+        letter-spacing: 0.5px;
+        color: var(--text-muted);
+    }
+    
+    .table td {
+        vertical-align: middle;
+    }
+    
+    /* Buttons */
+    .btn-primary {
+        background: transparent;
+        border: 1px solid var(--neon-cyan);
+        color: var(--neon-cyan);
+        padding: 0.5rem 1.5rem;
+        font-weight: 500;
+        letter-spacing: 0.5px;
+        text-transform: uppercase;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+        z-index: 1;
+        text-shadow: 0 0 5px rgba(0, 240, 255, 0.5);
+    }
+    
+    .btn-primary:hover, .btn-primary:focus {
+        background: transparent;
+        border-color: var(--neon-pink);
+        color: var(--neon-pink);
+        box-shadow: 0 0 15px var(--neon-pink), 
+                   inset 0 0 15px rgba(255, 0, 255, 0.1);
+        transform: translateY(-2px);
+        text-shadow: 0 0 10px rgba(255, 0, 255, 0.8);
+    }
+    
+    .btn-primary::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, 
+            transparent, 
+            rgba(0, 240, 255, 0.2), 
+            transparent);
+        transition: 0.5s;
+        z-index: -1;
+    }
+    
+    .nav-pills .nav-link.active {
+        background: transparent;
+        color: var(--neon-cyan);
+        border: 1px solid var(--neon-cyan);
+        box-shadow: 0 0 10px var(--neon-cyan);
+        position: relative;
+        z-index: 1;
+    }
+    
+    .nav-pills .nav-link {
+        color: var(--text-secondary);
+        transition: all 0.3s ease;
+    }
+    
+    .nav-pills .nav-link:hover {
+        color: var(--neon-cyan);
+        text-shadow: 0 0 5px rgba(0, 240, 255, 0.5);
+    }
+    
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+        .card {
+            margin-bottom: 1rem;
+        }
+        
+        .stat-card {
+            margin-bottom: 1rem;
+        }
+    }
+    
+    /* Theme color aliases for compatibility */
+    :root {
+        --primary: var(--neon-cyan);
+        --primary-light: #6DF2FF;  /* Lighter cyan */
+        --secondary: var(--dark-bg);
+        --status-high: var(--error);
+        --status-medium: var(--warning);
+        --status-low: var(--success);
+        --status-info: var(--neon-cyan);
+        --text-muted: var(--text-secondary);
+        --border-color: var(--border);
+    }
+    /* Card styles */
+    .card {
+        border: 1px solid var(--card-border);
+        border-radius: 8px;
+        transition: all 0.3s ease;
+        background-color: var(--card-bg);
+        margin-bottom: 1.5rem;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .card::before {
+        content: '';
+        position: absolute;
+        top: -2px;
+        left: -2px;
+        right: -2px;
+        bottom: -2px;
+        background: linear-gradient(45deg, var(--neon-cyan), var(--neon-pink), var(--neon-purple));
+        z-index: -1;
+        border-radius: 10px;
+        opacity: 0.2;
+        transition: 0.5s;
+    }
+    .card:hover {
+        transform: translateY(-5px);
+    }
+    .card-header {
+        background: linear-gradient(90deg, rgba(0,0,0,0.8) 0%, var(--card-bg) 100%) !important;
+        color: var(--neon-cyan) !important;
+        border-radius: 8px 8px 0 0 !important;
+        font-weight: 600;
+        font-size: 1rem;
+        border-bottom: 1px solid var(--border) !important;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    .stat-card {
+        border-left: 4px solid;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
+    .stat-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 0.5rem 1.5rem rgba(0, 0, 0, 0.08);
+    }
+    .stat-card::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: 100px;
+        height: 100%;
+        background: linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.3) 100%);
+        transform: translateX(100%);
+        transition: transform 0.6s ease;
+    }
+    .stat-card:hover::after {
+        transform: translateX(-100%);
+    }
+    .icon-shape {
+        width: 3rem;
+        height: 3rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 12px;
+        transition: all 0.3s ease;
+    }
+    .stat-card:hover .icon-shape {
+        transform: scale(1.1);
+    }
+    
+    .activity-item {
+        position: relative;
+        padding: 1rem 1.5rem;
+        border-left: 3px solid var(--primary);
+        margin-bottom: 1rem;
+        background: var(--white);
+        border-radius: 8px;
+        transition: all 0.2s ease;
+    }
+    .activity-item:hover {
+        transform: translateX(5px);
+        box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
+    .activity-item:last-child {
+        margin-bottom: 0;
+    }
+    .activity-item::before {
+        content: '';
+        position: absolute;
+        left: -0.5rem;
+        top: 1.25rem;
+        width: 0.75rem;
+        height: 0.75rem;
+        border-radius: 50%;
+        background-color: var(--primary);
+        border: 2px solid var(--white);
+        box-shadow: 0 0 0 2px var(--primary);
+    }
+    .activity-item .activity-time {
+        font-size: 0.75rem;
+        color: var(--text-muted);
+        font-weight: 500;
+        background: var(--secondary);
+        padding: 0.25rem 0.5rem;
+        border-radius: 4px;
+        display: inline-block;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <!-- Page Header -->
+    <div class="d-flex flex-column flex-md-row align-items-center justify-content-between mb-4">
+        <div>
+            <h1 class="h3 mb-1">HOD Dashboard</h1>
+            <p class="text-muted mb-0">Welcome back! Here's what's happening with your department.</p>
+        </div>
+        <div class="mt-3 mt-md-0">
+            <button class="btn btn-primary">
+                <i class="fas fa-download fa-sm me-1"></i> Generate Report
+            </button>
+        </div>
+    </div>
+    <!-- Page Header -->
+    <div class="d-flex flex-column flex-md-row align-items-center justify-content-between mb-4">
+        <div>
+            <h1 class="h3 mb-0 text-gray-800">HOD Dashboard</h1>
+            <p class="mb-0 text-muted">Welcome back! Here's what's happening with your department.</p>
+        </div>
+        <div class="mt-3 mt-md-0">
+            <button class="btn btn-primary">
+                <i class="fas fa-download fa-sm text-white-50"></i> Generate Report
+            </button>
+        </div>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="row mb-4">
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card stat-card border-left-primary h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Total Faculty</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ faculty_count or 0 }}</div>
+                            <div class="mt-2">
+                                <span class="text-success small"><i class="fas fa-arrow-up"></i> 12%</span>
+                                <span class="text-muted small">Since last month</span>
+                            </div>
+                        </div>
+                        <div class="icon-shape bg-soft-primary rounded-3">
+                            <i class="fas fa-users fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer bg-transparent border-0 py-2">
+                    <a href="#" class="text-primary text-decoration-none small">View Details <i class="fas fa-arrow-right"></i></a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card stat-card border-left-success h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Total Subjects</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ subject_count or 0 }}</div>
+                            <div class="mt-2">
+                                <span class="text-success small"><i class="fas fa-arrow-up"></i> 8%</span>
+                                <span class="text-muted small">Since last month</span>
+                            </div>
+                        </div>
+                        <div class="icon-shape bg-soft-success rounded-3">
+                            <i class="fas fa-book fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer bg-transparent border-0 py-2">
+                    <a href="#" class="text-success text-decoration-none small">View All <i class="fas fa-arrow-right"></i></a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card stat-card border-left-warning h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">Pending Complaints</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ complaint_count or 0 }}</div>
+                            <div class="mt-2">
+                                <span class="text-danger small"><i class="fas fa-arrow-up"></i> 5%</span>
+                                <span class="text-muted small">Since last week</span>
+                            </div>
+                        </div>
+                        <div class="icon-shape bg-soft-warning rounded-3">
+                            <i class="fas fa-exclamation-triangle fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer bg-transparent border-0 py-2">
+                    <a href="#" class="text-warning text-decoration-none small">View All <i class="fas fa-arrow-right"></i></a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card stat-card border-left-info h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">Announcements</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ announcement_count or 0 }}</div>
+                            <div class="mt-2">
+                                <span class="text-success small"><i class="fas fa-bullhorn"></i> 3 New</span>
+                                <span class="text-muted small">This week</span>
+                            </div>
+                        </div>
+                        <div class="icon-shape bg-soft-info rounded-3">
+                            <i class="fas fa-bullhorn fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer bg-transparent border-0 py-2">
+                    <a href="#" class="text-info text-decoration-none small">View All <i class="fas fa-arrow-right"></i></a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="row">
+        <!-- Left Column -->
+        <div class="col-lg-6">
+            <!-- Staff Management -->
+            <div class="card shadow-sm mb-4">
+                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                    <h6 class="m-0 font-weight-bold"><i class="fas fa-users me-2"></i>Faculty Overview</h6>
+                    <div class="dropdown no-arrow">
+                        <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end shadow" aria-labelledby="dropdownMenuLink">
+                            <li><a class="dropdown-item" href="#">Export List</a></li>
+                            <li><a class="dropdown-item" href="#">Print</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="#">Refresh</a></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h5 class="card-title text-gray-800 mb-0">Faculty Members</h5>
+                        <a href="{{ url_for('manage_subjects') }}" class="btn btn-sm" style="background-color: var(--primary); border-color: var(--primary); color: white;">
+                            <i class="fas fa-plus me-1"></i> Add New
+                        </a>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Department</th>
+                                    <th>Status</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for faculty in recent_faculty %}
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <div class="me-3">
+                                                <div class="icon-shape bg-soft-primary rounded-circle p-2">
+                                                    <i class="fas fa-user text-primary"></i>
+                                                </div>
+                                            </div>
+                                            <div>
+                                                <h6 class="mb-0">{{ faculty.full_name or faculty.username }}</h6>
+                                                <small class="text-muted">{{ faculty.email or 'No email' }}</small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td><span class="badge bg-light text-dark">{{ faculty.department or 'N/A' }}</span></td>
+                                    <td><span class="badge bg-success">Active</span></td>
+                                    <td>
+                                        <div class="btn-group">
+                                            <a href="{{ url_for('edit_faculty', id=faculty.id) }}" class="btn btn-sm btn-outline-primary" title="Edit">
+                                                <i class="fas fa-edit"></i>
+                                            </a>
+                                            <button class="btn btn-sm btn-outline-secondary" title="View Details">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="mt-3 text-end">
+                        <a href="#" class="btn btn-link text-primary text-decoration-none">View All Faculty <i class="fas fa-arrow-right ms-1"></i></a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Activity -->
+            <div class="card shadow-sm">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold"><i class="fas fa-bell me-2"></i>Recent Activity</h6>
+                </div>
+                <div class="card-body p-0">
+                    <div class="list-group list-group-flush">
+                        {% if recent_activities %}
+                            {% for activity in recent_activities %}
+                            <div class="activity-item px-4 py-3">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h6 class="mb-1">{{ activity.title }}</h6>
+                                        <p class="mb-1 small text-muted">{{ activity.description }}</p>
+                                    </div>
+                                    <small class="text-muted">{{ activity.timestamp.strftime('%b %d, %Y %I:%M %p') if activity.timestamp else 'Just now' }}</small>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        {% else %}
+                            <div class="text-center py-4">
+                                <div class="mb-3">
+                                    <i class="fas fa-inbox fa-3x text-gray-300"></i>
+                                </div>
+                                <p class="text-muted mb-0">No recent activities to display</p>
+                            </div>
+                        {% endif %}
+                    </div>
+                    <div class="card-footer bg-white text-end py-2">
+                        <a href="#" class="btn btn-link text-primary text-decoration-none p-0">View All Activity <i class="fas fa-arrow-right ms-1"></i></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Column -->
+        <div class="col-lg-6">
+            <!-- Workload Assignment -->
+            <div class="card mb-4">
+                <div class="card-header text-white" style="background-color: var(--status-low); border-color: var(--status-low);">
+                    <i class="fas fa-tasks me-2"></i>Workload Assignment
+                </div>
+                <div class="card-body">
+                    <div class="d-flex justify-content-between mb-3">
+                        <h5 class="card-title">Current Workloads</h5>
+                        <a href="{{ url_for('assign_workload') }}" class="btn btn-sm btn-success">
+                            <i class="fas fa-plus me-1"></i> Assign Workload
+                        </a>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-sm table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Faculty</th>
+                                    <th>Subject</th>
+                                    <th>Hours</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for workload in recent_workloads %}
+                                <tr>
+                                    <td>{{ workload.faculty.username }}</td>
+                                    <td>{{ workload.subject }}</td>
+                                    <td>{{ workload.hours }}</td>
+                                </tr>
+                                {% else %}
+                                <tr>
+                                    <td colspan="3" class="text-center text-muted">No workload assignments yet</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="card shadow-sm">
+                <div class="card-header bg-secondary text-white">
+                    <i class="fas fa-bolt me-2"></i>Quick Actions
+                </div>
+                <div class="card-body">
+                    <div class="row text-center">
+                        <div class="col-4 mb-3">
+                            <a href="{{ url_for('view_workload') }}" class="btn btn-block" style="border-color: var(--primary); color: var(--primary);">
+                                <i class="fas fa-tasks fa-2x d-block mb-2"></i>
+                                View Workloads
+                            </a>
+                        </div>
+                        <div class="col-4 mb-3">
+                            <a href="{{ url_for('manage_subjects') }}" class="btn btn-block" style="border-color: var(--status-low); color: var(--status-low);">
+                                <i class="fas fa-book fa-2x d-block mb-2"></i>
+                                Manage Subjects
+                            </a>
+                        </div>
+                        <div class="col-4 mb-3">
+                            <a href="{{ url_for('generate_reports') }}" class="btn btn-block" style="border-color: var(--status-info); color: var(--status-info);">
+                                <i class="fas fa-chart-bar fa-2x d-block mb-2"></i>
+                                View Reports
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Additional Features -->
+    <div class="row mt-4">
+        <!-- Model Answers -->
+        <div class="col-lg-4 col-md-6 mb-4">
+            <div class="card h-100">
+                <div class="card-header bg-purple text-white" style="background-color: #6f42c1 !important;">
+                    <i class="fas fa-file-pdf me-2"></i>Model Answers
+                </div>
+                <div class="card-body d-flex flex-column">
+                    <div class="text-center mb-3">
+                        <i class="fas fa-file-download fa-3x mb-3" style="color: #6f42c1;"></i>
+                        <h5>Manage Model Answers</h5>
+                        <p class="text-muted">Upload and manage model answers for all subjects.</p>
+                    </div>
+                    <div class="mt-auto">
+                        <a href="{{ url_for('manage_model_answers') }}" class="btn w-100" style="background-color: #6f42c1; color: white;">
+                            <i class="fas fa-upload me-2"></i>Manage Model Answers
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Complaints & Reports -->
+        <div class="col-lg-4 col-md-6 mb-4">
+            <div class="card h-100">
+                <div class="card-header bg-danger text-white">
+                    <i class="fas fa-exclamation-triangle me-2"></i>Complaints & Reports
+                </div>
+                <div class="card-body d-flex flex-column">
+                    <div class="text-center mb-3">
+                        <i class="fas fa-file-alt fa-3x text-danger mb-3"></i>
+                        <h5>View & Generate</h5>
+                        <p class="text-muted">Handle complaints and generate department reports.</p>
+                    </div>
+                    <div class="mt-auto">
+                        <a href="{{ url_for('hod_view_complaints') }}" class="btn btn-danger w-100 mb-2">
+                            <i class="fas fa-exclamation-triangle me-2"></i>View Complaints
+                        </a>
+                        <a href="{{ url_for('generate_reports') }}" class="btn btn-outline-danger w-100">
+                            <i class="fas fa-file-alt me-2"></i>Generate Reports
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Activity -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card shadow-sm">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="fas fa-clock me-2"></i>Recent Activity</h5>
+                </div>
+                <div class="card-body">
+                    {% if recent_activities %}
+                        <div class="list-group list-group-flush">
+                            {% for activity in recent_activities %}
+                            <div class="list-group-item d-flex justify-content-between align-items-center">
+                                <div>
+                                    <i class="fas fa-{{ activity.icon }} me-2 text-{{ activity.color }}"></i>
+                                    {{ activity.message }}
+                                </div>
+                                <small class="text-muted">{{ activity.timestamp.strftime('%d %b, %Y at %I:%M %p') }}</small>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="text-center text-muted py-4">
+                            <i class="fas fa-inbox fa-3x mb-3"></i>
+                            <p>No recent activity to display.</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

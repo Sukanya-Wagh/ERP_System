@@ -1,0 +1,1032 @@
+{% extends "student_base.html" %}
+
+{% block title %}AI Doubt Solver - Student Dashboard{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-12">
+        <div class="card" style="background: rgba(18, 18, 24, 0.9) !important; border: 2px solid #8A2BE2 !important;">
+            <div class="card-header d-flex align-items-center justify-content-between" style="background: rgba(138, 43, 226, 0.1) !important; border-bottom: 2px solid #8A2BE2 !important;">
+                <div class="d-flex align-items-center">
+                    <i class="fas fa-robot me-2" style="color: #8A2BE2 !important;"></i>
+                    <h5 class="mb-0" style="color: #8A2BE2 !important; font-weight: 700 !important;">AI Doubt Solver</h5>
+                </div>
+                <a href="{{ url_for('student_dashboard') }}" 
+                   class="btn btn-secondary" style="background: rgba(0, 0, 0, 0.5) !important; border: 1px solid var(--text-secondary) !important; color: var(--text-secondary) !important; font-weight: 600 !important;">
+                    <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
+                </a>
+            </div>
+            
+            <div class="card-body" style="padding: 2rem !important;">
+                <div class="row">
+                    <div class="col-md-8">
+                        <div class="icon-container" style="margin-bottom: 2rem !important; background: linear-gradient(45deg, #8A2BE2, #9932CC); width: 80px; height: 80px; display: flex; align-items: center; justify-content: center; border-radius: 50%;">
+                            <i class="fas fa-brain" style="color: #000; font-size: 2rem;"></i>
+                        </div>
+                        
+                        <h4 style="color: var(--text-primary) !important; margin-bottom: 1rem;">Smart Learning Assistant</h4>
+                        <p style="color: var(--text-secondary) !important; margin-bottom: 2rem;">Ask any academic question and get instant, detailed explanations powered by AI. Perfect for clearing doubts in any subject!</p>
+                        
+                        <!-- Chat Interface -->
+                        <div class="chat-container" style="background: rgba(0, 0, 0, 0.3); border-radius: 12px; padding: 1.5rem; margin-bottom: 2rem; min-height: 400px; max-height: 500px; overflow-y: auto; border: 1px solid rgba(138, 43, 226, 0.3);">
+                            <div id="chatMessages">
+                                <!-- Welcome Message -->
+                                <div class="message ai-message" style="margin-bottom: 1rem;">
+                                    <div class="message-content" style="background: rgba(138, 43, 226, 0.2); padding: 1rem; border-radius: 12px; border-left: 4px solid #8A2BE2;">
+                                        <div class="message-header" style="display: flex; align-items: center; margin-bottom: 0.5rem;">
+                                            <i class="fas fa-robot" style="color: #8A2BE2; margin-right: 0.5rem;"></i>
+                                            <strong style="color: #8A2BE2;">AI Assistant</strong>
+                                        </div>
+                                        <p style="color: var(--text-primary); margin: 0;">Hello! I'm your AI Doubt Solver. Ask me any academic question and I'll help you understand it better. You can ask about:</p>
+                                        <ul style="color: var(--text-secondary); margin: 0.5rem 0 0 1rem; font-size: 0.9rem;">
+                                            <li>Programming concepts (Java, Python, C++, etc.)</li>
+                                            <li>Mathematics and Statistics</li>
+                                            <li>Data Structures and Algorithms</li>
+                                            <li>Database concepts</li>
+                                            <li>Computer Networks</li>
+                                            <li>And much more!</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Input Form with Voice Support -->
+                        <form id="questionForm" style="display: flex; gap: 1rem; align-items: center;">
+                            <div style="flex: 1; position: relative;">
+                                <input type="text" id="questionInput" placeholder="Ask your question here... (or use voice)" 
+                                       style="width: 100%; background: rgba(18, 18, 24, 0.8) !important; border: 1px solid rgba(138, 43, 226, 0.3) !important; color: var(--text-primary) !important; border-radius: 8px !important; padding: 1rem; padding-right: 3rem;"
+                                       required>
+                                <button type="button" id="voiceBtn" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); background: none; border: none; color: #8A2BE2; font-size: 1.2rem; cursor: pointer;">
+                                    <i class="fas fa-microphone"></i>
+                                </button>
+                            </div>
+                            <button type="submit" class="btn" style="background: rgba(138, 43, 226, 0.2) !important; border-color: #8A2BE2 !important; color: #8A2BE2 !important; font-weight: 600 !important; padding: 1rem 2rem;">
+                                <i class="fas fa-paper-plane me-2"></i>Ask AI
+                            </button>
+                            <button type="button" id="clearBtn" class="btn" style="background: rgba(255, 56, 100, 0.2) !important; border-color: #FF3864 !important; color: #FF3864 !important; font-weight: 600 !important; padding: 1rem;">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </form>
+                        
+                        <!-- Voice Status -->
+                        <div id="voiceStatus" style="display: none; margin-top: 1rem; padding: 0.5rem; background: rgba(138, 43, 226, 0.1); border-radius: 6px; text-align: center;">
+                            <i class="fas fa-microphone-alt" style="color: #8A2BE2;"></i>
+                            <span style="color: #8A2BE2; margin-left: 0.5rem;">Listening... Speak your question</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Quick Questions Sidebar -->
+                    <div class="col-md-4">
+                        <div class="card" style="background: rgba(138, 43, 226, 0.05) !important; border: 1px solid rgba(138, 43, 226, 0.2) !important;">
+                            <div class="card-header" style="background: rgba(138, 43, 226, 0.1) !important; border-bottom: 1px solid rgba(138, 43, 226, 0.2) !important;">
+                                <h6 class="mb-0" style="color: #8A2BE2 !important;">
+                                    <i class="fas fa-lightbulb me-2"></i>Quick Questions
+                                </h6>
+                            </div>
+                            <div class="card-body" style="padding: 1rem !important;">
+                                <p style="color: var(--text-secondary) !important; font-size: 0.9rem; margin-bottom: 1rem;">Click on any question to get started:</p>
+                                
+                                <div class="quick-questions">
+                                    <button class="quick-question-btn" onclick="askQuestion('What is object-oriented programming?')" 
+                                            style="width: 100%; text-align: left; background: rgba(0, 0, 0, 0.3); border: 1px solid rgba(138, 43, 226, 0.3); color: var(--text-primary); padding: 0.75rem; border-radius: 6px; margin-bottom: 0.5rem; transition: all 0.3s ease;">
+                                        <i class="fas fa-code me-2" style="color: #8A2BE2;"></i>What is OOP?
+                                    </button>
+                                    
+                                    <button class="quick-question-btn" onclick="askQuestion('Explain binary search algorithm')" 
+                                            style="width: 100%; text-align: left; background: rgba(0, 0, 0, 0.3); border: 1px solid rgba(138, 43, 226, 0.3); color: var(--text-primary); padding: 0.75rem; border-radius: 6px; margin-bottom: 0.5rem; transition: all 0.3s ease;">
+                                        <i class="fas fa-search me-2" style="color: #8A2BE2;"></i>Binary Search Algorithm
+                                    </button>
+                                    
+                                    <button class="quick-question-btn" onclick="askQuestion('What is database normalization?')" 
+                                            style="width: 100%; text-align: left; background: rgba(0, 0, 0, 0.3); border: 1px solid rgba(138, 43, 226, 0.3); color: var(--text-primary); padding: 0.75rem; border-radius: 6px; margin-bottom: 0.5rem; transition: all 0.3s ease;">
+                                        <i class="fas fa-database me-2" style="color: #8A2BE2;"></i>Database Normalization
+                                    </button>
+                                    
+                                    <button class="quick-question-btn" onclick="askQuestion('Difference between stack and queue')" 
+                                            style="width: 100%; text-align: left; background: rgba(0, 0, 0, 0.3); border: 1px solid rgba(138, 43, 226, 0.3); color: var(--text-primary); padding: 0.75rem; border-radius: 6px; margin-bottom: 0.5rem; transition: all 0.3s ease;">
+                                        <i class="fas fa-layer-group me-2" style="color: #8A2BE2;"></i>Stack vs Queue
+                                    </button>
+                                    
+                                    <button class="quick-question-btn" onclick="askQuestion('What is machine learning?')" 
+                                            style="width: 100%; text-align: left; background: rgba(0, 0, 0, 0.3); border: 1px solid rgba(138, 43, 226, 0.3); color: var(--text-primary); padding: 0.75rem; border-radius: 6px; margin-bottom: 0.5rem; transition: all 0.3s ease;">
+                                        <i class="fas fa-brain me-2" style="color: #8A2BE2;"></i>Machine Learning Basics
+                                    </button>
+                                    
+                                    <button class="quick-question-btn" onclick="askQuestion('Explain Java programming')" 
+                                            style="width: 100%; text-align: left; background: rgba(0, 0, 0, 0.3); border: 1px solid rgba(138, 43, 226, 0.3); color: var(--text-primary); padding: 0.75rem; border-radius: 6px; margin-bottom: 0.5rem; transition: all 0.3s ease;">
+                                        <i class="fas fa-coffee me-2" style="color: #8A2BE2;"></i>Java Programming
+                                    </button>
+                                    
+                                    <button class="quick-question-btn" onclick="askQuestion('What is Python used for?')" 
+                                            style="width: 100%; text-align: left; background: rgba(0, 0, 0, 0.3); border: 1px solid rgba(138, 43, 226, 0.3); color: var(--text-primary); padding: 0.75rem; border-radius: 6px; margin-bottom: 0.5rem; transition: all 0.3s ease;">
+                                        <i class="fab fa-python me-2" style="color: #8A2BE2;"></i>Python Programming
+                                    </button>
+                                    
+                                    <button class="quick-question-btn" onclick="askQuestion('Explain computer networks')" 
+                                            style="width: 100%; text-align: left; background: rgba(0, 0, 0, 0.3); border: 1px solid rgba(138, 43, 226, 0.3); color: var(--text-primary); padding: 0.75rem; border-radius: 6px; margin-bottom: 0.5rem; transition: all 0.3s ease;">
+                                        <i class="fas fa-network-wired me-2" style="color: #8A2BE2;"></i>Computer Networks
+                                    </button>
+                                    
+                                    <button class="quick-question-btn" onclick="askQuestion('What is cybersecurity?')" 
+                                            style="width: 100%; text-align: left; background: rgba(0, 0, 0, 0.3); border: 1px solid rgba(138, 43, 226, 0.3); color: var(--text-primary); padding: 0.75rem; border-radius: 6px; margin-bottom: 0.5rem; transition: all 0.3s ease;">
+                                        <i class="fas fa-shield-alt me-2" style="color: #8A2BE2;"></i>Cybersecurity Basics
+                                    </button>
+                                    
+                                    <button class="quick-question-btn" onclick="askQuestion('Explain cloud computing')" 
+                                            style="width: 100%; text-align: left; background: rgba(0, 0, 0, 0.3); border: 1px solid rgba(138, 43, 226, 0.3); color: var(--text-primary); padding: 0.75rem; border-radius: 6px; margin-bottom: 0.5rem; transition: all 0.3s ease;">
+                                        <i class="fas fa-cloud me-2" style="color: #8A2BE2;"></i>Cloud Computing
+                                    </button>
+                                    
+                                    <button class="quick-question-btn" onclick="askQuestion('What is blockchain technology?')" 
+                                            style="width: 100%; text-align: left; background: rgba(0, 0, 0, 0.3); border: 1px solid rgba(138, 43, 226, 0.3); color: var(--text-primary); padding: 0.75rem; border-radius: 6px; margin-bottom: 0.5rem; transition: all 0.3s ease;">
+                                        <i class="fas fa-link me-2" style="color: #8A2BE2;"></i>Blockchain Technology
+                                    </button>
+                                    
+                                    <button class="quick-question-btn" onclick="askQuestion('Explain DevOps practices')" 
+                                            style="width: 100%; text-align: left; background: rgba(0, 0, 0, 0.3); border: 1px solid rgba(138, 43, 226, 0.3); color: var(--text-primary); padding: 0.75rem; border-radius: 6px; margin-bottom: 0.5rem; transition: all 0.3s ease;">
+                                        <i class="fas fa-cogs me-2" style="color: #8A2BE2;"></i>DevOps Practices
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- AI Features -->
+                        <div class="card mt-3" style="background: rgba(0, 255, 157, 0.05) !important; border: 1px solid rgba(0, 255, 157, 0.2) !important;">
+                            <div class="card-header" style="background: rgba(0, 255, 157, 0.1) !important; border-bottom: 1px solid rgba(0, 255, 157, 0.2) !important;">
+                                <h6 class="mb-0" style="color: #00FF9D !important;">
+                                    <i class="fas fa-magic me-2"></i>AI Features
+                                </h6>
+                            </div>
+                            <div class="card-body" style="padding: 1rem !important;">
+                                <div class="feature-list">
+                                    <div class="feature-item" style="display: flex; align-items: center; margin-bottom: 0.75rem;">
+                                        <i class="fas fa-check-circle me-2" style="color: #00FF9D;"></i>
+                                        <span style="color: var(--text-primary); font-size: 0.9rem;">Instant Answers</span>
+                                    </div>
+                                    <div class="feature-item" style="display: flex; align-items: center; margin-bottom: 0.75rem;">
+                                        <i class="fas fa-check-circle me-2" style="color: #00FF9D;"></i>
+                                        <span style="color: var(--text-primary); font-size: 0.9rem;">Step-by-step Explanations</span>
+                                    </div>
+                                    <div class="feature-item" style="display: flex; align-items: center; margin-bottom: 0.75rem;">
+                                        <i class="fas fa-check-circle me-2" style="color: #00FF9D;"></i>
+                                        <span style="color: var(--text-primary); font-size: 0.9rem;">Code Examples</span>
+                                    </div>
+                                    <div class="feature-item" style="display: flex; align-items: center; margin-bottom: 0.75rem;">
+                                        <i class="fas fa-check-circle me-2" style="color: #00FF9D;"></i>
+                                        <span style="color: var(--text-primary); font-size: 0.9rem;">24/7 Available</span>
+                                    </div>
+                                    <div class="feature-item" style="display: flex; align-items: center; margin-bottom: 0.75rem;">
+                                        <i class="fas fa-check-circle me-2" style="color: #00FF9D;"></i>
+                                        <span style="color: var(--text-primary); font-size: 0.9rem;">Voice Input/Output</span>
+                                    </div>
+                                    <div class="feature-item" style="display: flex; align-items: center; margin-bottom: 0.75rem;">
+                                        <i class="fas fa-check-circle me-2" style="color: #00FF9D;"></i>
+                                        <span style="color: var(--text-primary); font-size: 0.9rem;">Multi-Subject Support</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Subject Selector -->
+                        <div class="card mt-3" style="background: rgba(255, 215, 0, 0.05) !important; border: 1px solid rgba(255, 215, 0, 0.2) !important;">
+                            <div class="card-header" style="background: rgba(255, 215, 0, 0.1) !important; border-bottom: 1px solid rgba(255, 215, 0, 0.2) !important;">
+                                <h6 class="mb-0" style="color: #FFD700 !important;">
+                                    <i class="fas fa-graduation-cap me-2"></i>Subject Focus
+                                </h6>
+                            </div>
+                            <div class="card-body" style="padding: 1rem !important;">
+                                <p style="color: var(--text-secondary) !important; font-size: 0.9rem; margin-bottom: 1rem;">Select a subject for focused questions:</p>
+                                <select id="subjectSelector" style="width: 100%; background: rgba(0, 0, 0, 0.3); border: 1px solid rgba(255, 215, 0, 0.3); color: var(--text-primary); padding: 0.5rem; border-radius: 6px; margin-bottom: 1rem;">
+                                    <option value="">All Subjects</option>
+                                    <option value="programming">Programming</option>
+                                    <option value="database">Database Systems</option>
+                                    <option value="networking">Computer Networks</option>
+                                    <option value="algorithms">Data Structures & Algorithms</option>
+                                    <option value="ai">Artificial Intelligence</option>
+                                    <option value="security">Cybersecurity</option>
+                                    <option value="cloud">Cloud Computing</option>
+                                    <option value="web">Web Development</option>
+                                </select>
+                                <button onclick="generateSubjectQuestions()" style="width: 100%; background: rgba(255, 215, 0, 0.2); border: 1px solid #FFD700; color: #FFD700; padding: 0.5rem; border-radius: 6px; font-size: 0.9rem;">
+                                    <i class="fas fa-random me-2"></i>Generate Questions
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_styles %}
+<style>
+/* AI Doubt Solver specific styles */
+.chat-container::-webkit-scrollbar {
+    width: 8px;
+}
+
+.chat-container::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 4px;
+}
+
+.chat-container::-webkit-scrollbar-thumb {
+    background: rgba(138, 43, 226, 0.5);
+    border-radius: 4px;
+}
+
+.chat-container::-webkit-scrollbar-thumb:hover {
+    background: rgba(138, 43, 226, 0.7);
+}
+
+.message {
+    animation: fadeInUp 0.3s ease-out;
+}
+
+.user-message .message-content {
+    background: rgba(0, 240, 255, 0.2) !important;
+    border-left: 4px solid var(--neon-cyan) !important;
+    margin-left: 2rem;
+}
+
+.ai-message .message-content {
+    margin-right: 2rem;
+}
+
+.quick-question-btn:hover {
+    background: rgba(138, 43, 226, 0.2) !important;
+    border-color: #8A2BE2 !important;
+    transform: translateX(5px);
+}
+
+.typing-indicator {
+    display: flex;
+    align-items: center;
+    padding: 1rem;
+    background: rgba(138, 43, 226, 0.1);
+    border-radius: 12px;
+    margin-bottom: 1rem;
+}
+
+.typing-dots {
+    display: flex;
+    gap: 4px;
+}
+
+.typing-dots span {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #8A2BE2;
+    animation: typing 1.4s infinite ease-in-out;
+}
+
+.typing-dots span:nth-child(1) { animation-delay: -0.32s; }
+.typing-dots span:nth-child(2) { animation-delay: -0.16s; }
+
+@keyframes typing {
+    0%, 80%, 100% {
+        transform: scale(0);
+        opacity: 0.5;
+    }
+    40% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+#questionInput:focus {
+    border-color: #8A2BE2 !important;
+    box-shadow: 0 0 0 0.2rem rgba(138, 43, 226, 0.25) !important;
+}
+
+.btn:hover {
+    transform: translateY(-2px) !important;
+    box-shadow: 0 0 20px rgba(138, 43, 226, 0.4) !important;
+}
+</style>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const questionForm = document.getElementById('questionForm');
+    const questionInput = document.getElementById('questionInput');
+    const chatMessages = document.getElementById('chatMessages');
+    const voiceBtn = document.getElementById('voiceBtn');
+    const clearBtn = document.getElementById('clearBtn');
+    const voiceStatus = document.getElementById('voiceStatus');
+    
+    let recognition;
+    let isListening = false;
+    
+    // Initialize Speech Recognition
+    if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        recognition = new SpeechRecognition();
+        recognition.continuous = false;
+        recognition.interimResults = false;
+        recognition.lang = 'en-US';
+        
+        recognition.onstart = function() {
+            isListening = true;
+            voiceBtn.innerHTML = '<i class="fas fa-stop"></i>';
+            voiceBtn.style.color = '#FF3864';
+            voiceStatus.style.display = 'block';
+        };
+        
+        recognition.onresult = function(event) {
+            const transcript = event.results[0][0].transcript;
+            questionInput.value = transcript;
+            voiceStatus.style.display = 'none';
+        };
+        
+        recognition.onend = function() {
+            isListening = false;
+            voiceBtn.innerHTML = '<i class="fas fa-microphone"></i>';
+            voiceBtn.style.color = '#8A2BE2';
+            voiceStatus.style.display = 'none';
+        };
+        
+        recognition.onerror = function(event) {
+            console.error('Speech recognition error:', event.error);
+            voiceStatus.style.display = 'none';
+            isListening = false;
+            voiceBtn.innerHTML = '<i class="fas fa-microphone"></i>';
+            voiceBtn.style.color = '#8A2BE2';
+        };
+    } else {
+        voiceBtn.style.display = 'none';
+    }
+    
+    // Voice button click handler
+    voiceBtn.addEventListener('click', function() {
+        if (!recognition) return;
+        
+        if (isListening) {
+            recognition.stop();
+        } else {
+            recognition.start();
+        }
+    });
+    
+    // Clear chat button
+    clearBtn.addEventListener('click', function() {
+        if (confirm('Are you sure you want to clear the chat?')) {
+            chatMessages.innerHTML = `
+                <div class="message ai-message" style="margin-bottom: 1rem;">
+                    <div class="message-content" style="background: rgba(138, 43, 226, 0.2); padding: 1rem; border-radius: 12px; border-left: 4px solid #8A2BE2;">
+                        <div class="message-header" style="display: flex; align-items: center; margin-bottom: 0.5rem;">
+                            <i class="fas fa-robot" style="color: #8A2BE2; margin-right: 0.5rem;"></i>
+                            <strong style="color: #8A2BE2;">AI Assistant</strong>
+                        </div>
+                        <p style="color: var(--text-primary); margin: 0;">Hello! I'm your AI Doubt Solver. Ask me any academic question and I'll help you understand it better.</p>
+                    </div>
+                </div>
+            `;
+        }
+    });
+    
+    // Handle form submission
+    questionForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        const question = questionInput.value.trim();
+        if (question) {
+            askQuestion(question);
+            questionInput.value = '';
+        }
+    });
+    
+    // Function to ask a question
+    window.askQuestion = function(question) {
+        // Add user message
+        addMessage(question, 'user');
+        
+        // Show typing indicator
+        showTypingIndicator();
+        
+        // Simulate AI response with realistic delay
+        setTimeout(() => {
+            hideTypingIndicator();
+            const response = generateAIResponse(question);
+            addMessage(response, 'ai');
+        }, Math.random() * 2000 + 1000); // Random delay between 1-3 seconds
+    };
+    
+    function addMessage(content, sender) {
+        const messageDiv = document.createElement('div');
+        messageDiv.className = `message ${sender}-message`;
+        messageDiv.style.marginBottom = '1rem';
+        
+        const isUser = sender === 'user';
+        const icon = isUser ? 'fas fa-user' : 'fas fa-robot';
+        const senderName = isUser ? 'You' : 'AI Assistant';
+        const bgColor = isUser ? 'rgba(0, 240, 255, 0.2)' : 'rgba(138, 43, 226, 0.2)';
+        const borderColor = isUser ? 'var(--neon-cyan)' : '#8A2BE2';
+        const iconColor = isUser ? 'var(--neon-cyan)' : '#8A2BE2';
+        
+        const timestamp = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+        
+        messageDiv.innerHTML = `
+            <div class="message-content" style="background: ${bgColor}; padding: 1rem; border-radius: 12px; border-left: 4px solid ${borderColor};">
+                <div class="message-header" style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.5rem;">
+                    <div style="display: flex; align-items: center;">
+                        <i class="${icon}" style="color: ${iconColor}; margin-right: 0.5rem;"></i>
+                        <strong style="color: ${iconColor};">${senderName}</strong>
+                    </div>
+                    <small style="color: var(--text-muted); font-size: 0.8rem;">${timestamp}</small>
+                </div>
+                <div style="color: var(--text-primary);">${content}</div>
+                ${!isUser ? `<div style="margin-top: 0.5rem;">
+                    <button onclick="copyToClipboard(this)" style="background: none; border: 1px solid rgba(138, 43, 226, 0.3); color: #8A2BE2; padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.8rem; cursor: pointer;">
+                        <i class="fas fa-copy me-1"></i>Copy
+                    </button>
+                    <button onclick="speakText(this)" style="background: none; border: 1px solid rgba(138, 43, 226, 0.3); color: #8A2BE2; padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.8rem; cursor: pointer; margin-left: 0.5rem;">
+                        <i class="fas fa-volume-up me-1"></i>Speak
+                    </button>
+                </div>` : ''}
+            </div>
+        `;
+        
+        chatMessages.appendChild(messageDiv);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+    
+    function showTypingIndicator() {
+        const typingDiv = document.createElement('div');
+        typingDiv.id = 'typingIndicator';
+        typingDiv.className = 'typing-indicator';
+        typingDiv.innerHTML = `
+            <i class="fas fa-robot" style="color: #8A2BE2; margin-right: 0.5rem;"></i>
+            <span style="color: #8A2BE2; margin-right: 1rem;">AI is thinking...</span>
+            <div class="typing-dots">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        `;
+        chatMessages.appendChild(typingDiv);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+    
+    function hideTypingIndicator() {
+        const typingIndicator = document.getElementById('typingIndicator');
+        if (typingIndicator) {
+            typingIndicator.remove();
+        }
+    }
+    
+    // Copy to clipboard function
+    window.copyToClipboard = function(button) {
+        const messageContent = button.closest('.message-content').querySelector('div:last-of-type').innerText;
+        navigator.clipboard.writeText(messageContent).then(() => {
+            button.innerHTML = '<i class="fas fa-check me-1"></i>Copied!';
+            setTimeout(() => {
+                button.innerHTML = '<i class="fas fa-copy me-1"></i>Copy';
+            }, 2000);
+        });
+    };
+    
+    // Text to speech function
+    window.speakText = function(button) {
+        const messageContent = button.closest('.message-content').querySelector('div:last-of-type').innerText;
+        if ('speechSynthesis' in window) {
+            const utterance = new SpeechSynthesisUtterance(messageContent);
+            utterance.rate = 0.8;
+            utterance.pitch = 1;
+            utterance.volume = 0.8;
+            
+            button.innerHTML = '<i class="fas fa-stop me-1"></i>Stop';
+            button.style.color = '#FF3864';
+            
+            utterance.onend = function() {
+                button.innerHTML = '<i class="fas fa-volume-up me-1"></i>Speak';
+                button.style.color = '#8A2BE2';
+            };
+            
+            speechSynthesis.speak(utterance);
+        }
+    };
+    
+    // Auto-suggestions based on typing
+    let suggestionTimeout;
+    questionInput.addEventListener('input', function() {
+        clearTimeout(suggestionTimeout);
+        suggestionTimeout = setTimeout(() => {
+            showSuggestions(this.value);
+        }, 500);
+    });
+    
+    function showSuggestions(input) {
+        if (input.length < 3) return;
+        
+        const suggestions = [
+            'What is object-oriented programming?',
+            'Explain binary search algorithm',
+            'What is machine learning?',
+            'Difference between stack and queue',
+            'What is database normalization?',
+            'Explain Java programming',
+            'What is Python used for?',
+            'How does TCP/IP work?',
+            'What is artificial intelligence?',
+            'Explain sorting algorithms'
+        ];
+        
+        const matches = suggestions.filter(s => 
+            s.toLowerCase().includes(input.toLowerCase())
+        );
+        
+        if (matches.length > 0) {
+            // Show suggestion dropdown (you can implement this)
+            console.log('Suggestions:', matches);
+        }
+    }
+    
+    // Subject-specific question generator
+    window.generateSubjectQuestions = function() {
+        const subject = document.getElementById('subjectSelector').value;
+        const subjectQuestions = {
+            'programming': [
+                'What is the difference between Java and Python?',
+                'Explain object-oriented programming concepts',
+                'What are design patterns in programming?',
+                'How does garbage collection work?',
+                'What is the difference between abstract class and interface?'
+            ],
+            'database': [
+                'What is database normalization?',
+                'Explain ACID properties in databases',
+                'What is the difference between SQL and NoSQL?',
+                'How do database indexes work?',
+                'What are database transactions?'
+            ],
+            'networking': [
+                'Explain the OSI model layers',
+                'What is the difference between TCP and UDP?',
+                'How does DNS resolution work?',
+                'What is a subnet mask?',
+                'Explain network routing protocols'
+            ],
+            'algorithms': [
+                'What is time complexity analysis?',
+                'Explain different sorting algorithms',
+                'What is dynamic programming?',
+                'How does binary search work?',
+                'What are graph traversal algorithms?'
+            ],
+            'ai': [
+                'What is machine learning?',
+                'Explain supervised vs unsupervised learning',
+                'What are neural networks?',
+                'How does deep learning work?',
+                'What is natural language processing?'
+            ],
+            'security': [
+                'What is cybersecurity?',
+                'Explain encryption and decryption',
+                'What are common security threats?',
+                'How do firewalls work?',
+                'What is multi-factor authentication?'
+            ],
+            'cloud': [
+                'What is cloud computing?',
+                'Explain SaaS, PaaS, and IaaS',
+                'What are the benefits of cloud computing?',
+                'How does cloud storage work?',
+                'What is serverless computing?'
+            ],
+            'web': [
+                'What is the difference between HTML, CSS, and JavaScript?',
+                'Explain responsive web design',
+                'What are web frameworks?',
+                'How does HTTP protocol work?',
+                'What is RESTful API design?'
+            ]
+        };
+        
+        if (subject && subjectQuestions[subject]) {
+            const questions = subjectQuestions[subject];
+            const randomQuestion = questions[Math.floor(Math.random() * questions.length)];
+            questionInput.value = randomQuestion;
+            questionInput.focus();
+        } else {
+            // Generate a random question from all subjects
+            const allQuestions = Object.values(subjectQuestions).flat();
+            const randomQuestion = allQuestions[Math.floor(Math.random() * allQuestions.length)];
+            questionInput.value = randomQuestion;
+            questionInput.focus();
+        }
+    };
+    
+    function generateAIResponse(question) {
+        const q = question.toLowerCase();
+        
+        // Programming Languages with code examples
+        if (q.includes('java') || q.includes('programming') || q.includes('oop')) {
+            return `
+                <strong>Java Programming & OOP</strong><br><br>
+                Java is a popular object-oriented programming language known for:<br>
+                • <strong>Platform Independence:</strong> "Write once, run anywhere"<br>
+                • <strong>Object-Oriented:</strong> Classes, objects, inheritance, polymorphism<br>
+                • <strong>Memory Management:</strong> Automatic garbage collection<br>
+                • <strong>Security:</strong> Built-in security features<br><br>
+                
+                <strong>Example - Simple Class:</strong><br>
+                <div style="background: rgba(0,0,0,0.5); padding: 1rem; border-radius: 6px; margin: 1rem 0; font-family: monospace; border-left: 4px solid #8A2BE2;">
+                <code style="color: #00FF9D;">
+                public class Student {<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;private String name;<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;private int age;<br><br>
+                &nbsp;&nbsp;&nbsp;&nbsp;public Student(String name, int age) {<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;this.name = name;<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;this.age = age;<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;}<br><br>
+                &nbsp;&nbsp;&nbsp;&nbsp;public void displayInfo() {<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;System.out.println("Name: " + name + ", Age: " + age);<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;}<br>
+                }
+                </code>
+                </div>
+                
+                <strong>Key OOP Concepts:</strong><br>
+                • <strong>Encapsulation:</strong> Private variables, public methods<br>
+                • <strong>Inheritance:</strong> extends keyword<br>
+                • <strong>Polymorphism:</strong> Method overriding<br>
+                • <strong>Abstraction:</strong> Abstract classes and interfaces
+            `;
+        }
+        
+        if (q.includes('python')) {
+            return `
+                <strong>Python Programming</strong><br><br>
+                Python is a high-level, interpreted programming language known for:<br>
+                • <strong>Simple Syntax:</strong> Easy to read and write<br>
+                • <strong>Versatile:</strong> Web development, data science, AI, automation<br>
+                • <strong>Large Libraries:</strong> NumPy, Pandas, Django, Flask<br>
+                • <strong>Interpreted:</strong> No compilation needed<br><br>
+                
+                <strong>Example - Basic Python:</strong><br>
+                <div style="background: rgba(0,0,0,0.5); padding: 1rem; border-radius: 6px; margin: 1rem 0; font-family: monospace; border-left: 4px solid #8A2BE2;">
+                <code style="color: #00FF9D;">
+                # Python class example<br>
+                class Student:<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;def __init__(self, name, age):<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;self.name = name<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;self.age = age<br><br>
+                &nbsp;&nbsp;&nbsp;&nbsp;def display_info(self):<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;print(f"Name: {self.name}, Age: {self.age}")<br><br>
+                # Usage<br>
+                student = Student("John", 20)<br>
+                student.display_info()
+                </code>
+                </div>
+                
+                <strong>Popular Uses:</strong><br>
+                • Data Science: pandas, numpy, matplotlib<br>
+                • Web Development: Django, Flask<br>
+                • Machine Learning: scikit-learn, TensorFlow<br>
+                • Automation: selenium, requests
+            `;
+        }
+        
+        if (q.includes('c++') || q.includes('cpp')) {
+            return `
+                <strong>C++ Programming</strong><br><br>
+                C++ is a powerful, compiled programming language that extends C:<br>
+                • <strong>Object-Oriented:</strong> Classes, objects, inheritance<br>
+                • <strong>Low-Level Control:</strong> Memory management, pointers<br>
+                • <strong>Performance:</strong> Fast execution, system programming<br>
+                • <strong>STL:</strong> Standard Template Library<br><br>
+                <strong>Key Features:</strong><br>
+                • Classes and Objects<br>
+                • Operator Overloading<br>
+                • Templates and Generic Programming<br>
+                • Multiple Inheritance<br>
+                • Virtual Functions
+            `;
+        }
+        
+        // Data Structures
+        if (q.includes('array') || q.includes('data structure')) {
+            return `
+                <strong>Data Structures</strong><br><br>
+                Data structures are ways to organize and store data efficiently:<br><br>
+                <strong>Linear Data Structures:</strong><br>
+                • <strong>Array:</strong> Fixed-size, indexed collection<br>
+                • <strong>Linked List:</strong> Dynamic size, node-based<br>
+                • <strong>Stack:</strong> LIFO (Last In, First Out)<br>
+                • <strong>Queue:</strong> FIFO (First In, First Out)<br><br>
+                <strong>Non-Linear Data Structures:</strong><br>
+                • <strong>Tree:</strong> Hierarchical structure<br>
+                • <strong>Graph:</strong> Nodes connected by edges<br>
+                • <strong>Hash Table:</strong> Key-value pairs for fast lookup
+            `;
+        }
+        
+        if (q.includes('algorithm') || q.includes('sorting') || q.includes('searching') || q.includes('binary search')) {
+            return `
+                <strong>Algorithms & Data Structures</strong><br><br>
+                Algorithms are step-by-step procedures to solve problems efficiently:<br><br>
+                
+                <strong>Binary Search Algorithm:</strong><br>
+                <div style="background: rgba(0,0,0,0.5); padding: 1rem; border-radius: 6px; margin: 1rem 0; font-family: monospace; border-left: 4px solid #8A2BE2;">
+                <code style="color: #00FF9D;">
+                def binary_search(arr, target):<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;left, right = 0, len(arr) - 1<br><br>
+                &nbsp;&nbsp;&nbsp;&nbsp;while left <= right:<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;mid = (left + right) // 2<br><br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if arr[mid] == target:<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return mid<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;elif arr[mid] < target:<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;left = mid + 1<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;else:<br>
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;right = mid - 1<br><br>
+                &nbsp;&nbsp;&nbsp;&nbsp;return -1  # Not found
+                </code>
+                </div>
+                
+                <strong>Time Complexities:</strong><br>
+                • <strong>Binary Search:</strong> O(log n) - For sorted arrays<br>
+                • <strong>Linear Search:</strong> O(n) - Check each element<br>
+                • <strong>Quick Sort:</strong> O(n log n) average, O(n²) worst<br>
+                • <strong>Merge Sort:</strong> O(n log n) - Always stable<br>
+                • <strong>Bubble Sort:</strong> O(n²) - Simple but inefficient<br><br>
+                
+                <strong>When to Use:</strong><br>
+                • Binary Search: Sorted data, fast lookup<br>
+                • Quick Sort: General purpose, good average performance<br>
+                • Merge Sort: When stability is important
+            `;
+        }
+        
+        // Database
+        if (q.includes('database') || q.includes('sql') || q.includes('dbms')) {
+            return `
+                <strong>Database Management Systems (DBMS)</strong><br><br>
+                A DBMS is software for storing, retrieving, and managing data:<br><br>
+                <strong>Key Concepts:</strong><br>
+                • <strong>Tables:</strong> Store data in rows and columns<br>
+                • <strong>Primary Key:</strong> Unique identifier for records<br>
+                • <strong>Foreign Key:</strong> Links tables together<br>
+                • <strong>Normalization:</strong> Reduces data redundancy<br><br>
+                <strong>SQL Commands:</strong><br>
+                • <strong>SELECT:</strong> Retrieve data<br>
+                • <strong>INSERT:</strong> Add new records<br>
+                • <strong>UPDATE:</strong> Modify existing records<br>
+                • <strong>DELETE:</strong> Remove records<br>
+                • <strong>JOIN:</strong> Combine data from multiple tables
+            `;
+        }
+        
+        // Networking
+        if (q.includes('network') || q.includes('tcp') || q.includes('ip') || q.includes('internet')) {
+            return `
+                <strong>Computer Networks</strong><br><br>
+                Computer networks connect devices to share resources and information:<br><br>
+                <strong>OSI Model (7 Layers):</strong><br>
+                • <strong>Physical:</strong> Hardware transmission<br>
+                • <strong>Data Link:</strong> Node-to-node delivery<br>
+                • <strong>Network:</strong> Routing (IP)<br>
+                • <strong>Transport:</strong> End-to-end delivery (TCP/UDP)<br>
+                • <strong>Session:</strong> Session management<br>
+                • <strong>Presentation:</strong> Data formatting<br>
+                • <strong>Application:</strong> User interface (HTTP, FTP)<br><br>
+                <strong>Protocols:</strong> TCP/IP, HTTP, HTTPS, FTP, DNS
+            `;
+        }
+        
+        // Operating Systems
+        if (q.includes('operating system') || q.includes('os') || q.includes('process') || q.includes('thread')) {
+            return `
+                <strong>Operating Systems</strong><br><br>
+                An OS manages computer hardware and software resources:<br><br>
+                <strong>Key Functions:</strong><br>
+                • <strong>Process Management:</strong> Creating, scheduling, terminating processes<br>
+                • <strong>Memory Management:</strong> Allocating and deallocating memory<br>
+                • <strong>File System:</strong> Organizing and accessing files<br>
+                • <strong>I/O Management:</strong> Handling input/output operations<br><br>
+                <strong>Process vs Thread:</strong><br>
+                • <strong>Process:</strong> Independent program in execution<br>
+                • <strong>Thread:</strong> Lightweight process within a process<br>
+                • Threads share memory, processes don't
+            `;
+        }
+        
+        // Mathematics
+        if (q.includes('math') || q.includes('calculus') || q.includes('algebra') || q.includes('statistics')) {
+            return `
+                <strong>Mathematics in Computer Science</strong><br><br>
+                Mathematics forms the foundation of computer science:<br><br>
+                <strong>Discrete Mathematics:</strong><br>
+                • <strong>Logic:</strong> Boolean algebra, propositional logic<br>
+                • <strong>Set Theory:</strong> Sets, relations, functions<br>
+                • <strong>Graph Theory:</strong> Vertices, edges, paths<br>
+                • <strong>Combinatorics:</strong> Counting, permutations, combinations<br><br>
+                <strong>Statistics & Probability:</strong><br>
+                • <strong>Descriptive Statistics:</strong> Mean, median, mode<br>
+                • <strong>Probability:</strong> Events, distributions<br>
+                • <strong>Hypothesis Testing:</strong> Statistical significance<br>
+                • <strong>Regression:</strong> Linear and non-linear relationships
+            `;
+        }
+        
+        // Artificial Intelligence
+        if (q.includes('ai') || q.includes('artificial intelligence') || q.includes('machine learning') || q.includes('ml')) {
+            return `
+                <strong>Artificial Intelligence & Machine Learning</strong><br><br>
+                AI enables machines to simulate human intelligence:<br><br>
+                <strong>Machine Learning Types:</strong><br>
+                • <strong>Supervised Learning:</strong> Labeled training data<br>
+                • <strong>Unsupervised Learning:</strong> Find patterns in unlabeled data<br>
+                • <strong>Reinforcement Learning:</strong> Learn through rewards/penalties<br><br>
+                <strong>Popular Algorithms:</strong><br>
+                • <strong>Linear Regression:</strong> Predict continuous values<br>
+                • <strong>Decision Trees:</strong> Rule-based decisions<br>
+                • <strong>Neural Networks:</strong> Mimic brain neurons<br>
+                • <strong>K-Means:</strong> Clustering algorithm<br>
+                • <strong>SVM:</strong> Support Vector Machines for classification
+            `;
+        }
+        
+        // Web Development
+        if (q.includes('web') || q.includes('html') || q.includes('css') || q.includes('javascript') || q.includes('http')) {
+            return `
+                <strong>Web Development</strong><br><br>
+                Web development involves creating websites and web applications:<br><br>
+                <strong>Frontend Technologies:</strong><br>
+                • <strong>HTML:</strong> Structure and content<br>
+                • <strong>CSS:</strong> Styling and layout<br>
+                • <strong>JavaScript:</strong> Interactivity and behavior<br>
+                • <strong>Frameworks:</strong> React, Angular, Vue.js<br><br>
+                <strong>Backend Technologies:</strong><br>
+                • <strong>Server Languages:</strong> Python, Java, PHP, Node.js<br>
+                • <strong>Databases:</strong> MySQL, PostgreSQL, MongoDB<br>
+                • <strong>Frameworks:</strong> Django, Flask, Spring, Express<br><br>
+                <strong>HTTP Methods:</strong> GET, POST, PUT, DELETE
+            `;
+        }
+        
+        // Software Engineering
+        if (q.includes('software engineering') || q.includes('sdlc') || q.includes('agile') || q.includes('testing')) {
+            return `
+                <strong>Software Engineering</strong><br><br>
+                Software engineering is the systematic approach to software development:<br><br>
+                <strong>SDLC (Software Development Life Cycle):</strong><br>
+                • <strong>Planning:</strong> Define requirements and scope<br>
+                • <strong>Analysis:</strong> Understand user needs<br>
+                • <strong>Design:</strong> Create system architecture<br>
+                • <strong>Implementation:</strong> Write code<br>
+                • <strong>Testing:</strong> Find and fix bugs<br>
+                • <strong>Deployment:</strong> Release to users<br>
+                • <strong>Maintenance:</strong> Updates and bug fixes<br><br>
+                <strong>Methodologies:</strong> Waterfall, Agile, Scrum, DevOps
+            `;
+        }
+        
+        // Cybersecurity
+        if (q.includes('cybersecurity') || q.includes('security') || q.includes('encryption') || q.includes('firewall')) {
+            return `
+                <strong>Cybersecurity Fundamentals</strong><br><br>
+                Cybersecurity protects digital systems, networks, and data from threats:<br><br>
+                <strong>Core Principles (CIA Triad):</strong><br>
+                • <strong>Confidentiality:</strong> Protecting data from unauthorized access<br>
+                • <strong>Integrity:</strong> Ensuring data accuracy and completeness<br>
+                • <strong>Availability:</strong> Ensuring systems are accessible when needed<br><br>
+                <strong>Common Threats:</strong><br>
+                • <strong>Malware:</strong> Viruses, trojans, ransomware<br>
+                • <strong>Phishing:</strong> Social engineering attacks<br>
+                • <strong>DDoS:</strong> Distributed denial of service<br>
+                • <strong>SQL Injection:</strong> Database attacks<br><br>
+                <strong>Security Measures:</strong> Firewalls, Encryption, Multi-factor Authentication, Regular Updates
+            `;
+        }
+        
+        // Cloud Computing
+        if (q.includes('cloud') || q.includes('aws') || q.includes('azure') || q.includes('saas') || q.includes('paas')) {
+            return `
+                <strong>Cloud Computing</strong><br><br>
+                Cloud computing delivers computing services over the internet:<br><br>
+                <strong>Service Models:</strong><br>
+                • <strong>SaaS (Software as a Service):</strong> Ready-to-use applications<br>
+                • <strong>PaaS (Platform as a Service):</strong> Development platforms<br>
+                • <strong>IaaS (Infrastructure as a Service):</strong> Virtual machines and storage<br><br>
+                <strong>Deployment Models:</strong><br>
+                • <strong>Public Cloud:</strong> Shared infrastructure (AWS, Azure, GCP)<br>
+                • <strong>Private Cloud:</strong> Dedicated infrastructure<br>
+                • <strong>Hybrid Cloud:</strong> Combination of public and private<br><br>
+                <strong>Benefits:</strong> Scalability, Cost-effectiveness, Accessibility, Automatic Updates
+            `;
+        }
+        
+        // Blockchain Technology
+        if (q.includes('blockchain') || q.includes('cryptocurrency') || q.includes('bitcoin') || q.includes('smart contract')) {
+            return `
+                <strong>Blockchain Technology</strong><br><br>
+                Blockchain is a distributed ledger technology that maintains a secure, transparent record:<br><br>
+                <strong>Key Features:</strong><br>
+                • <strong>Decentralization:</strong> No single point of control<br>
+                • <strong>Immutability:</strong> Records cannot be altered<br>
+                • <strong>Transparency:</strong> All transactions are visible<br>
+                • <strong>Consensus:</strong> Network agreement on validity<br><br>
+                <strong>Applications:</strong><br>
+                • <strong>Cryptocurrency:</strong> Bitcoin, Ethereum<br>
+                • <strong>Smart Contracts:</strong> Self-executing contracts<br>
+                • <strong>Supply Chain:</strong> Tracking goods and authenticity<br>
+                • <strong>Digital Identity:</strong> Secure identity verification<br><br>
+                <strong>Benefits:</strong> Security, Transparency, Reduced Costs, Global Access
+            `;
+        }
+        
+        // DevOps
+        if (q.includes('devops') || q.includes('ci/cd') || q.includes('docker') || q.includes('kubernetes')) {
+            return `
+                <strong>DevOps Practices</strong><br><br>
+                DevOps combines development and operations to improve collaboration and productivity:<br><br>
+                <strong>Core Principles:</strong><br>
+                • <strong>Collaboration:</strong> Breaking down silos between teams<br>
+                • <strong>Automation:</strong> Automating repetitive tasks<br>
+                • <strong>Continuous Integration:</strong> Regular code integration<br>
+                • <strong>Continuous Deployment:</strong> Automated releases<br><br>
+                <strong>Key Tools:</strong><br>
+                • <strong>Version Control:</strong> Git, GitHub, GitLab<br>
+                • <strong>CI/CD:</strong> Jenkins, GitHub Actions, Azure DevOps<br>
+                • <strong>Containerization:</strong> Docker, Kubernetes<br>
+                • <strong>Monitoring:</strong> Prometheus, Grafana, ELK Stack<br><br>
+                <strong>Benefits:</strong> Faster Delivery, Better Quality, Improved Collaboration, Reduced Risk
+            `;
+        }
+        
+        // General CS concepts
+        if (q.includes('computer science') || q.includes('cs') || q.includes('programming')) {
+            return `
+                <strong>Computer Science Fundamentals</strong><br><br>
+                Computer Science is the study of computational systems and algorithms:<br><br>
+                <strong>Core Areas:</strong><br>
+                • <strong>Programming:</strong> Writing instructions for computers<br>
+                • <strong>Data Structures:</strong> Organizing data efficiently<br>
+                • <strong>Algorithms:</strong> Problem-solving procedures<br>
+                • <strong>Computer Systems:</strong> Hardware and software interaction<br>
+                • <strong>Software Engineering:</strong> Building large-scale systems<br>
+                • <strong>Database Systems:</strong> Storing and retrieving data<br>
+                • <strong>Networks:</strong> Connecting computers<br>
+                • <strong>Security:</strong> Protecting systems and data<br><br>
+                <strong>Career Paths:</strong> Software Developer, Data Scientist, System Administrator, Cybersecurity Analyst
+            `;
+        }
+        
+        // If no specific match, provide a comprehensive general response
+        return `
+            <strong>Academic Question: "${question}"</strong><br><br>
+            Thank you for your question! I'm here to help with various academic topics:<br><br>
+            
+            <strong>🖥️ Programming & Development:</strong><br>
+            • Java, Python, C++, JavaScript<br>
+            • Object-Oriented Programming<br>
+            • Web Development (HTML, CSS, JS)<br>
+            • Software Engineering principles<br><br>
+            
+            <strong>📊 Data & Algorithms:</strong><br>
+            • Data Structures (Arrays, Trees, Graphs)<br>
+            • Sorting and Searching Algorithms<br>
+            • Database Management (SQL, DBMS)<br>
+            • Big Data and Analytics<br><br>
+            
+            <strong>🤖 AI & Machine Learning:</strong><br>
+            • Machine Learning algorithms<br>
+            • Neural Networks and Deep Learning<br>
+            • Natural Language Processing<br>
+            • Computer Vision<br><br>
+            
+            <strong>🌐 Systems & Networks:</strong><br>
+            • Operating Systems concepts<br>
+            • Computer Networks and Protocols<br>
+            • Cybersecurity fundamentals<br>
+            • Cloud Computing<br><br>
+            
+            <strong>📐 Mathematics:</strong><br>
+            • Discrete Mathematics<br>
+            • Statistics and Probability<br>
+            • Linear Algebra<br>
+            • Calculus applications<br><br>
+            
+            <em>Try asking more specific questions like "What is binary search?" or "Explain inheritance in Java" for detailed explanations!</em>
+        `;
+    }
+});
+</script>
+{% endblock %}

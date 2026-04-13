@@ -1,0 +1,328 @@
+{% extends "hod_base.html" %}
+
+{% block title %}Generate Reports - HOD Dashboard{% endblock %}
+
+{% block content %}
+<div class="row">
+    <!-- Faculty Performance Report -->
+    <div class="col-lg-4 mb-4">
+        <div class="card">
+            <div class="card-header d-flex align-items-center">
+                <i class="fas fa-users me-2"></i>
+                <h5 class="mb-0">Faculty Performance</h5>
+            </div>
+            <div class="card-body">
+                <div class="icon-container">
+                    <i class="fas fa-chart-bar"></i>
+                </div>
+                
+                <p class="card-text mb-3">Generate comprehensive faculty performance reports including workload, student feedback, and attendance.</p>
+                <div class="mb-3">
+                    <label class="form-label">Select Faculty</label>
+                    <select class="form-select">
+                        <option>All Faculty</option>
+                        <option>Individual Faculty</option>
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Time Period</label>
+                    <select class="form-select">
+                        <option>Current Semester</option>
+                        <option>Last 3 Months</option>
+                        <option>Academic Year</option>
+                    </select>
+                </div>
+                <form method="POST">
+                    <input type="hidden" name="report_type" value="Faculty Performance">
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="fas fa-download me-2"></i>Generate Report
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Student Performance Report -->
+    <div class="col-lg-4 mb-4">
+        <div class="card">
+            <div class="card-header d-flex align-items-center">
+                <i class="fas fa-graduation-cap me-2"></i>
+                <h5 class="mb-0">Student Performance</h5>
+            </div>
+            <div class="card-body">
+                <div class="icon-container">
+                    <i class="fas fa-chart-line"></i>
+                </div>
+                
+                <p class="card-text mb-3">Generate student performance reports including test marks, attendance, and overall progress.</p>
+                <div class="mb-3">
+                    <label class="form-label">Select Class</label>
+                    <select class="form-select">
+                        <option>All Classes</option>
+                        <option>Semester 1</option>
+                        <option>Semester 2</option>
+                        <option>Semester 3</option>
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Report Type</label>
+                    <select class="form-select">
+                        <option>Overall Performance</option>
+                        <option>Subject-wise Marks</option>
+                        <option>Attendance Report</option>
+                    </select>
+                </div>
+                <form method="POST">
+                    <input type="hidden" name="report_type" value="Student Performance">
+                    <button type="submit" class="btn btn-success w-100">
+                        <i class="fas fa-download me-2"></i>Generate Report
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Workload Analysis -->
+    <div class="col-lg-4 mb-4">
+        <div class="card">
+            <div class="card-header d-flex align-items-center">
+                <i class="fas fa-tasks me-2"></i>
+                <h5 class="mb-0">Workload Analysis</h5>
+            </div>
+            <div class="card-body">
+                <div class="icon-container">
+                    <i class="fas fa-balance-scale"></i>
+                </div>
+                
+                <p class="card-text mb-3">Analyze faculty workload distribution and identify optimization opportunities.</p>
+                <div class="mb-3">
+                    <label class="form-label">Analysis Type</label>
+                    <select class="form-select">
+                        <option>Department-wise</option>
+                        <option>Subject-wise</option>
+                        <option>Faculty-wise</option>
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Format</label>
+                    <select class="form-select">
+                        <option>PDF Report</option>
+                        <option>Excel Spreadsheet</option>
+                        <option>Chart View</option>
+                    </select>
+                </div>
+                <form method="POST">
+                    <input type="hidden" name="report_type" value="Workload Analysis">
+                    <button type="submit" class="btn btn-warning w-100">
+                        <i class="fas fa-download me-2"></i>Generate Report
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Complaint Summary -->
+    <div class="col-lg-4 mb-4">
+        <div class="card">
+            <div class="card-header d-flex align-items-center">
+                <i class="fas fa-exclamation-triangle me-2"></i>
+                <h5 class="mb-0">Complaint Summary</h5>
+            </div>
+            <div class="card-body">
+                <div class="icon-container">
+                    <i class="fas fa-clipboard-check"></i>
+                </div>
+                
+                <p class="card-text mb-3">Generate summary reports of student complaints and resolution status.</p>
+                <div class="mb-3">
+                    <label class="form-label">Status Filter</label>
+                    <select class="form-select">
+                        <option>All Complaints</option>
+                        <option>Pending Only</option>
+                        <option>Resolved Only</option>
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Date Range</label>
+                    <select class="form-select">
+                        <option>Last 30 Days</option>
+                        <option>Last 3 Months</option>
+                        <option>Current Semester</option>
+                    </select>
+                </div>
+                <form method="POST">
+                    <input type="hidden" name="report_type" value="Complaint Summary">
+                    <button type="submit" class="btn btn-danger w-100">
+                        <i class="fas fa-download me-2"></i>Generate Report
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Attendance Report -->
+    <div class="col-lg-4 mb-4">
+        <div class="card">
+            <div class="card-header d-flex align-items-center">
+                <i class="fas fa-calendar-check me-2"></i>
+                <h5 class="mb-0">Attendance Report</h5>
+            </div>
+            <div class="card-body">
+                <div class="icon-container">
+                    <i class="fas fa-user-check"></i>
+                </div>
+                
+                <p class="card-text mb-3">Generate detailed attendance reports for students and faculty.</p>
+                <div class="mb-3">
+                    <label class="form-label">Report For</label>
+                    <select class="form-select">
+                        <option>Students</option>
+                        <option>Faculty</option>
+                        <option>Both</option>
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Period</label>
+                    <select class="form-select">
+                        <option>Current Month</option>
+                        <option>Current Semester</option>
+                        <option>Academic Year</option>
+                    </select>
+                </div>
+                <form method="POST">
+                    <input type="hidden" name="report_type" value="Attendance Report">
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="fas fa-download me-2"></i>Generate Report
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Custom Report -->
+    <div class="col-lg-4 mb-4">
+        <div class="card">
+            <div class="card-header d-flex align-items-center">
+                <i class="fas fa-cog me-2"></i>
+                <h5 class="mb-0">Custom Report</h5>
+            </div>
+            <div class="card-body">
+                <div class="icon-container">
+                    <i class="fas fa-tools"></i>
+                </div>
+                
+                <p class="card-text mb-3">Create custom reports with specific parameters and data points.</p>
+                <div class="mb-3">
+                    <label class="form-label">Data Source</label>
+                    <select class="form-select">
+                        <option>Student Data</option>
+                        <option>Faculty Data</option>
+                        <option>Academic Data</option>
+                        <option>System Data</option>
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Output Format</label>
+                    <select class="form-select">
+                        <option>PDF Document</option>
+                        <option>Excel File</option>
+                        <option>CSV Export</option>
+                    </select>
+                </div>
+                <form method="POST">
+                    <input type="hidden" name="report_type" value="Custom Report">
+                    <button type="submit" class="btn btn-secondary w-100">
+                        <i class="fas fa-download me-2"></i>Generate Report
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Recent Reports -->
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header d-flex align-items-center">
+                <i class="fas fa-history me-2"></i>
+                <h5 class="mb-0">Recent Reports</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Report Name</th>
+                                <th>Type</th>
+                                <th>Generated Date</th>
+                                <th>File Size</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for report in recent_reports %}
+                            <tr>
+                                <td>{{ report.title }}</td>
+                                <td>
+                                    {% if 'Faculty' in report.report_type %}
+                                        <span class="badge bg-primary">Faculty Report</span>
+                                    {% elif 'Student' in report.report_type %}
+                                        <span class="badge bg-success">Student Report</span>
+                                    {% elif 'Workload' in report.report_type %}
+                                        <span class="badge bg-warning">Workload Report</span>
+                                    {% elif 'Complaint' in report.report_type %}
+                                        <span class="badge bg-danger">Complaint Report</span>
+                                    {% elif 'Attendance' in report.report_type %}
+                                        <span class="badge bg-info">Attendance Report</span>
+                                    {% else %}
+                                        <span class="badge bg-secondary">{{ report.report_type }}</span>
+                                    {% endif %}
+                                </td>
+                                <td>{{ report.timestamp.strftime('%B %d, %Y') }}</td>
+                                <td>
+                                    {% if report.file_path %}
+                                        {% set file_path = report.file_path %}
+                                        <span class="text-muted">~2.5 MB</span>
+                                    {% else %}
+                                        <span class="text-muted">N/A</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <div class="btn-group btn-group-sm">
+                                        {% if report.file_path %}
+                                        <a href="/{{ report.file_path }}" target="_blank" class="btn btn-secondary" title="Download">
+                                            <i class="fas fa-download"></i>
+                                        </a>
+                                        {% endif %}
+                                        <form method="POST" action="{{ url_for('delete_report', report_id=report.id) }}" style="display: inline;" onsubmit="return confirm('Are you sure you want to delete this report?');">
+                                            <button type="submit" class="btn btn-danger" title="Delete">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% else %}
+                            <tr>
+                                <td colspan="5" class="text-center py-4">
+                                    <i class="fas fa-file-alt fa-2x mb-2 text-muted"></i>
+                                    <p class="text-muted mb-0">No recent reports found</p>
+                                    <small class="text-muted">Generate your first report!</small>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="d-flex justify-content-end mt-4">
+    <a href="{{ url_for('hod_dashboard') }}" class="btn btn-secondary">
+        <i class="fas fa-arrow-left me-2"></i> Back to Dashboard
+    </a>
+</div>
+{% endblock %}

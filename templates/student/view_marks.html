@@ -1,0 +1,255 @@
+{% extends "student_base.html" %}
+
+{% block title %}View Marks - Student Dashboard{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="card" style="background: rgba(18, 18, 24, 0.9) !important; border: 2px solid var(--neon-green) !important;">
+            <div class="card-header d-flex align-items-center justify-content-between" style="background: rgba(0, 255, 157, 0.1) !important; border-bottom: 2px solid var(--neon-green) !important;">
+                <div class="d-flex align-items-center">
+                    <i class="fas fa-chart-bar me-2" style="color: var(--neon-green) !important;"></i>
+                    <h5 class="mb-0" style="color: var(--neon-green) !important; font-weight: 700 !important;">View All Marks</h5>
+                </div>
+                <a href="{{ url_for('student_dashboard') }}" 
+                   class="btn btn-secondary" style="background: rgba(0, 0, 0, 0.5) !important; border: 1px solid var(--text-secondary) !important; color: var(--text-secondary) !important; font-weight: 600 !important;">
+                    <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
+                </a>
+            </div>
+            <div class="card-body" style="padding: 2rem !important;">
+                <div class="icon-container" style="margin-bottom: 2rem !important; background: linear-gradient(45deg, var(--neon-green), var(--neon-teal)); width: 80px; height: 80px; display: flex; align-items: center; justify-content: center; border-radius: 50%;">
+                    <i class="fas fa-trophy" style="color: #000; font-size: 2rem;"></i>
+                </div>
+                
+                <p style="color: var(--text-secondary) !important; margin-bottom: 2rem;">Comprehensive view of all your academic performance across subjects and assessment types.</p>
+                
+                <!-- Performance Summary Cards -->
+                <div class="row mb-4">
+                    <div class="col-lg-3 col-md-6 mb-3">
+                        <div class="card" style="background: linear-gradient(135deg, rgba(0, 255, 157, 0.1), rgba(0, 212, 170, 0.1)); border: 1px solid rgba(0, 255, 157, 0.3);">
+                            <div class="card-body text-center">
+                                <div class="icon-container" style="background: linear-gradient(45deg, var(--neon-green), var(--neon-teal)); width: 60px; height: 60px; margin: 0 auto 1rem; display: flex; align-items: center; justify-content: center; border-radius: 50%;">
+                                    <i class="fas fa-percentage" style="color: #000; font-size: 1.5rem;"></i>
+                                </div>
+                                <h3 style="color: var(--neon-green) !important; font-size: 2rem; font-weight: 700;">87.5%</h3>
+                                <p style="color: var(--text-secondary) !important; margin: 0;">Overall Average</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-md-6 mb-3">
+                        <div class="card" style="background: linear-gradient(135deg, rgba(0, 245, 255, 0.1), rgba(0, 212, 170, 0.1)); border: 1px solid rgba(0, 245, 255, 0.3);">
+                            <div class="card-body text-center">
+                                <div class="icon-container" style="background: linear-gradient(45deg, var(--neon-cyan), var(--neon-teal)); width: 60px; height: 60px; margin: 0 auto 1rem; display: flex; align-items: center; justify-content: center; border-radius: 50%;">
+                                    <i class="fas fa-star" style="color: #000; font-size: 1.5rem;"></i>
+                                </div>
+                                <h3 style="color: var(--neon-cyan) !important; font-size: 2rem; font-weight: 700;">A</h3>
+                                <p style="color: var(--text-secondary) !important; margin: 0;">Current Grade</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-md-6 mb-3">
+                        <div class="card" style="background: linear-gradient(135deg, rgba(255, 215, 0, 0.1), rgba(255, 165, 0, 0.1)); border: 1px solid rgba(255, 215, 0, 0.3);">
+                            <div class="card-body text-center">
+                                <div class="icon-container" style="background: linear-gradient(45deg, var(--neon-yellow), #ff8c00); width: 60px; height: 60px; margin: 0 auto 1rem; display: flex; align-items: center; justify-content: center; border-radius: 50%;">
+                                    <i class="fas fa-chart-line" style="color: #000; font-size: 1.5rem;"></i>
+                                </div>
+                                <h3 style="color: var(--neon-yellow) !important; font-size: 2rem; font-weight: 700;">+5.2%</h3>
+                                <p style="color: var(--text-secondary) !important; margin: 0;">Improvement</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-md-6 mb-3">
+                        <div class="card" style="background: linear-gradient(135deg, rgba(139, 92, 246, 0.1), rgba(255, 0, 255, 0.1)); border: 1px solid rgba(139, 92, 246, 0.3);">
+                            <div class="card-body text-center">
+                                <div class="icon-container" style="background: linear-gradient(45deg, var(--neon-purple), var(--neon-pink)); width: 60px; height: 60px; margin: 0 auto 1rem; display: flex; align-items: center; justify-content: center; border-radius: 50%;">
+                                    <i class="fas fa-medal" style="color: #000; font-size: 1.5rem;"></i>
+                                </div>
+                                <h3 style="color: var(--neon-purple) !important; font-size: 2rem; font-weight: 700;">3rd</h3>
+                                <p style="color: var(--text-secondary) !important; margin: 0;">Class Rank</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Subject-wise Performance -->
+                <div class="row">
+                    <div class="col-12">
+                        <div class="card" style="background: rgba(0, 255, 157, 0.05) !important; border: 1px solid rgba(0, 255, 157, 0.2) !important;">
+                            <div class="card-header" style="background: rgba(0, 255, 157, 0.1) !important; border-bottom: 1px solid rgba(0, 255, 157, 0.3) !important;">
+                                <h6 class="mb-0" style="color: var(--neon-green) !important;">
+                                    <i class="fas fa-book me-2"></i>Subject-wise Performance
+                                </h6>
+                            </div>
+                            <div class="card-body" style="padding: 1.5rem !important;">
+                                <div class="table-responsive">
+                                    <table class="table table-hover" style="background: transparent !important;">
+                                        <thead>
+                                            <tr>
+                                                <th style="color: var(--neon-green) !important; font-weight: 700 !important; border-bottom: 2px solid var(--neon-green) !important;">Subject</th>
+                                                <th style="color: var(--neon-green) !important; font-weight: 700 !important; border-bottom: 2px solid var(--neon-green) !important;">Internal</th>
+                                                <th style="color: var(--neon-green) !important; font-weight: 700 !important; border-bottom: 2px solid var(--neon-green) !important;">Mid-Term</th>
+                                                <th style="color: var(--neon-green) !important; font-weight: 700 !important; border-bottom: 2px solid var(--neon-green) !important;">Final</th>
+                                                <th style="color: var(--neon-green) !important; font-weight: 700 !important; border-bottom: 2px solid var(--neon-green) !important;">Total</th>
+                                                <th style="color: var(--neon-green) !important; font-weight: 700 !important; border-bottom: 2px solid var(--neon-green) !important;">Grade</th>
+                                                <th style="color: var(--neon-green) !important; font-weight: 700 !important; border-bottom: 2px solid var(--neon-green) !important;">Status</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr style="border-bottom: 1px solid rgba(0, 255, 157, 0.1) !important;">
+                                                <td>
+                                                    <div>
+                                                        <span class="badge" style="background-color: var(--neon-cyan) !important; color: var(--cyber-dark) !important;">CS101</span>
+                                                        <p style="color: var(--text-primary) !important; margin: 0.25rem 0 0 0; font-size: 0.85rem;">Programming Fundamentals</p>
+                                                    </div>
+                                                </td>
+                                                <td style="color: var(--neon-cyan) !important; font-weight: 600;">18/20</td>
+                                                <td style="color: var(--neon-yellow) !important; font-weight: 600;">42/50</td>
+                                                <td style="color: var(--neon-green) !important; font-weight: 600;">85/100</td>
+                                                <td style="color: var(--text-primary) !important; font-weight: 700; font-size: 1.1rem;">145/170</td>
+                                                <td>
+                                                    <span class="badge" style="background-color: var(--neon-green) !important; color: var(--cyber-dark) !important; padding: 0.4rem 0.8rem;">A</span>
+                                                </td>
+                                                <td>
+                                                    <span class="badge" style="background-color: var(--success) !important; color: var(--cyber-dark) !important;">Pass</span>
+                                                </td>
+                                            </tr>
+                                            <tr style="border-bottom: 1px solid rgba(0, 255, 157, 0.1) !important;">
+                                                <td>
+                                                    <div>
+                                                        <span class="badge" style="background-color: var(--neon-purple) !important; color: var(--cyber-dark) !important;">CS102</span>
+                                                        <p style="color: var(--text-primary) !important; margin: 0.25rem 0 0 0; font-size: 0.85rem;">Data Structures</p>
+                                                    </div>
+                                                </td>
+                                                <td style="color: var(--neon-cyan) !important; font-weight: 600;">16/20</td>
+                                                <td style="color: var(--neon-yellow) !important; font-weight: 600;">38/50</td>
+                                                <td style="color: var(--neon-green) !important; font-weight: 600;">78/100</td>
+                                                <td style="color: var(--text-primary) !important; font-weight: 700; font-size: 1.1rem;">132/170</td>
+                                                <td>
+                                                    <span class="badge" style="background-color: var(--neon-yellow) !important; color: var(--cyber-dark) !important; padding: 0.4rem 0.8rem;">B+</span>
+                                                </td>
+                                                <td>
+                                                    <span class="badge" style="background-color: var(--success) !important; color: var(--cyber-dark) !important;">Pass</span>
+                                                </td>
+                                            </tr>
+                                            <tr style="border-bottom: 1px solid rgba(0, 255, 157, 0.1) !important;">
+                                                <td>
+                                                    <div>
+                                                        <span class="badge" style="background-color: var(--neon-teal) !important; color: var(--cyber-dark) !important;">CS201</span>
+                                                        <p style="color: var(--text-primary) !important; margin: 0.25rem 0 0 0; font-size: 0.85rem;">Database Systems</p>
+                                                    </div>
+                                                </td>
+                                                <td style="color: var(--neon-cyan) !important; font-weight: 600;">19/20</td>
+                                                <td style="color: var(--neon-yellow) !important; font-weight: 600;">45/50</td>
+                                                <td style="color: var(--neon-green) !important; font-weight: 600;">92/100</td>
+                                                <td style="color: var(--text-primary) !important; font-weight: 700; font-size: 1.1rem;">156/170</td>
+                                                <td>
+                                                    <span class="badge" style="background-color: var(--neon-green) !important; color: var(--cyber-dark) !important; padding: 0.4rem 0.8rem;">A+</span>
+                                                </td>
+                                                <td>
+                                                    <span class="badge" style="background-color: var(--success) !important; color: var(--cyber-dark) !important;">Pass</span>
+                                                </td>
+                                            </tr>
+                                            <tr style="border-bottom: 1px solid rgba(0, 255, 157, 0.1) !important;">
+                                                <td>
+                                                    <div>
+                                                        <span class="badge" style="background-color: var(--neon-pink) !important; color: var(--cyber-dark) !important;">CS202</span>
+                                                        <p style="color: var(--text-primary) !important; margin: 0.25rem 0 0 0; font-size: 0.85rem;">Web Development</p>
+                                                    </div>
+                                                </td>
+                                                <td style="color: var(--neon-cyan) !important; font-weight: 600;">17/20</td>
+                                                <td style="color: var(--neon-yellow) !important; font-weight: 600;">40/50</td>
+                                                <td style="color: var(--neon-green) !important; font-weight: 600;">82/100</td>
+                                                <td style="color: var(--text-primary) !important; font-weight: 700; font-size: 1.1rem;">139/170</td>
+                                                <td>
+                                                    <span class="badge" style="background-color: var(--neon-yellow) !important; color: var(--cyber-dark) !important; padding: 0.4rem 0.8rem;">B+</span>
+                                                </td>
+                                                <td>
+                                                    <span class="badge" style="background-color: var(--success) !important; color: var(--cyber-dark) !important;">Pass</span>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Performance Chart Section -->
+                <div class="row mt-4">
+                    <div class="col-12">
+                        <div class="card" style="background: rgba(0, 245, 255, 0.05) !important; border: 1px solid rgba(0, 245, 255, 0.2) !important;">
+                            <div class="card-header" style="background: rgba(0, 245, 255, 0.1) !important; border-bottom: 1px solid rgba(0, 245, 255, 0.3) !important;">
+                                <h6 class="mb-0" style="color: var(--neon-cyan) !important;">
+                                    <i class="fas fa-chart-area me-2"></i>Performance Trend
+                                </h6>
+                            </div>
+                            <div class="card-body text-center" style="padding: 2rem !important;">
+                                <div class="row">
+                                    <div class="col-md-3">
+                                        <div class="performance-meter" style="position: relative; width: 100px; height: 100px; margin: 0 auto 1rem;">
+                                            <div style="width: 100px; height: 100px; border-radius: 50%; background: conic-gradient(var(--neon-green) 315deg, rgba(0, 255, 157, 0.2) 0deg); display: flex; align-items: center; justify-content: center;">
+                                                <div style="width: 70px; height: 70px; background: var(--cyber-card); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                                                    <span style="color: var(--neon-green) !important; font-weight: 700; font-size: 1.2rem;">87.5%</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <h6 style="color: var(--text-primary) !important;">Overall</h6>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="performance-meter" style="position: relative; width: 100px; height: 100px; margin: 0 auto 1rem;">
+                                            <div style="width: 100px; height: 100px; border-radius: 50%; background: conic-gradient(var(--neon-cyan) 324deg, rgba(0, 245, 255, 0.2) 0deg); display: flex; align-items: center; justify-content: center;">
+                                                <div style="width: 70px; height: 70px; background: var(--cyber-card); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                                                    <span style="color: var(--neon-cyan) !important; font-weight: 700; font-size: 1.2rem;">90%</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <h6 style="color: var(--text-primary) !important;">Internal</h6>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="performance-meter" style="position: relative; width: 100px; height: 100px; margin: 0 auto 1rem;">
+                                            <div style="width: 100px; height: 100px; border-radius: 50%; background: conic-gradient(var(--neon-yellow) 306deg, rgba(255, 215, 0, 0.2) 0deg); display: flex; align-items: center; justify-content: center;">
+                                                <div style="width: 70px; height: 70px; background: var(--cyber-card); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                                                    <span style="color: var(--neon-yellow) !important; font-weight: 700; font-size: 1.2rem;">85%</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <h6 style="color: var(--text-primary) !important;">Mid-Term</h6>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="performance-meter" style="position: relative; width: 100px; height: 100px; margin: 0 auto 1rem;">
+                                            <div style="width: 100px; height: 100px; border-radius: 50%; background: conic-gradient(var(--neon-purple) 309deg, rgba(139, 92, 246, 0.2) 0deg); display: flex; align-items: center; justify-content: center;">
+                                                <div style="width: 70px; height: 70px; background: var(--cyber-card); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                                                    <span style="color: var(--neon-purple) !important; font-weight: 700; font-size: 1.2rem;">86%</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <h6 style="color: var(--text-primary) !important;">Final</h6>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_styles %}
+<style>
+.card:hover {
+    transform: translateY(-5px) !important;
+    box-shadow: 0 15px 35px rgba(0, 255, 157, 0.2) !important;
+}
+
+.performance-meter:hover {
+    transform: scale(1.1) !important;
+}
+
+.btn:hover {
+    transform: translateY(-2px) !important;
+}
+</style>
+{% endblock %}

@@ -1,0 +1,895 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HOD Dashboard - Academic Workload System</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --neon-cyan: #00f5ff;
+            --neon-magenta: #ff00ff;
+            --neon-purple: #8b5cf6;
+            --neon-green: #00ff9d;
+            --neon-yellow: #ffd700;
+            --neon-orange: #ff8c00;
+            --neon-red: #ff3864;
+            --bg-dark: #050508;
+            --bg-card: #0d0d14;
+            --bg-surface: #12121c;
+            --bg-elevated: #1a1a28;
+            --border-dim: rgba(0,245,255,0.12);
+            --border-glow: rgba(0,245,255,0.4);
+            --text-primary: #e5e7eb;
+            --text-secondary: #9ca3af;
+            --text-muted: #6b7280;
+            --sidebar-width: 280px;
+            --radius: 14px;
+        }
+        * { margin:0; padding:0; box-sizing:border-box; }
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-dark);
+            color: var(--text-primary);
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+
+        body::before {
+            content: '';
+            position: fixed; top:0; left:0; width:100%; height:100%;
+            background:
+                radial-gradient(ellipse 80% 50% at 20% 20%, rgba(0,245,255,0.04) 0%, transparent 60%),
+                radial-gradient(ellipse 60% 40% at 80% 80%, rgba(139,92,246,0.05) 0%, transparent 60%),
+                linear-gradient(rgba(0,245,255,0.015) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0,245,255,0.015) 1px, transparent 1px);
+            background-size: 100% 100%, 100% 100%, 30px 30px, 30px 30px;
+            z-index: -1; pointer-events: none;
+        }
+
+        .orb { position:fixed; border-radius:50%; filter:blur(80px); pointer-events:none; z-index:-1; animation: floatOrb 12s ease-in-out infinite; }
+        .orb-1 { width:400px; height:400px; background:rgba(0,245,255,0.06); top:-100px; left:-100px; animation-delay:0s; }
+        .orb-2 { width:300px; height:300px; background:rgba(139,92,246,0.07); bottom:-50px; right:-50px; animation-delay:-4s; }
+        .orb-3 { width:200px; height:200px; background:rgba(255,0,255,0.05); top:50%; left:50%; animation-delay:-8s; }
+        @keyframes floatOrb {
+            0%,100% { transform: translate(0,0) scale(1); }
+            33% { transform: translate(30px,-20px) scale(1.05); }
+            66% { transform: translate(-20px,30px) scale(0.95); }
+        }
+
+        ::-webkit-scrollbar { width:6px; }
+        ::-webkit-scrollbar-track { background: var(--bg-card); }
+        ::-webkit-scrollbar-thumb { background: linear-gradient(var(--neon-cyan), var(--neon-purple)); border-radius:3px; }
+
+        .dashboard-layout { display:flex; min-height:100vh; }
+
+        /* ===== SIDEBAR ===== */
+        .sidebar {
+            width: var(--sidebar-width);
+            background: rgba(13,13,20,0.95);
+            backdrop-filter: blur(24px);
+            border-right: 1px solid var(--border-dim);
+            position: fixed; height:100vh; overflow-y:auto; z-index:1000;
+            transition: transform 0.3s ease;
+            display: flex; flex-direction: column;
+        }
+        .sidebar::before {
+            content:''; position:absolute; top:0; left:0; right:0; height:2px;
+            background: linear-gradient(90deg, var(--neon-cyan), var(--neon-purple), var(--neon-magenta));
+            box-shadow: 0 0 20px rgba(0,245,255,0.6);
+        }
+
+        .sidebar-brand {
+            padding: 1.8rem 1.5rem 1.5rem;
+            border-bottom: 1px solid var(--border-dim);
+            text-align: center;
+        }
+        .brand-logo {
+            width: 64px; height: 64px; border-radius: 50%;
+            background: linear-gradient(135deg, rgba(0,245,255,0.15), rgba(139,92,246,0.15));
+            border: 2px solid rgba(0,245,255,0.4);
+            display: flex; align-items:center; justify-content:center;
+            margin: 0 auto 1rem;
+            box-shadow: 0 0 20px rgba(0,245,255,0.3), inset 0 0 20px rgba(0,245,255,0.05);
+            animation: pulseBrand 3s ease-in-out infinite;
+        }
+        @keyframes pulseBrand {
+            0%,100% { box-shadow: 0 0 20px rgba(0,245,255,0.3), inset 0 0 20px rgba(0,245,255,0.05); }
+            50% { box-shadow: 0 0 35px rgba(0,245,255,0.5), inset 0 0 30px rgba(0,245,255,0.1); }
+        }
+        .brand-logo i { font-size:1.8rem; color: var(--neon-cyan); text-shadow: 0 0 15px var(--neon-cyan); }
+        .brand-title {
+            font-family: 'Orbitron', monospace; font-size:1rem; font-weight:700;
+            color: var(--neon-cyan); text-transform:uppercase; letter-spacing:2px;
+            text-shadow: 0 0 10px rgba(0,245,255,0.5); margin-bottom:0.25rem;
+        }
+        .brand-subtitle { color: var(--text-muted); font-size:0.75rem; }
+
+        .nav-section-label {
+            padding: 1rem 1.5rem 0.4rem;
+            font-size: 0.65rem; font-weight:700; text-transform:uppercase;
+            letter-spacing:2px; color: var(--text-muted);
+        }
+        .nav-menu { padding: 0.5rem 0; flex:1; }
+        .nav-item { margin: 0.2rem 0.75rem; }
+        .nav-link {
+            display:flex; align-items:center; padding:0.8rem 1rem;
+            color: var(--text-secondary); text-decoration:none;
+            border-radius:10px; transition:all 0.25s ease;
+            position:relative; overflow:hidden; font-size:0.88rem; font-weight:500;
+            border: 1px solid transparent;
+        }
+        .nav-link i { width:20px; margin-right:0.85rem; font-size:1rem; transition: all 0.25s; }
+        .nav-link .nav-badge {
+            margin-left:auto; background:rgba(255,56,100,0.2); color:var(--neon-red);
+            border:1px solid rgba(255,56,100,0.4); border-radius:20px;
+            font-size:0.65rem; padding:0.1rem 0.5rem; font-weight:700;
+        }
+        .nav-link:hover, .nav-link.active {
+            color: var(--neon-cyan);
+            background: rgba(0,245,255,0.08);
+            border-color: rgba(0,245,255,0.25);
+            text-shadow: 0 0 8px rgba(0,245,255,0.4);
+            text-decoration: none;
+        }
+        .nav-link:hover i, .nav-link.active i { color: var(--neon-cyan); text-shadow: 0 0 10px var(--neon-cyan); }
+        .nav-link.active::before {
+            content:''; position:absolute; left:0; top:20%; height:60%; width:3px;
+            background: var(--neon-cyan); border-radius:0 3px 3px 0;
+            box-shadow: 0 0 10px var(--neon-cyan);
+        }
+        .nav-link::after {
+            content:''; position:absolute; top:0; left:-100%; width:100%; height:100%;
+            background: linear-gradient(90deg, transparent, rgba(0,245,255,0.06), transparent);
+            transition:0.5s;
+        }
+        .nav-link:hover::after { left:100%; }
+
+        .sidebar-footer {
+            padding: 1rem 0.75rem;
+            border-top: 1px solid var(--border-dim);
+        }
+
+        /* ===== MAIN CONTENT ===== */
+        .main-content { margin-left: var(--sidebar-width); flex:1; min-height:100vh; min-width:0; overflow-x:hidden; }
+
+        /* ===== HEADER ===== */
+        .top-header {
+            background: linear-gradient(135deg, rgba(13,13,20,0.98) 0%, rgba(26,26,40,0.98) 100%);
+            border-bottom: 1px solid var(--border-dim);
+            padding: 1.5rem 2rem;
+            position: sticky; top:0; z-index:100;
+            backdrop-filter: blur(20px);
+            display: flex; align-items:center; justify-content:space-between;
+        }
+        .top-header::after {
+            content:''; position:absolute; bottom:0; left:0; right:0; height:1px;
+            background: linear-gradient(90deg, transparent, var(--neon-cyan), var(--neon-purple), transparent);
+            opacity:0.5;
+        }
+        .header-left h1 {
+            font-family:'Orbitron', monospace; font-size:1.4rem; font-weight:700;
+            color: var(--neon-cyan); text-shadow: 0 0 15px rgba(0,245,255,0.4);
+            margin-bottom:0.2rem;
+        }
+        .header-left p { color: var(--text-muted); font-size:0.82rem; }
+        .header-right { display:flex; align-items:center; gap:1rem; }
+        .header-time { text-align:right; font-family:'Orbitron', monospace; }
+        .header-time .time { font-size:1.2rem; color:var(--neon-cyan); font-weight:600; }
+        .header-time .date { font-size:0.7rem; color:var(--text-muted); }
+        .header-avatar {
+            width:44px; height:44px; border-radius:50%;
+            background: linear-gradient(135deg, var(--neon-cyan), var(--neon-purple));
+            display:flex; align-items:center; justify-content:center;
+            font-size:1.1rem; color:#000; font-weight:700;
+            box-shadow: 0 0 15px rgba(0,245,255,0.4);
+            cursor:pointer; transition: all 0.3s; text-decoration:none;
+        }
+        .header-avatar:hover { box-shadow: 0 0 25px rgba(0,245,255,0.7); transform:scale(1.05); }
+
+        .content-area { padding: 1.5rem; }
+
+        /* ===== WELCOME BANNER ===== */
+        .welcome-banner {
+            background: linear-gradient(135deg, rgba(0,245,255,0.08) 0%, rgba(139,92,246,0.08) 50%, rgba(255,0,255,0.05) 100%);
+            border: 1px solid rgba(0,245,255,0.2);
+            border-radius: var(--radius);
+            padding: 2rem 2.5rem;
+            margin-bottom: 2rem;
+            position: relative; overflow:hidden;
+        }
+        .welcome-banner::before {
+            content:''; position:absolute; top:0; left:0; right:0; height:2px;
+            background: linear-gradient(90deg, var(--neon-cyan), var(--neon-purple), var(--neon-magenta));
+            box-shadow: 0 0 15px rgba(0,245,255,0.5);
+        }
+        .welcome-banner::after {
+            content:'HOD'; position:absolute; right:2rem; top:50%; transform:translateY(-50%);
+            font-family:'Orbitron', monospace; font-size:5rem; font-weight:900;
+            color:rgba(0,245,255,0.04); letter-spacing:4px; pointer-events:none;
+        }
+        .welcome-crown {
+            width:56px; height:56px; border-radius:14px;
+            background: linear-gradient(135deg, rgba(255,215,0,0.2), rgba(255,140,0,0.2));
+            border: 1px solid rgba(255,215,0,0.4);
+            display:flex; align-items:center; justify-content:center;
+            font-size:1.6rem; margin-right:1.5rem; flex-shrink:0;
+            box-shadow: 0 0 20px rgba(255,215,0,0.2);
+        }
+        .welcome-title { font-family:'Orbitron', monospace; font-size:1.5rem; font-weight:700; color:#fff; margin-bottom:0.3rem; }
+        .welcome-sub { color: var(--text-secondary); font-size:0.9rem; }
+        .welcome-stats { display:flex; gap:2rem; margin-top:1rem; }
+        .welcome-stat { text-align:center; }
+        .welcome-stat .val { font-family:'Orbitron', monospace; font-size:1.4rem; font-weight:700; color:var(--neon-cyan); }
+        .welcome-stat .lbl { font-size:0.7rem; color:var(--text-muted); text-transform:uppercase; letter-spacing:1px; }
+
+        /* ===== STAT CARDS ===== */
+        .stat-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-dim);
+            border-radius: var(--radius);
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+            position: relative; overflow: hidden;
+        }
+        .stat-card:hover { transform: translateY(-4px); border-color: var(--border-glow); box-shadow: 0 0 20px rgba(0,245,255,0.15); }
+        .stat-card .s-icon { width:48px; height:48px; border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:1.3rem; margin-bottom:1rem; }
+        .stat-card .s-num { font-size:2rem; font-weight:700; color:var(--neon-cyan); font-family:'Orbitron',monospace; }
+        .stat-card .s-lbl { font-size:0.78rem; color:var(--text-muted); text-transform:uppercase; letter-spacing:1px; margin-top:0.25rem; }
+
+        /* ===== FEATURE CARDS ===== */
+        .feat-card {
+            background: rgba(13,13,20,0.85);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(0,245,255,0.2);
+            border-radius: var(--radius);
+            padding: 2rem;
+            transition: all 0.3s ease;
+            position: relative; overflow: hidden;
+            height: 100%;
+            display: flex; flex-direction: column;
+        }
+        .feat-card::before { content:''; position:absolute; top:0; left:0; right:0; height:4px; background:linear-gradient(90deg,var(--neon-cyan),var(--neon-magenta)); }
+        .feat-card:hover { transform: translateY(-5px); border-color: rgba(0,245,255,0.5); box-shadow: 0 15px 35px rgba(0,0,0,0.3); }
+        .feat-card .f-header { display:flex; align-items:center; margin-bottom:1.5rem; }
+        .feat-card .f-icon-wrap { width:60px; height:60px; border-radius:50%; background:rgba(0,245,255,0.1); border:1px solid rgba(0,245,255,0.3); display:flex; align-items:center; justify-content:center; margin-right:1rem; box-shadow:0 0 15px rgba(0,245,255,0.2); transition:all 0.3s; flex-shrink:0; }
+        .feat-card:hover .f-icon-wrap { transform:scale(1.1); box-shadow:0 0 25px rgba(0,245,255,0.4); }
+        .feat-card .f-icon { font-size:1.5rem; color:var(--neon-cyan); }
+        .feat-card h4 { color:var(--neon-cyan); font-weight:700; font-size:1.2rem; margin:0; text-shadow:0 0 5px rgba(0,245,255,0.3); }
+        .feat-card .f-subtitle { color:var(--text-primary); font-weight:600; font-size:1rem; margin-bottom:0.4rem; }
+        .feat-card p { color:var(--text-secondary); font-size:0.9rem; flex:1; margin-bottom:1.5rem; line-height:1.5; }
+        .btn-feat { display:block; background:rgba(0,0,0,0.4); border:1px solid rgba(0,245,255,0.4); color:var(--neon-cyan); padding:0.75rem 1.5rem; border-radius:6px; text-decoration:none; font-size:0.88rem; font-weight:600; text-align:center; transition:all 0.3s; position:relative; overflow:hidden; }
+        .btn-feat::before { content:''; position:absolute; top:0; left:-100%; width:100%; height:100%; background:linear-gradient(90deg,transparent,rgba(0,245,255,0.15),transparent); transition:0.5s; }
+        .btn-feat:hover::before { left:100%; }
+        .btn-feat:hover { background:rgba(0,245,255,0.1); box-shadow:0 0 20px rgba(0,245,255,0.3); color:var(--neon-cyan); transform:translateY(-2px); }
+
+        /* ===== CHART CARDS ===== */
+        .chart-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-dim);
+            border-radius: var(--radius);
+            padding: 1.5rem;
+            height: 100%;
+        }
+        .chart-card .c-title { color:var(--neon-cyan); font-weight:700; font-size:0.95rem; margin-bottom:1rem; display:flex; align-items:center; gap:0.5rem; }
+
+        .prog-bar-wrap { margin-bottom:0.75rem; }
+        .prog-bar-wrap .prog-label { display:flex; justify-content:space-between; margin-bottom:0.3rem; font-size:0.8rem; color:var(--text-secondary); }
+        .prog-bar-bg { background:rgba(255,255,255,0.07); border-radius:20px; height:8px; overflow:hidden; }
+        .prog-bar-fill { height:100%; border-radius:20px; transition:width 1.2s ease; }
+
+        @media(max-width:1200px){ .sidebar{transform:translateX(-100%);} .main-content{margin-left:0;} .sidebar.show{transform:translateX(0);} }
+        @media(max-width:768px){ .content-area{padding:1rem;} }
+
+        .mobile-toggle { display:none; position:fixed; top:1rem; left:1rem; z-index:1001; background:var(--neon-cyan); color:#000; border:none; padding:0.7rem; border-radius:8px; cursor:pointer; }
+        @media(max-width:1200px){ .mobile-toggle{display:block;} }
+
+        /* Trend buttons */
+        .trend-btn { background:rgba(0,0,0,0.4); border:1px solid rgba(0,245,255,0.3); color:var(--text-muted); padding:0.2rem 0.75rem; border-radius:20px; font-size:0.72rem; cursor:pointer; transition:all 0.2s; }
+        .trend-btn.active-trend { background:rgba(0,245,255,0.15); border-color:var(--neon-cyan); color:var(--neon-cyan); }
+        .trend-btn:hover { color:var(--neon-cyan); border-color:var(--neon-cyan); }
+    </style>
+</head>
+<body>
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+    <button class="mobile-toggle" onclick="document.getElementById('sidebar').classList.toggle('show')"><i class="fas fa-bars"></i></button>
+
+    <div class="dashboard-layout">
+        <!-- Sidebar -->
+        <nav class="sidebar" id="sidebar">
+            <div class="sidebar-brand">
+                <div class="brand-logo"><i class="fas fa-graduation-cap"></i></div>
+                <div class="brand-title">HOD Panel</div>
+                <div class="brand-subtitle">Faculty Workload System</div>
+            </div>
+            <div class="nav-menu">
+                <div class="nav-section-label">Main</div>
+                <div class="nav-item"><a href="{{ url_for('hod_dashboard') }}" class="nav-link active"><i class="fas fa-tachometer-alt"></i>Dashboard</a></div>
+                <div class="nav-item"><a href="{{ url_for('hod_announcements') }}" class="nav-link"><i class="fas fa-bullhorn"></i>Announcements</a></div>
+                <div class="nav-section-label">Management</div>
+                <div class="nav-item"><a href="{{ url_for('add_staff') }}" class="nav-link"><i class="fas fa-users-cog"></i>Manage Staff</a></div>
+                <div class="nav-item"><a href="{{ url_for('manage_subjects') }}" class="nav-link"><i class="fas fa-book"></i>Subjects</a></div>
+                <div class="nav-item"><a href="{{ url_for('manage_test_marks') }}" class="nav-link"><i class="fas fa-chart-bar"></i>Test Marks</a></div>
+                <div class="nav-item"><a href="{{ url_for('hod_view_staff') }}" class="nav-link"><i class="fas fa-id-card"></i>View Staff</a></div>
+                <div class="nav-item"><a href="{{ url_for('assign_workload') }}" class="nav-link"><i class="fas fa-briefcase"></i>Assign Workload</a></div>
+                <div class="nav-item"><a href="{{ url_for('hod_view_workloads') }}" class="nav-link"><i class="fas fa-layer-group"></i>View Workloads</a></div>
+                <div class="nav-section-label">Operations</div>
+                <div class="nav-item"><a href="{{ url_for('hod_view_complaints') }}" class="nav-link"><i class="fas fa-exclamation-triangle"></i>Complaints <span class="nav-badge">{{ complaint_count or 0 }}</span></a></div>
+                <div class="nav-item"><a href="{{ url_for('hod_leave_requests') }}" class="nav-link"><i class="fas fa-calendar-check"></i>Leave Requests <span class="nav-badge">{{ leave_request_count or 0 }}</span></a></div>
+                <div class="nav-item"><a href="{{ url_for('generate_reports') }}" class="nav-link"><i class="fas fa-file-alt"></i>Reports</a></div>
+                <div class="nav-item"><a href="{{ url_for('manage_model_answers') }}" class="nav-link"><i class="fas fa-file-pdf"></i>Model Answers</a></div>
+                <div class="nav-section-label">Account</div>
+                <div class="nav-item"><a href="{{ url_for('profile') }}" class="nav-link"><i class="fas fa-user"></i>Profile</a></div>
+                <div class="nav-item"><a href="{{ url_for('logout') }}" class="nav-link"><i class="fas fa-sign-out-alt"></i>Logout</a></div>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="top-header">
+                <div class="header-left">
+                    <h1><i class="fas fa-graduation-cap me-2"></i>HOD Dashboard</h1>
+                    <p>Department Overview & Management</p>
+                </div>
+                <div class="header-right">
+                    <div class="header-time">
+                        <div class="time" id="liveTime">--:--</div>
+                        <div class="date" id="liveDate">---</div>
+                    </div>
+                    <a href="{{ url_for('profile') }}" class="header-avatar" title="Profile">
+                        {{ (current_user.full_name or current_user.username)[0]|upper }}
+                    </a>
+                </div>
+            </div>
+
+            <div class="content-area">
+
+                <!-- Welcome Banner -->
+                <div class="welcome-banner mb-4">
+                    <div class="d-flex align-items-center">
+                        <div class="welcome-crown">👑</div>
+                        <div>
+                            <div class="welcome-title">Welcome, {{ current_user.full_name or current_user.username }}</div>
+                            <div class="welcome-sub">Head of Department — Academic Workload Management System</div>
+                            <div class="welcome-stats">
+                                <div class="welcome-stat"><div class="val">{{ faculty_count or 0 }}</div><div class="lbl">Faculty</div></div>
+                                <div class="welcome-stat"><div class="val">{{ subject_count or 0 }}</div><div class="lbl">Subjects</div></div>
+                                <div class="welcome-stat"><div class="val">{{ complaint_count or 0 }}</div><div class="lbl">Pending</div></div>
+                                <div class="welcome-stat"><div class="val">{{ announcement_count or 0 }}</div><div class="lbl">Notices</div></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Stats Cards -->
+                <div class="row g-3 mb-4">
+                    <div class="col-lg-3 col-md-6">
+                        <div class="stat-card">
+                            <div class="s-icon" style="background:rgba(0,245,255,0.1);color:var(--neon-cyan);"><i class="fas fa-users"></i></div>
+                            <div class="s-num">{{ faculty_count or 0 }}</div>
+                            <div class="s-lbl"><i class="fas fa-chalkboard-teacher me-1"></i>Total Faculty</div>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-md-6">
+                        <div class="stat-card">
+                            <div class="s-icon" style="background:rgba(0,255,157,0.1);color:var(--neon-green);"><i class="fas fa-book"></i></div>
+                            <div class="s-num" style="color:var(--neon-green);">{{ subject_count or 0 }}</div>
+                            <div class="s-lbl"><i class="fas fa-book me-1"></i>Total Subjects</div>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-md-6">
+                        <a href="{{ url_for('hod_view_complaints') }}" style="text-decoration:none;">
+                        <div class="stat-card" style="cursor:pointer;border-color:rgba(255,56,100,0.4);">
+                            <div class="s-icon" style="background:rgba(255,56,100,0.1);color:var(--neon-red);"><i class="fas fa-exclamation-triangle"></i></div>
+                            <div class="s-num" style="color:var(--neon-red);">{{ complaint_count or 0 }}</div>
+                            <div class="s-lbl"><i class="fas fa-exclamation-circle me-1"></i>Pending Complaints</div>
+                            <div style="font-size:0.75rem;color:var(--neon-red);margin-top:0.4rem;opacity:0.8;"><i class="fas fa-arrow-right me-1"></i>View All</div>
+                        </div>
+                        </a>
+                    </div>
+                    <div class="col-lg-3 col-md-6">
+                        <div class="stat-card">
+                            <div class="s-icon" style="background:rgba(255,215,0,0.1);color:var(--neon-yellow);"><i class="fas fa-calendar-check"></i></div>
+                            <div class="s-num" style="color:var(--neon-yellow);">{{ leave_request_count or 0 }}</div>
+                            <div class="s-lbl"><i class="fas fa-calendar me-1"></i>Leave Requests</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Charts Row -->
+                <div class="row g-3 mb-4">
+                    <div class="col-lg-5 col-md-12">
+                        <div class="chart-card">
+                            <div class="c-title"><i class="fas fa-chart-bar"></i>Faculty Workload Distribution</div>
+                            <canvas id="hodWorkloadChart" height="200"></canvas>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-md-6">
+                        <div class="chart-card">
+                            <div class="c-title"><i class="fas fa-chart-pie"></i>Workload Split</div>
+                            <canvas id="hodPieChart" height="180"></canvas>
+                        </div>
+                    </div>
+                    <div class="col-lg-4 col-md-6">
+                        <div class="chart-card">
+                            <div class="c-title"><i class="fas fa-tasks"></i>Department Stats</div>
+                            <div class="prog-bar-wrap">
+                                <div class="prog-label"><span>Faculty Utilization</span><span style="color:var(--neon-cyan);">78%</span></div>
+                                <div class="prog-bar-bg"><div class="prog-bar-fill" style="width:78%;background:linear-gradient(90deg,var(--neon-cyan),var(--neon-purple));"></div></div>
+                            </div>
+                            <div class="prog-bar-wrap">
+                                <div class="prog-label"><span>Subjects Assigned</span><span style="color:var(--neon-green);">85%</span></div>
+                                <div class="prog-bar-bg"><div class="prog-bar-fill" style="width:85%;background:linear-gradient(90deg,var(--neon-green),var(--neon-cyan));"></div></div>
+                            </div>
+                            <div class="prog-bar-wrap">
+                                <div class="prog-label"><span>Complaints Resolved</span><span style="color:var(--neon-yellow);">65%</span></div>
+                                <div class="prog-bar-bg"><div class="prog-bar-fill" style="width:65%;background:linear-gradient(90deg,var(--neon-yellow),var(--neon-orange));"></div></div>
+                            </div>
+                            <div class="prog-bar-wrap">
+                                <div class="prog-label"><span>Leave Approvals</span><span style="color:var(--neon-red);">40%</span></div>
+                                <div class="prog-bar-bg"><div class="prog-bar-fill" style="width:40%;background:linear-gradient(90deg,var(--neon-red),var(--neon-magenta));"></div></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Feature Cards -->
+                <div class="row g-3">
+                    <div class="col-lg-4 col-md-6">
+                        <div class="feat-card">
+                            <div class="f-header">
+                                <div class="f-icon-wrap"><i class="fas fa-bullhorn f-icon"></i></div>
+                                <h4>Announcements</h4>
+                            </div>
+                            <div class="f-subtitle">Latest Updates</div>
+                            <p>Post and manage announcements for faculty and staff. Keep everyone informed about important events and updates.</p>
+                            <a href="{{ url_for('hod_announcements') }}" class="btn-feat"><i class="fas fa-eye me-2"></i>Manage Announcements</a>
+                        </div>
+                    </div>
+                    <div class="col-lg-4 col-md-6">
+                        <div class="feat-card" style="border-color:rgba(0,255,157,0.2);">
+                            <div style="position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg,var(--neon-green),#10B981);"></div>
+                            <div class="f-header">
+                                <div class="f-icon-wrap" style="background:rgba(0,255,157,0.1);border-color:rgba(0,255,157,0.3);box-shadow:0 0 15px rgba(0,255,157,0.2);"><i class="fas fa-users-cog f-icon" style="color:var(--neon-green);"></i></div>
+                                <h4 style="color:var(--neon-green);">Manage Staff</h4>
+                            </div>
+                            <div class="f-subtitle">Faculty Management</div>
+                            <p>Add, view and manage faculty members in your department. Track staff assignments and performance.</p>
+                            <a href="{{ url_for('add_staff') }}" class="btn-feat" style="border-color:rgba(0,255,157,0.4);color:var(--neon-green);"><i class="fas fa-user-plus me-2"></i>Manage Staff</a>
+                        </div>
+                    </div>
+                    <div class="col-lg-4 col-md-6">
+                        <div class="feat-card" style="border-color:rgba(255,56,100,0.2);">
+                            <div style="position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg,var(--neon-red),#EF4444);"></div>
+                            <div class="f-header">
+                                <div class="f-icon-wrap" style="background:rgba(255,56,100,0.1);border-color:rgba(255,56,100,0.3);box-shadow:0 0 15px rgba(255,56,100,0.2);"><i class="fas fa-exclamation-triangle f-icon" style="color:var(--neon-red);"></i></div>
+                                <h4 style="color:var(--neon-red);">Complaints</h4>
+                            </div>
+                            <div class="f-subtitle">Issue Management</div>
+                            <p>Review and resolve pending complaints from students and faculty. Ensure timely resolution of issues.</p>
+                            <a href="{{ url_for('hod_view_complaints') }}" class="btn-feat" style="border-color:rgba(255,56,100,0.4);color:var(--neon-red);"><i class="fas fa-eye me-2"></i>View Complaints</a>
+                        </div>
+                    </div>
+                    <div class="col-lg-4 col-md-6">
+                        <div class="feat-card" style="border-color:rgba(139,92,246,0.2);">
+                            <div style="position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg,var(--neon-purple),#8B5CF6);"></div>
+                            <div class="f-header">
+                                <div class="f-icon-wrap" style="background:rgba(139,92,246,0.1);border-color:rgba(139,92,246,0.3);box-shadow:0 0 15px rgba(139,92,246,0.2);"><i class="fas fa-book f-icon" style="color:var(--neon-purple);"></i></div>
+                                <h4 style="color:var(--neon-purple);">Subjects</h4>
+                            </div>
+                            <div class="f-subtitle">Subject Management</div>
+                            <p>Manage subjects and assign them to faculty members. Organize curriculum and course distribution.</p>
+                            <a href="{{ url_for('manage_subjects') }}" class="btn-feat" style="border-color:rgba(139,92,246,0.4);color:var(--neon-purple);"><i class="fas fa-tasks me-2"></i>Manage Subjects</a>
+                        </div>
+                    </div>
+                    <div class="col-lg-4 col-md-6">
+                        <div class="feat-card" style="border-color:rgba(255,215,0,0.2);">
+                            <div style="position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg,var(--neon-yellow),#F59E0B);"></div>
+                            <div class="f-header">
+                                <div class="f-icon-wrap" style="background:rgba(255,215,0,0.1);border-color:rgba(255,215,0,0.3);box-shadow:0 0 15px rgba(255,215,0,0.2);"><i class="fas fa-chart-bar f-icon" style="color:var(--neon-yellow);"></i></div>
+                                <h4 style="color:var(--neon-yellow);">Test Marks</h4>
+                            </div>
+                            <div class="f-subtitle">Student Assessment</div>
+                            <p>View and manage student test marks across all subjects. Monitor academic performance and progress.</p>
+                            <a href="{{ url_for('manage_test_marks') }}" class="btn-feat" style="border-color:rgba(255,215,0,0.4);color:var(--neon-yellow);"><i class="fas fa-edit me-2"></i>Manage Marks</a>
+                        </div>
+                    </div>
+                    <div class="col-lg-4 col-md-6">
+                        <div class="feat-card" style="border-color:rgba(255,140,0,0.2);">
+                            <div style="position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg,var(--neon-orange),#F97316);"></div>
+                            <div class="f-header">
+                                <div class="f-icon-wrap" style="background:rgba(255,140,0,0.1);border-color:rgba(255,140,0,0.3);box-shadow:0 0 15px rgba(255,140,0,0.2);"><i class="fas fa-calendar-check f-icon" style="color:var(--neon-orange);"></i></div>
+                                <h4 style="color:var(--neon-orange);">Leave Requests</h4>
+                            </div>
+                            <div class="f-subtitle">Leave Management</div>
+                            <p>Approve or reject faculty leave requests efficiently. Keep track of attendance and leave records.</p>
+                            <a href="{{ url_for('hod_leave_requests') }}" class="btn-feat" style="border-color:rgba(255,140,0,0.4);color:var(--neon-orange);"><i class="fas fa-clipboard-check me-2"></i>Review Requests</a>
+                        </div>
+                    </div>
+                    <div class="col-lg-4 col-md-6">
+                        <div class="feat-card" style="border-color:rgba(255,0,255,0.2);">
+                            <div style="position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg,var(--neon-magenta),var(--neon-purple));"></div>
+                            <div class="f-header">
+                                <div class="f-icon-wrap" style="background:rgba(255,0,255,0.1);border-color:rgba(255,0,255,0.3);box-shadow:0 0 15px rgba(255,0,255,0.2);"><i class="fas fa-file-alt f-icon" style="color:var(--neon-magenta);"></i></div>
+                                <h4 style="color:var(--neon-magenta);">Reports</h4>
+                            </div>
+                            <div class="f-subtitle">Analytics & Reports</div>
+                            <p>Generate faculty performance and workload reports. Export data for analysis and documentation.</p>
+                            <a href="{{ url_for('generate_reports') }}" class="btn-feat" style="border-color:rgba(255,0,255,0.4);color:var(--neon-magenta);"><i class="fas fa-download me-2"></i>Generate Reports</a>
+                        </div>
+                    </div>
+                    <div class="col-lg-4 col-md-6">
+                        <div class="feat-card" style="border-color:rgba(99,102,241,0.2);">
+                            <div style="position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg,#6366f1,#3B82F6);"></div>
+                            <div class="f-header">
+                                <div class="f-icon-wrap" style="background:rgba(99,102,241,0.1);border-color:rgba(99,102,241,0.3);box-shadow:0 0 15px rgba(99,102,241,0.2);"><i class="fas fa-file-pdf f-icon" style="color:#6366f1;"></i></div>
+                                <h4 style="color:#6366f1;">Model Answers</h4>
+                            </div>
+                            <div class="f-subtitle">Reference Materials</div>
+                            <p>Upload and manage model answer papers for students. Provide reference solutions for exam preparation.</p>
+                            <a href="{{ url_for('manage_model_answers') }}" class="btn-feat" style="border-color:rgba(99,102,241,0.4);color:#6366f1;"><i class="fas fa-upload me-2"></i>Manage Answers</a>
+                        </div>
+                    </div>
+                    <div class="col-lg-4 col-md-6">
+                        <div class="feat-card" style="border-color:rgba(0,245,255,0.2);">
+                            <div style="position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg,var(--neon-cyan),#0ea5e9);"></div>
+                            <div class="f-header">
+                                <div class="f-icon-wrap" style="background:rgba(0,245,255,0.1);border-color:rgba(0,245,255,0.3);box-shadow:0 0 15px rgba(0,245,255,0.2);"><i class="fas fa-id-card f-icon" style="color:var(--neon-cyan);"></i></div>
+                                <h4 style="color:var(--neon-cyan);">View Staff</h4>
+                            </div>
+                            <div class="f-subtitle">Staff Directory</div>
+                            <p>View all faculty and staff members in your department. Check profiles, roles and contact details.</p>
+                            <a href="{{ url_for('hod_view_staff') }}" class="btn-feat" style="border-color:rgba(0,245,255,0.4);color:var(--neon-cyan);"><i class="fas fa-users me-2"></i>View Staff</a>
+                        </div>
+                    </div>
+                    <div class="col-lg-4 col-md-6">
+                        <div class="feat-card" style="border-color:rgba(0,255,157,0.2);">
+                            <div style="position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg,var(--neon-green),#10b981);"></div>
+                            <div class="f-header">
+                                <div class="f-icon-wrap" style="background:rgba(0,255,157,0.1);border-color:rgba(0,255,157,0.3);box-shadow:0 0 15px rgba(0,255,157,0.2);"><i class="fas fa-briefcase f-icon" style="color:var(--neon-green);"></i></div>
+                                <h4 style="color:var(--neon-green);">Assign Workload</h4>
+                            </div>
+                            <div class="f-subtitle">Workload Management</div>
+                            <p>Assign teaching workload to faculty members. Distribute lectures, practicals and tutorials efficiently.</p>
+                            <a href="{{ url_for('assign_workload') }}" class="btn-feat" style="border-color:rgba(0,255,157,0.4);color:var(--neon-green);"><i class="fas fa-plus-circle me-2"></i>Assign Workload</a>
+                        </div>
+                    </div>
+                    <div class="col-lg-4 col-md-6">
+                        <div class="feat-card" style="border-color:rgba(255,140,0,0.2);">
+                            <div style="position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg,var(--neon-orange),#f97316);"></div>
+                            <div class="f-header">
+                                <div class="f-icon-wrap" style="background:rgba(255,140,0,0.1);border-color:rgba(255,140,0,0.3);box-shadow:0 0 15px rgba(255,140,0,0.2);"><i class="fas fa-layer-group f-icon" style="color:var(--neon-orange);"></i></div>
+                                <h4 style="color:var(--neon-orange);">View Workloads</h4>
+                            </div>
+                            <div class="f-subtitle">Workload Overview</div>
+                            <p>View all faculty workload assignments. Monitor teaching hours and subject distribution across department.</p>
+                            <a href="{{ url_for('hod_view_workloads') }}" class="btn-feat" style="border-color:rgba(255,140,0,0.4);color:var(--neon-orange);"><i class="fas fa-eye me-2"></i>View Workloads</a>
+                        </div>
+                    </div>
+                </div>
+
+            </div><!-- /content-area end of feat cards -->
+
+                <!-- ===== NEW ADVANCED SECTIONS ===== -->
+                <div class="content-area" style="padding-top:0;">
+
+                <!-- SECTION: Trend Analysis + Faculty Availability -->
+                <div class="row g-3 mb-4 mt-2">
+                    <!-- Workload Trend Line Chart -->
+                    <div class="col-lg-8">
+                        <div class="chart-card" style="position:relative;">
+                            <div class="c-title"><i class="fas fa-chart-line"></i>Workload Trend — Weekly/Monthly
+                                <span style="margin-left:auto;display:flex;gap:0.5rem;">
+                                    <button onclick="switchTrend('weekly')" id="btn-weekly" class="trend-btn active-trend">Weekly</button>
+                                    <button onclick="switchTrend('monthly')" id="btn-monthly" class="trend-btn">Monthly</button>
+                                </span>
+                            </div>
+                            <canvas id="trendChart" height="130"></canvas>
+                        </div>
+                    </div>
+                    <!-- Faculty Availability Status -->
+                    <div class="col-lg-4">
+                        <div class="chart-card h-100">
+                            <div class="c-title"><i class="fas fa-circle-dot"></i>Faculty Availability</div>
+                            <div id="availabilityList" style="display:flex;flex-direction:column;gap:0.6rem;margin-top:0.5rem;">
+                                {% for f in faculty_workload_data %}
+                                {% set hrs = f.hours %}
+                                {% if hrs == 0 %}
+                                    {% set status = 'Available' %}{% set sc = '#00ff9d' %}{% set sb = 'rgba(0,255,157,0.15)' %}{% set si = 'fa-check-circle' %}
+                                {% elif hrs > 20 %}
+                                    {% set status = 'Overloaded' %}{% set sc = '#ff3864' %}{% set sb = 'rgba(255,56,100,0.15)' %}{% set si = 'fa-exclamation-circle' %}
+                                {% else %}
+                                    {% set status = 'Busy' %}{% set sc = '#ffd700' %}{% set sb = 'rgba(255,215,0,0.15)' %}{% set si = 'fa-clock' %}
+                                {% endif %}
+                                <div style="display:flex;align-items:center;justify-content:space-between;background:{{ sb }};border:1px solid {{ sc }}33;border-radius:8px;padding:0.5rem 0.75rem;">
+                                    <div style="display:flex;align-items:center;gap:0.5rem;">
+                                        <div style="width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--neon-cyan),var(--neon-purple));display:flex;align-items:center;justify-content:center;font-weight:700;color:#000;font-size:0.75rem;">{{ f.name[0]|upper }}</div>
+                                        <span style="color:var(--text-primary);font-size:0.85rem;font-weight:500;">{{ f.name }}</span>
+                                    </div>
+                                    <span style="color:{{ sc }};font-size:0.75rem;font-weight:700;display:flex;align-items:center;gap:0.3rem;"><i class="fas {{ si }}"></i>{{ status }}</span>
+                                </div>
+                                {% else %}
+                                <div style="text-align:center;color:var(--text-muted);padding:1rem;">No faculty data</div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SECTION: Top Performers + Smart Suggestion + Deadlines -->
+                <div class="row g-3 mb-4">
+                    <!-- Top Performer Faculty -->
+                    <div class="col-lg-4">
+                        <div class="chart-card h-100">
+                            <div class="c-title"><i class="fas fa-trophy" style="color:var(--neon-yellow);"></i>Top Performers</div>
+                            {% set sorted = faculty_workload_data|sort(attribute='hours', reverse=True) %}
+                            {% for f in sorted[:3] %}
+                            <div style="display:flex;align-items:center;gap:0.75rem;padding:0.75rem;background:rgba(255,215,0,0.05);border:1px solid rgba(255,215,0,0.15);border-radius:10px;margin-bottom:0.6rem;">
+                                <div style="width:36px;height:36px;border-radius:50%;background:{% if loop.index==1 %}linear-gradient(135deg,#ffd700,#ff8c00){% elif loop.index==2 %}linear-gradient(135deg,#c0c0c0,#808080){% else %}linear-gradient(135deg,#cd7f32,#8b4513){% endif %};display:flex;align-items:center;justify-content:center;font-weight:900;color:#000;font-size:0.9rem;">{{ loop.index }}</div>
+                                <div style="flex:1;">
+                                    <div style="color:var(--text-primary);font-weight:600;font-size:0.88rem;">{{ f.name }}</div>
+                                    <div style="color:var(--neon-yellow);font-size:0.75rem;">{{ f.hours }} hrs/week</div>
+                                </div>
+                                <i class="fas fa-star" style="color:var(--neon-yellow);"></i>
+                            </div>
+                            {% else %}
+                            <div style="text-align:center;color:var(--text-muted);padding:1rem;">No data available</div>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    <!-- Smart Workload Suggestion -->
+                    <div class="col-lg-4">
+                        <div class="chart-card h-100">
+                            <div class="c-title"><i class="fas fa-lightbulb" style="color:var(--neon-cyan);"></i>Smart Suggestions</div>
+                            <div style="display:flex;flex-direction:column;gap:0.6rem;margin-top:0.5rem;">
+                                {% set sorted_asc = faculty_workload_data|sort(attribute='hours') %}
+                                {% for f in sorted_asc[:3] %}
+                                <div style="background:rgba(0,245,255,0.05);border:1px solid rgba(0,245,255,0.2);border-radius:8px;padding:0.65rem 0.85rem;">
+                                    <div style="color:var(--neon-cyan);font-size:0.8rem;font-weight:700;margin-bottom:0.2rem;"><i class="fas fa-user-check me-1"></i>{{ f.name }}</div>
+                                    <div style="color:var(--text-secondary);font-size:0.75rem;">Current: {{ f.hours }} hrs — <span style="color:var(--neon-green);">Available for assignment</span></div>
+                                </div>
+                                {% else %}
+                                <div style="text-align:center;color:var(--text-muted);padding:1rem;">No suggestions</div>
+                                {% endfor %}
+                                <div style="background:rgba(139,92,246,0.08);border:1px solid rgba(139,92,246,0.2);border-radius:8px;padding:0.65rem 0.85rem;margin-top:0.3rem;">
+                                    <div style="color:var(--neon-purple);font-size:0.78rem;"><i class="fas fa-info-circle me-1"></i>Faculty with lowest workload are suggested first for new subject assignments.</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Deadline & Reminder System -->
+                    <div class="col-lg-4">
+                        <div class="chart-card h-100">
+                            <div class="c-title"><i class="fas fa-bell" style="color:var(--neon-red);"></i>Deadlines & Reminders</div>
+                            <div style="display:flex;flex-direction:column;gap:0.5rem;margin-top:0.5rem;">
+                                <div style="background:rgba(255,56,100,0.08);border-left:3px solid var(--neon-red);border-radius:0 8px 8px 0;padding:0.6rem 0.85rem;">
+                                    <div style="color:var(--neon-red);font-size:0.8rem;font-weight:700;">Pending Leave Requests</div>
+                                    <div style="color:var(--text-secondary);font-size:0.75rem;">{{ leave_request_count or 0 }} requests awaiting approval</div>
+                                </div>
+                                <div style="background:rgba(255,215,0,0.08);border-left:3px solid var(--neon-yellow);border-radius:0 8px 8px 0;padding:0.6rem 0.85rem;">
+                                    <div style="color:var(--neon-yellow);font-size:0.8rem;font-weight:700;">Pending Complaints</div>
+                                    <div style="color:var(--text-secondary);font-size:0.75rem;">{{ complaint_count or 0 }} complaints unresolved</div>
+                                </div>
+                                <div style="background:rgba(0,255,157,0.08);border-left:3px solid var(--neon-green);border-radius:0 8px 8px 0;padding:0.6rem 0.85rem;">
+                                    <div style="color:var(--neon-green);font-size:0.8rem;font-weight:700;">Announcements Active</div>
+                                    <div style="color:var(--text-secondary);font-size:0.75rem;">{{ announcement_count or 0 }} active announcements</div>
+                                </div>
+                                <div style="background:rgba(0,245,255,0.08);border-left:3px solid var(--neon-cyan);border-radius:0 8px 8px 0;padding:0.6rem 0.85rem;">
+                                    <div style="color:var(--neon-cyan);font-size:0.8rem;font-weight:700;">Semester End Reminder</div>
+                                    <div style="color:var(--text-secondary);font-size:0.75rem;">Ensure all marks are submitted before deadline</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SECTION: Department Stats + Semester Planning + Auto Refresh -->
+                <div class="row g-3 mb-4">
+                    <!-- Department Statistics Cards -->
+                    <div class="col-lg-5">
+                        <div class="chart-card h-100">
+                            <div class="c-title"><i class="fas fa-building"></i>Department Statistics</div>
+                            <div class="row g-2 mt-1">
+                                <div class="col-6">
+                                    <div style="background:rgba(0,245,255,0.07);border:1px solid rgba(0,245,255,0.2);border-radius:10px;padding:1rem;text-align:center;">
+                                        <div style="font-size:1.6rem;font-weight:700;color:var(--neon-cyan);font-family:'Orbitron',monospace;">{{ faculty_count or 0 }}</div>
+                                        <div style="font-size:0.72rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;">Total Faculty</div>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div style="background:rgba(0,255,157,0.07);border:1px solid rgba(0,255,157,0.2);border-radius:10px;padding:1rem;text-align:center;">
+                                        <div style="font-size:1.6rem;font-weight:700;color:var(--neon-green);font-family:'Orbitron',monospace;">{{ subject_count or 0 }}</div>
+                                        <div style="font-size:0.72rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;">Total Subjects</div>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div style="background:rgba(139,92,246,0.07);border:1px solid rgba(139,92,246,0.2);border-radius:10px;padding:1rem;text-align:center;">
+                                        <div style="font-size:1.6rem;font-weight:700;color:var(--neon-purple);font-family:'Orbitron',monospace;">{{ (faculty_workload_data|map(attribute='hours')|sum) if faculty_workload_data else 0 }}</div>
+                                        <div style="font-size:0.72rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;">Total Hrs/Week</div>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div style="background:rgba(255,215,0,0.07);border:1px solid rgba(255,215,0,0.2);border-radius:10px;padding:1rem;text-align:center;">
+                                        <div style="font-size:1.6rem;font-weight:700;color:var(--neon-yellow);font-family:'Orbitron',monospace;">{{ announcement_count or 0 }}</div>
+                                        <div style="font-size:0.72rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;">Announcements</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Semester Planning View -->
+                    <div class="col-lg-7">
+                        <div class="chart-card h-100">
+                            <div class="c-title"><i class="fas fa-calendar-alt"></i>Semester Planning View
+                                <span style="margin-left:auto;font-size:0.72rem;color:var(--neon-green);background:rgba(0,255,157,0.1);border:1px solid rgba(0,255,157,0.3);border-radius:20px;padding:0.15rem 0.6rem;">Sem 2 — 2025-26</span>
+                            </div>
+                            <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.6rem;margin-top:0.5rem;">
+                                {% set sem_subjects = [
+                                    ('OOP', 'Object Oriented Programming', 48, 32),
+                                    ('DSU', 'Data Structures', 48, 28),
+                                    ('DTM', 'Database Technology', 40, 30),
+                                    ('AMT', 'Applied Mathematics', 40, 20)
+                                ] %}
+                                {% for code, name, total, done in sem_subjects %}
+                                {% set pct = ((done/total)*100)|int %}
+                                <div style="background:rgba(0,0,0,0.3);border:1px solid rgba(0,245,255,0.1);border-radius:8px;padding:0.65rem;">
+                                    <div style="display:flex;justify-content:space-between;margin-bottom:0.3rem;">
+                                        <span style="color:var(--neon-cyan);font-size:0.78rem;font-weight:700;">{{ code }}</span>
+                                        <span style="color:var(--text-muted);font-size:0.72rem;">{{ done }}/{{ total }} lec</span>
+                                    </div>
+                                    <div style="font-size:0.72rem;color:var(--text-secondary);margin-bottom:0.4rem;">{{ name }}</div>
+                                    <div style="background:rgba(255,255,255,0.07);border-radius:20px;height:6px;">
+                                        <div style="width:{{ pct }}%;height:100%;border-radius:20px;background:{% if pct > 70 %}linear-gradient(90deg,var(--neon-green),#10b981){% elif pct > 40 %}linear-gradient(90deg,var(--neon-yellow),var(--neon-orange)){% else %}linear-gradient(90deg,var(--neon-red),var(--neon-magenta)){% endif %};transition:width 1s ease;"></div>
+                                    </div>
+                                    <div style="text-align:right;font-size:0.7rem;color:var(--text-muted);margin-top:0.2rem;">{{ pct }}% complete</div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SECTION: Auto Refresh Status + Quick Announcement -->
+                <div class="row g-3 mb-2">
+                    <!-- Real-time Status Bar -->
+                    <div class="col-lg-5">
+                        <div class="chart-card">
+                            <div class="c-title"><i class="fas fa-sync-alt" id="refreshIcon"></i>Real-time Data Status
+                                <span id="refreshStatus" style="margin-left:auto;font-size:0.72rem;color:var(--neon-green);background:rgba(0,255,157,0.1);border:1px solid rgba(0,255,157,0.3);border-radius:20px;padding:0.15rem 0.6rem;">● Live</span>
+                            </div>
+                            <div style="display:flex;flex-direction:column;gap:0.5rem;margin-top:0.5rem;">
+                                <div style="display:flex;justify-content:space-between;align-items:center;padding:0.5rem 0.75rem;background:rgba(0,245,255,0.05);border-radius:8px;border:1px solid rgba(0,245,255,0.1);">
+                                    <span style="color:var(--text-secondary);font-size:0.82rem;"><i class="fas fa-users me-2" style="color:var(--neon-cyan);"></i>Faculty Count</span>
+                                    <span style="color:var(--neon-cyan);font-weight:700;">{{ faculty_count or 0 }}</span>
+                                </div>
+                                <div style="display:flex;justify-content:space-between;align-items:center;padding:0.5rem 0.75rem;background:rgba(255,56,100,0.05);border-radius:8px;border:1px solid rgba(255,56,100,0.1);">
+                                    <span style="color:var(--text-secondary);font-size:0.82rem;"><i class="fas fa-exclamation-triangle me-2" style="color:var(--neon-red);"></i>Pending Complaints</span>
+                                    <span style="color:var(--neon-red);font-weight:700;">{{ complaint_count or 0 }}</span>
+                                </div>
+                                <div style="display:flex;justify-content:space-between;align-items:center;padding:0.5rem 0.75rem;background:rgba(255,215,0,0.05);border-radius:8px;border:1px solid rgba(255,215,0,0.1);">
+                                    <span style="color:var(--text-secondary);font-size:0.82rem;"><i class="fas fa-calendar-check me-2" style="color:var(--neon-yellow);"></i>Leave Requests</span>
+                                    <span style="color:var(--neon-yellow);font-weight:700;">{{ leave_request_count or 0 }}</span>
+                                </div>
+                                <div style="text-align:center;font-size:0.72rem;color:var(--text-muted);margin-top:0.3rem;">
+                                    <i class="fas fa-clock me-1"></i>Last updated: <span id="lastUpdated">just now</span> &nbsp;|&nbsp; Auto-refresh: <span style="color:var(--neon-green);">30s</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Quick Announcement Panel -->
+                    <div class="col-lg-7">
+                        <div class="chart-card">
+                            <div class="c-title"><i class="fas fa-paper-plane" style="color:var(--neon-magenta);"></i>Quick Announcement to Faculty</div>
+                            <form action="{{ url_for('hod_announcements') }}" method="GET" style="margin-top:0.5rem;">
+                                <div style="display:flex;gap:0.75rem;align-items:flex-start;flex-wrap:wrap;">
+                                    <div style="flex:1;min-width:200px;">
+                                        <input type="text" placeholder="Type a quick message for faculty..." class="form-control" style="background:rgba(0,0,0,0.4);border:1px solid rgba(255,0,255,0.3);color:var(--text-primary);border-radius:8px;" disabled>
+                                        <small style="color:var(--text-muted);font-size:0.72rem;"><i class="fas fa-info-circle me-1"></i>Use full Announcements page to send</small>
+                                    </div>
+                                    <a href="{{ url_for('hod_announcements') }}" class="btn" style="background:rgba(255,0,255,0.15);border:1px solid rgba(255,0,255,0.4);color:var(--neon-magenta);font-weight:600;white-space:nowrap;">
+                                        <i class="fas fa-bullhorn me-2"></i>Go to Announcements
+                                    </a>
+                                </div>
+                            </form>
+                            <div style="margin-top:1rem;">
+                                <div style="font-size:0.78rem;color:var(--text-muted);margin-bottom:0.5rem;text-transform:uppercase;letter-spacing:1px;">Recent Announcements</div>
+                                <div style="background:rgba(255,0,255,0.05);border:1px solid rgba(255,0,255,0.15);border-radius:8px;padding:0.65rem 0.85rem;">
+                                    <div style="color:var(--text-secondary);font-size:0.82rem;"><i class="fas fa-megaphone me-2" style="color:var(--neon-magenta);"></i>{{ announcement_count or 0 }} active announcement(s) posted.
+                                        <a href="{{ url_for('hod_announcements') }}" style="color:var(--neon-magenta);margin-left:0.5rem;">View all →</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                </div><!-- /new advanced sections -->
+
+            </div><!-- /content-area -->
+    </div><!-- /dashboard-layout -->
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script>
+    function updateClock() {
+        const now = new Date();
+        document.getElementById('liveTime').textContent = now.toLocaleTimeString('en-IN', {hour:'2-digit',minute:'2-digit'});
+        document.getElementById('liveDate').textContent = now.toLocaleDateString('en-IN', {weekday:'short',day:'numeric',month:'short'});
+    }
+    updateClock(); setInterval(updateClock, 1000);
+
+    new Chart(document.getElementById('hodWorkloadChart').getContext('2d'), {
+        type: 'bar',
+        data: {
+            labels: [{% for f in faculty_workload_data %}'{{ f.name }}'{% if not loop.last %},{% endif %}{% endfor %}{% if not faculty_workload_data %}'No Faculty'{% endif %}],
+            datasets: [{
+                label: 'Hours/Week',
+                data: [{% for f in faculty_workload_data %}{{ f.hours }}{% if not loop.last %},{% endif %}{% endfor %}{% if not faculty_workload_data %}0{% endif %}],
+                backgroundColor: ['rgba(0,245,255,0.5)','rgba(0,255,157,0.5)','rgba(139,92,246,0.5)','rgba(255,215,0,0.5)','rgba(255,0,255,0.5)','rgba(255,56,100,0.5)','rgba(255,140,0,0.5)','rgba(99,102,241,0.5)'],
+                borderColor: ['#00f5ff','#00ff9d','#8b5cf6','#ffd700','#ff00ff','#ff3864','#ff8c00','#6366f1'],
+                borderWidth: 1, borderRadius: 6
+            }]
+        },
+        options: {
+            responsive: true, maintainAspectRatio: true,
+            plugins: { legend: { display: false } },
+            scales: {
+                x: { ticks: { color: '#9ca3af', font: { size: 10 } }, grid: { color: 'rgba(255,255,255,0.04)' } },
+                y: { ticks: { color: '#9ca3af', font: { size: 10 } }, grid: { color: 'rgba(255,255,255,0.04)' }, min: 0 }
+            }
+        }
+    });
+
+    new Chart(document.getElementById('hodPieChart').getContext('2d'), {
+        type: 'doughnut',
+        data: {
+            labels: ['Lectures', 'Practicals', 'Tutorials'],
+            datasets: [{ data: [55, 30, 15], backgroundColor: ['rgba(0,245,255,0.6)','rgba(0,255,157,0.6)','rgba(139,92,246,0.6)'], borderColor: ['#00f5ff','#00ff9d','#8b5cf6'], borderWidth: 2 }]
+        },
+        options: {
+            responsive: true, maintainAspectRatio: true, cutout: '60%',
+            plugins: { legend: { labels: { color: '#9ca3af', font: { size: 10 }, boxWidth: 12 } } }
+        }
+    });
+
+    // Trend Chart
+    const weeklyData = { labels: ['Mon','Tue','Wed','Thu','Fri','Sat'], datasets: [{ label:'Hours', data:[12,18,15,22,19,10], borderColor:'#00f5ff', backgroundColor:'rgba(0,245,255,0.1)', tension:0.4, fill:true, pointBackgroundColor:'#00f5ff', pointRadius:4 }] };
+    const monthlyData = { labels: ['Jan','Feb','Mar','Apr','May','Jun'], datasets: [{ label:'Hours', data:[80,95,88,110,102,90], borderColor:'#00ff9d', backgroundColor:'rgba(0,255,157,0.1)', tension:0.4, fill:true, pointBackgroundColor:'#00ff9d', pointRadius:4 }] };
+    const trendChart = new Chart(document.getElementById('trendChart').getContext('2d'), {
+        type: 'line', data: weeklyData,
+        options: { responsive:true, maintainAspectRatio:true, plugins:{ legend:{display:false} }, scales:{ x:{ticks:{color:'#9ca3af',font:{size:10}},grid:{color:'rgba(255,255,255,0.04)'}}, y:{ticks:{color:'#9ca3af',font:{size:10}},grid:{color:'rgba(255,255,255,0.04)'},min:0} } }
+    });
+    function switchTrend(type) {
+        trendChart.data = type === 'weekly' ? weeklyData : monthlyData;
+        trendChart.update();
+        document.getElementById('btn-weekly').classList.toggle('active-trend', type==='weekly');
+        document.getElementById('btn-monthly').classList.toggle('active-trend', type==='monthly');
+    }
+
+    // Auto-refresh countdown
+    let refreshTimer = 30;
+    setInterval(() => {
+        refreshTimer--;
+        if (refreshTimer <= 0) { refreshTimer = 30; document.getElementById('lastUpdated').textContent = 'just now'; }
+        else { document.getElementById('lastUpdated').textContent = refreshTimer + 's ago'; }
+    }, 1000);
+    // Spin refresh icon
+    setInterval(() => {
+        const icon = document.getElementById('refreshIcon');
+        icon.style.transition = 'transform 0.5s';
+        icon.style.transform = 'rotate(360deg)';
+        setTimeout(() => { icon.style.transition = 'none'; icon.style.transform = 'rotate(0deg)'; }, 600);
+    }, 30000);
+    </script>
+</body>
+</html>

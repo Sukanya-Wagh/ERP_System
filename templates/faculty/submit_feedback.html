@@ -1,0 +1,255 @@
+{% extends "faculty_base.html" %}
+
+{% block title %}Submit Feedback - Faculty Dashboard{% endblock %}
+
+{% block extra_styles %}
+<style>
+    /* High contrast text visibility for submit feedback page */
+    .card-header h2, .card-header i {
+        color: var(--neon-yellow) !important;
+        text-shadow: 0 0 10px rgba(255, 215, 0, 0.3) !important;
+    }
+    
+    .alert {
+        border-radius: 8px !important;
+        font-weight: 500 !important;
+        margin-bottom: 1.5rem !important;
+    }
+    
+    .alert-info {
+        background: rgba(255, 215, 0, 0.1) !important;
+        border: 1px solid rgba(255, 215, 0, 0.3) !important;
+        color: #ffd700 !important;
+    }
+    
+    .form-control {
+        background: rgba(18, 18, 24, 0.6) !important;
+        border: 1px solid rgba(255, 215, 0, 0.3) !important;
+        color: #ffffff !important;
+        border-radius: 6px !important;
+        transition: all 0.3s ease !important;
+    }
+    
+    .form-control:focus {
+        background: rgba(18, 18, 24, 0.8) !important;
+        border-color: var(--neon-yellow) !important;
+        box-shadow: 0 0 20px rgba(255, 215, 0, 0.3) !important;
+        color: #ffffff !important;
+    }
+    
+    .form-control::placeholder {
+        color: #9ca3af !important;
+        opacity: 0.8 !important;
+    }
+    
+    .btn-primary {
+        background: rgba(0, 0, 0, 0.5) !important;
+        border: 1px solid var(--neon-yellow) !important;
+        color: var(--neon-yellow) !important;
+        font-weight: 600 !important;
+    }
+    
+    .btn-primary:hover {
+        background: rgba(255, 215, 0, 0.1) !important;
+        box-shadow: 0 0 15px rgba(255, 215, 0, 0.4) !important;
+        color: var(--neon-yellow) !important;
+    }
+    
+    .btn-secondary {
+        background: rgba(0, 0, 0, 0.5) !important;
+        border: 1px solid var(--text-secondary) !important;
+        color: var(--text-secondary) !important;
+        font-weight: 600 !important;
+    }
+    
+    .btn-secondary:hover {
+        background: rgba(156, 163, 175, 0.1) !important;
+        color: var(--text-secondary) !important;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="card" style="background: rgba(18, 18, 24, 0.9) !important; border: 2px solid var(--neon-yellow) !important;">
+            <div class="card-header d-flex align-items-center" style="background: rgba(255, 215, 0, 0.1) !important; border-bottom: 2px solid var(--neon-yellow) !important;">
+                <i class="fas fa-comment-dots me-2" style="color: var(--neon-yellow) !important;"></i>
+                <h5 class="mb-0" style="color: var(--neon-yellow) !important; font-weight: 700 !important;">Submit Feedback</h5>
+            </div>
+            <div class="card-body" style="padding: 2rem !important;">
+                <div class="icon-container" style="margin-bottom: 2rem !important;">
+                    <i class="fas fa-comments"></i>
+                </div>
+                
+                <!-- Instructions -->
+                <div class="alert alert-info">
+                    <div class="d-flex align-items-center">
+                        <i class="fas fa-info-circle me-3"></i>
+                        <div>
+                            <p class="mb-1" style="color: #ffd700 !important; font-weight: 600 !important;">Instructions</p>
+                            <p class="mb-0" style="color: #ffd700 !important; font-size: 0.9rem !important;">Provide your feedback, suggestions, or concerns to help improve the academic experience.</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <form method="POST">
+                    {{ form.hidden_tag() }}
+                    
+                    <div class="mb-3">
+                        {{ form.subject.label(class="form-label", style="color: var(--text-primary) !important; font-weight: 600 !important;") }}
+                        {{ form.subject(class="form-select", style="background: rgba(18, 18, 24, 0.6) !important; border: 1px solid rgba(255, 215, 0, 0.3) !important; color: var(--text-primary) !important;") }}
+                        {% if form.subject.errors %}
+                            <div class="text-danger small mt-1">{{ form.subject.errors[0] }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="mb-3">
+                        {{ form.teaching_clarity.label(class="form-label", style="color: var(--text-primary) !important; font-weight: 600 !important;") }}
+                        {{ form.teaching_clarity(class="form-select", style="background: rgba(18, 18, 24, 0.6) !important; border: 1px solid rgba(255, 215, 0, 0.3) !important; color: var(--text-primary) !important;") }}
+                        {% if form.teaching_clarity.errors %}
+                            <div class="text-danger small mt-1">{{ form.teaching_clarity.errors[0] }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="mb-3">
+                        {{ form.subject_knowledge.label(class="form-label", style="color: var(--text-primary) !important; font-weight: 600 !important;") }}
+                        {{ form.subject_knowledge(class="form-select", style="background: rgba(18, 18, 24, 0.6) !important; border: 1px solid rgba(255, 215, 0, 0.3) !important; color: var(--text-primary) !important;") }}
+                        {% if form.subject_knowledge.errors %}
+                            <div class="text-danger small mt-1">{{ form.subject_knowledge.errors[0] }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="mb-3">
+                        {{ form.communication_skills.label(class="form-label", style="color: var(--text-primary) !important; font-weight: 600 !important;") }}
+                        {{ form.communication_skills(class="form-select", style="background: rgba(18, 18, 24, 0.6) !important; border: 1px solid rgba(255, 215, 0, 0.3) !important; color: var(--text-primary) !important;") }}
+                        {% if form.communication_skills.errors %}
+                            <div class="text-danger small mt-1">{{ form.communication_skills.errors[0] }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="mb-3">
+                        {{ form.punctuality.label(class="form-label", style="color: var(--text-primary) !important; font-weight: 600 !important;") }}
+                        {{ form.punctuality(class="form-select", style="background: rgba(18, 18, 24, 0.6) !important; border: 1px solid rgba(255, 215, 0, 0.3) !important; color: var(--text-primary) !important;") }}
+                        {% if form.punctuality.errors %}
+                            <div class="text-danger small mt-1">{{ form.punctuality.errors[0] }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="mb-3">
+                        {{ form.assignment_feedback.label(class="form-label", style="color: var(--text-primary) !important; font-weight: 600 !important;") }}
+                        {{ form.assignment_feedback(class="form-select", style="background: rgba(18, 18, 24, 0.6) !important; border: 1px solid rgba(255, 215, 0, 0.3) !important; color: var(--text-primary) !important;") }}
+                        {% if form.assignment_feedback.errors %}
+                            <div class="text-danger small mt-1">{{ form.assignment_feedback.errors[0] }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="mb-3">
+                        {{ form.doubt_resolution.label(class="form-label", style="color: var(--text-primary) !important; font-weight: 600 !important;") }}
+                        {{ form.doubt_resolution(class="form-select", style="background: rgba(18, 18, 24, 0.6) !important; border: 1px solid rgba(255, 215, 0, 0.3) !important; color: var(--text-primary) !important;") }}
+                        {% if form.doubt_resolution.errors %}
+                            <div class="text-danger small mt-1">{{ form.doubt_resolution.errors[0] }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="mb-3">
+                        {{ form.course_completion.label(class="form-label", style="color: var(--text-primary) !important; font-weight: 600 !important;") }}
+                        {{ form.course_completion(class="form-select", style="background: rgba(18, 18, 24, 0.6) !important; border: 1px solid rgba(255, 215, 0, 0.3) !important; color: var(--text-primary) !important;") }}
+                        {% if form.course_completion.errors %}
+                            <div class="text-danger small mt-1">{{ form.course_completion.errors[0] }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="mb-3">
+                        {{ form.practical_approach.label(class="form-label", style="color: var(--text-primary) !important; font-weight: 600 !important;") }}
+                        {{ form.practical_approach(class="form-select", style="background: rgba(18, 18, 24, 0.6) !important; border: 1px solid rgba(255, 215, 0, 0.3) !important; color: var(--text-primary) !important;") }}
+                        {% if form.practical_approach.errors %}
+                            <div class="text-danger small mt-1">{{ form.practical_approach.errors[0] }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="mb-3">
+                        {{ form.student_interaction.label(class="form-label", style="color: var(--text-primary) !important; font-weight: 600 !important;") }}
+                        {{ form.student_interaction(class="form-select", style="background: rgba(18, 18, 24, 0.6) !important; border: 1px solid rgba(255, 215, 0, 0.3) !important; color: var(--text-primary) !important;") }}
+                        {% if form.student_interaction.errors %}
+                            <div class="text-danger small mt-1">{{ form.student_interaction.errors[0] }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="mb-3">
+                        {{ form.overall_satisfaction.label(class="form-label", style="color: var(--text-primary) !important; font-weight: 600 !important;") }}
+                        {{ form.overall_satisfaction(class="form-select", style="background: rgba(18, 18, 24, 0.6) !important; border: 1px solid rgba(255, 215, 0, 0.3) !important; color: var(--text-primary) !important;") }}
+                        {% if form.overall_satisfaction.errors %}
+                            <div class="text-danger small mt-1">{{ form.overall_satisfaction.errors[0] }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="mb-3">
+                        {{ form.additional_comments.label(class="form-label", style="color: var(--text-primary) !important; font-weight: 600 !important;") }}
+                        {{ form.additional_comments(class="form-control", rows="4", style="color: var(--text-primary) !important;", placeholder="Any additional comments...") }}
+                        {% if form.additional_comments.errors %}
+                            <div class="text-danger small mt-1">{{ form.additional_comments.errors[0] }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="mb-3">
+                        {{ form.suggestions.label(class="form-label", style="color: var(--text-primary) !important; font-weight: 600 !important;") }}
+                        {{ form.suggestions(class="form-control", rows="4", style="color: var(--text-primary) !important;", placeholder="Suggestions for improvement...") }}
+                        {% if form.suggestions.errors %}
+                            <div class="text-danger small mt-1">{{ form.suggestions.errors[0] }}</div>
+                        {% endif %}
+                    </div>
+
+                    <div class="d-flex gap-3 mt-4">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-paper-plane me-2"></i>Submit Feedback
+                        </button>
+                        <a href="{{ url_for('faculty_dashboard') }}" class="btn btn-secondary">
+                            <i class="fas fa-times me-2"></i>Cancel
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="d-flex justify-content-end mt-4">
+    <a href="{{ url_for('faculty_dashboard') }}" class="btn btn-secondary" style="background: rgba(0, 0, 0, 0.5) !important; border: 1px solid var(--text-secondary) !important; color: var(--text-secondary) !important; font-weight: 600 !important;">
+        <i class="fas fa-arrow-left me-2"></i> Back to Dashboard
+    </a>
+</div>
+
+<script>
+// Enhanced form validation
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.querySelector('form');
+    const additionalCommentsField = document.querySelector('textarea[name="additional_comments"]');
+    
+    form.addEventListener('submit', function(e) {
+        const additionalComments = additionalCommentsField.value.trim();
+        
+        if (additionalComments.length < 10) {
+            e.preventDefault();
+            alert('Please provide at least 10 characters of feedback.');
+            return false;
+        }
+        
+        // Show loading state
+        const submitBtn = form.querySelector('button[type="submit"]');
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Submitting...';
+        submitBtn.disabled = true;
+    });
+    
+    // Character counter
+    additionalCommentsField.addEventListener('input', function() {
+        const charCount = this.value.length;
+        const maxLength = 500;
+        
+        if (charCount > maxLength) {
+            this.value = this.value.substring(0, maxLength);
+        }
+    });
+});
+</script>
+{% endblock %}
