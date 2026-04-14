@@ -486,12 +486,14 @@
             
             <div class="row align-items-center">
                 <!-- Left side logo -->
-                <div class="col-md-3 text-center mb-3 mb-md-0" style="padding-left: 200px;">
+                <div class="col-md-3 text-center mb-3 mb-md-0" style="padding-left: 5px;">
                     <div style="height: 150px; width: 200px; display: flex; align-items: center; justify-content: center; margin: 0 auto 0 auto;">
-                        <img src="{{ url_for('static', filename='sveri.png') }}" 
+                        <img src="https://i.imgur.com/4LqJc9F.png" 
+                             onerror="this.style.display='none'; document.getElementById('logo-fallback').style.display='block';"
                              alt="College Logo" 
                              class="img-fluid" 
                              style="height: 100%; width: 100%; object-fit: contain; filter: drop-shadow(0 0 8px rgba(0,245,255,0.35));">
+                        <div id="logo-fallback" style="display: none; font-size: 3rem; color: var(--neon-cyan); font-weight: bold; text-shadow: 0 0 10px rgba(0,245,255,0.5);">SVERI</div>
                     </div>
                 </div>
                 
