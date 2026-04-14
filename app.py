@@ -43,6 +43,12 @@ def load_user(user_id):
 def home():
     return redirect(url_for('login'))
 
+@app.route('/static/<path:filename>')
+def serve_static(filename):
+    """Serve static files for Render.com deployment"""
+    from flask import send_from_directory
+    return send_from_directory('static', filename)
+
 @app.route('/project-report-cover')
 def project_report_cover():
     return render_template('project_report_cover.html')

@@ -488,12 +488,23 @@
                 <!-- Left side logo -->
                 <div class="col-md-3 text-center mb-3 mb-md-0" style="padding-left: 5px;">
                     <div style="height: 150px; width: 200px; display: flex; align-items: center; justify-content: center; margin: 0 auto 0 auto;">
-                        <img src="https://i.imgur.com/4LqJc9F.png" 
-                             onerror="this.style.display='none'; document.getElementById('logo-fallback').style.display='block';"
-                             alt="College Logo" 
-                             class="img-fluid" 
-                             style="height: 100%; width: 100%; object-fit: contain; filter: drop-shadow(0 0 8px rgba(0,245,255,0.35));">
-                        <div id="logo-fallback" style="display: none; font-size: 3rem; color: var(--neon-cyan); font-weight: bold; text-shadow: 0 0 10px rgba(0,245,255,0.5);">SVERI</div>
+                        <svg width="200" height="150" viewBox="0 0 200 150" style="filter: drop-shadow(0 0 8px rgba(0,245,255,0.35));">
+                            <defs>
+                                <linearGradient id="logoGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                    <stop offset="0%" style="stop-color:#00F0FF;stop-opacity:1" />
+                                    <stop offset="50%" style="stop-color:#00FF9D;stop-opacity:1" />
+                                    <stop offset="100%" style="stop-color:#FF00FF;stop-opacity:1" />
+                                </linearGradient>
+                            </defs>
+                            <rect x="10" y="10" width="180" height="130" rx="15" fill="none" stroke="url(#logoGradient)" stroke-width="3"/>
+                            <text x="100" y="60" font-family="Arial, sans-serif" font-size="24" font-weight="bold" text-anchor="middle" fill="url(#logoGradient)">SVERI</text>
+                            <text x="100" y="85" font-family="Arial, sans-serif" font-size="12" text-anchor="middle" fill="#00F0FF">Engineering</text>
+                            <text x="100" y="105" font-family="Arial, sans-serif" font-size="12" text-anchor="middle" fill="#00F0FF">for Excellence</text>
+                            <circle cx="30" cy="30" r="3" fill="#00F0FF"/>
+                            <circle cx="170" cy="30" r="3" fill="#00F0FF"/>
+                            <circle cx="30" cy="120" r="3" fill="#00F0FF"/>
+                            <circle cx="170" cy="120" r="3" fill="#00F0FF"/>
+                        </svg>
                     </div>
                 </div>
                 

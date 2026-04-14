@@ -8,12 +8,6 @@ services:
     startCommand: "python app.py"
     autoDeploy: true
     
-    # Static file serving configuration
-    staticPublish:
-      # Serve static files from the static directory
-      - url: /static
-        dir: static
-        
     # Environment variables
     envVars:
       - key: PYTHON_VERSION
@@ -23,12 +17,5 @@ services:
       - key: FLASK_APP
         value: app.py
 
-# Alternative approach if staticPublish doesn't work
-# Use this in your app.py to serve static files manually:
-"""
-from flask import send_from_directory
-
-@app.route('/static/<path:filename>')
-def serve_static(filename):
-    return send_from_directory('static', filename)
-"""
+# Note: Render.com automatically serves static files from the 'static' directory
+# So your local logo should work once deployed with render.yaml
