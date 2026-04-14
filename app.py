@@ -46,8 +46,16 @@ def home():
 @app.route('/static/<path:filename>')
 def serve_static(filename):
     """Serve static files for Render.com deployment"""
-    from flask import send_from_directory
-    return send_from_directory('static', filename)
+    from flask import send_from_directory, abort
+    import os
+    
+    static_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'static')
+    file_path = os.path.join(static_dir, filename)
+    
+    if os.path.exists(file_path) and os.path.isfile(file_path):
+        return send_from_directory('static', filename)
+    else:
+        abort(404)
 
 @app.route('/project-report-cover')
 def project_report_cover():
