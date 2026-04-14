@@ -9,7 +9,7 @@
         <div class="stat-mini-card">
             <div class="stat-icon"><i class="fas fa-chalkboard"></i></div>
             <div class="stat-info">
-                <div class="stat-number" style="color:var(--neon-cyan);">{{ workloads|length if workloads else 3 }}</div>
+                <div class="stat-number" style="color:var(--neon-cyan);">{{ my_workloads|length if my_workloads else 0 }}</div>
                 <div class="stat-label">Total Subjects</div>
             </div>
         </div>
@@ -18,7 +18,7 @@
         <div class="stat-mini-card">
             <div class="stat-icon success"><i class="fas fa-clock"></i></div>
             <div class="stat-info">
-                <div class="stat-number" style="color:var(--neon-green);">{{ workloads|sum(attribute='hours') if workloads else 12 }}</div>
+                <div class="stat-number" style="color:var(--neon-green);">{{ my_workloads|sum(attribute='hours') if my_workloads else 0 }}</div>
                 <div class="stat-label">Total Hours/Week</div>
             </div>
         </div>
@@ -88,7 +88,7 @@
                     <i class="fas fa-clipboard-list"></i>
                 </div>
                 
-                {% if workloads %}
+                {% if my_workloads %}
                 <div class="table-responsive">
                     <table class="table table-hover" style="background: transparent !important;">
                         <thead>
@@ -101,7 +101,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            {% for w in workloads %}
+                            {% for w in my_workloads %}
                             <tr style="border-bottom: 1px solid rgba(0, 245, 255, 0.1) !important;">
                                 <td>
                                     <div class="fw-bold" style="color: var(--neon-cyan) !important;">{{ w.subject }}</div>
@@ -181,8 +181,8 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <script>
 // Build chart data from workloads or use demo data
-const wLabels = [{% if workloads %}{% for w in workloads %}'{{ w.subject }}'{% if not loop.last %},{% endif %}{% endfor %}{% else %}'CS Fund.','Prog Lab','Data Str.'{% endif %}];
-const wData = [{% if workloads %}{% for w in workloads %}{{ w.hours }}{% if not loop.last %},{% endif %}{% endfor %}{% else %}4,3,5{% endif %}];
+const wLabels = [{% if my_workloads %}{% for w in my_workloads %}'{{ w.subject }}'{% if not loop.last %},{% endif %}{% endfor %}{% else %}'CS Fund.','Prog Lab','Data Str.'{% endif %}];
+const wData = [{% if my_workloads %}{% for w in my_workloads %}{{ w.hours }}{% if not loop.last %},{% endif %}{% endfor %}{% else %}4,3,5{% endif %}];
 const colors = ['rgba(0,245,255,0.5)','rgba(0,255,157,0.5)','rgba(139,92,246,0.5)','rgba(255,215,0,0.5)','rgba(255,0,255,0.5)'];
 const borders = ['#00f5ff','#00ff9d','#8b5cf6','#ffd700','#ff00ff'];
 

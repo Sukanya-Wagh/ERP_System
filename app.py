@@ -1684,10 +1684,39 @@ def faculty_dashboard():
                 'last_updated': mark.timestamp
             }
     
+    # Get faculty's workload data
+    my_workloads = Workload.query.filter_by(faculty_id=current_user.id).all()
+    
+    # Calculate workload statistics
+    workload_count = len(my_workloads)
+    total_lectures = 0
+    total_practicals = 0
+    
+    for workload in my_workloads:
+        if workload.workload_type.lower() == 'theory':
+            total_lectures += workload.hours
+        elif workload.workload_type.lower() == 'practical':
+            total_practicals += workload.hours
+    
+    # Get leave requests count
+    leave_requests = LeaveRequest.query.filter_by(user_id=current_user.id).count()
+    
+    # Get unread notifications count
+    unread_notifications = Notification.query.filter_by(user_id=current_user.id, is_read=False).count()
+    
+    # Get marks entered count
+    marks_entered = TestMarks.query.filter_by(faculty_id=current_user.id).count()
+    
     return render_template('faculty_dashboard.html',
                          notifications=notifications,
                          recent_marks=recent_marks[:5],
-                         recent_students=list(recent_students.values())[:5])
+                         recent_students=list(recent_students.values())[:5],
+                         workload_count=workload_count,
+                         total_lectures=total_lectures,
+                         total_practicals=total_practicals,
+                         leave_requests=leave_requests,
+                         unread_notifications=unread_notifications,
+                         marks_entered=marks_entered)
 
 # Faculty - Notifications
 @app.route('/faculty/notifications')
@@ -1899,16 +1928,27 @@ def view_workload():
      .all()
     
     # Add workload details for personal workload
+    total_lectures = 0
+    total_practicals = 0
+    
     for workload in my_workloads:
         subject = Subject.query.get(workload.subject_id)
         if subject:
             workload.subject_name = subject.name
         else:
             workload.subject_name = "Unknown Subject"
+            
+        # Calculate lecture vs practical hours
+        if workload.workload_type.lower() == 'theory':
+            total_lectures += workload.hours
+        elif workload.workload_type.lower() == 'practical':
+            total_practicals += workload.hours
     
     return render_template('faculty/view_workload.html', 
                          my_workloads=my_workloads,
-                         department_workloads=department_workloads)
+                         department_workloads=department_workloads,
+                         total_lectures=total_lectures,
+                         total_practicals=total_practicals)
 
 # Student - Test Marks
 @app.route('/student/test_marks')
